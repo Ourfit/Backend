@@ -8,10 +8,10 @@ from config import settings
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
 config.set_main_option(
-    "sqlalchemy.url",
-    # settings.DB_URL,
-    "mysql+mysqldb://root/qwer1234!@127.0.0.1:3308/ourfit",
+    "db_url",
+    settings.DB_URL,
 )
 
 # Interpret the config file for Python logging.
