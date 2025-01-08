@@ -1,7 +1,6 @@
 from datetime import datetime
-from typing import Optional
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel
 
 
 class Mate(SQLModel, table=True):
@@ -10,4 +9,4 @@ class Mate(SQLModel, table=True):
     id: int = Field(primary_key=True)
     created_at: datetime
     updated_at: datetime | None = None
-    deleted_at: Optional | None = None
+    deleted_at: datetime | None = None
