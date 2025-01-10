@@ -30,4 +30,9 @@
 4. 실행
 
 - fastapi dev main.py
-- http://127.0.0.1:8000/initialize_databse 으로 접속해서 user 테이블 생성
+- alembic upgrade head 로 데이터베이스 초기화
+
+5. 데이터베이스 변경
+
+- 명령어 alembic revesion -m <파일명>
+- upgrade에 실행문, downgrade에 되돌리는 쿼리 입력하기
