@@ -24,6 +24,11 @@ class IsUserNameAvailable:
 @strawberry.type
 class QueryUser:
     @strawberry.field
+    def get_user_id_by_jwt_token_test(self, info: Info) -> int:
+        user_id = info.context.user_id
+        return user_id
+
+    @strawberry.field
     def user(self, info: Info, user_id: int) -> None | UserType:
         session: Session = info.context.session
         resolver = UserResolver(session)
