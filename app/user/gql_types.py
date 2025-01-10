@@ -23,7 +23,7 @@ class IsUserNameAvailable:
 @strawberry.type
 class QueryUser:
     @strawberry.field
-    def get_user(self, info: Info, user_id: int) -> None | UserType:
+    def user(self, info: Info, user_id: int) -> None | UserType:
         session: Session = info.context.session
         resolver = UserResolver(session)
         user = resolver.get_user(user_id)
