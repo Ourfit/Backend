@@ -35,7 +35,7 @@ def upgrade() -> None:
             ),
             sa.Column(
                 "hashed_password",
-                sa.String,
+                sa.String(1000),
             ),
             sa.Column(
                 "email",
