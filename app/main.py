@@ -1,11 +1,18 @@
-from fastapi import FastAPI, Request
+import json
+
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import HTTPException
 from fastapi.responses import RedirectResponse
 from gql import graphql_app
 from oauth.kakao_manager import KakaoAPI
 from starlette.middleware.sessions import SessionMiddleware
+from user.service import OauthService
+
+from app.security.jwt_manager import create_jwt_token
 
 app = FastAPI()
+# TODO: secret_key를 환경변수로 설정
+# kakao API에서 Redirect를 사용하기 때문에 HTTP를 사용해야 하고, 여기서 http에 대한 sesssion을 필요함.
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 app.include_router(graphql_app, prefix="/graphql")
 kakao_api = KakaoAPI()
@@ -34,14 +41,19 @@ async def login_kakao_callback(request: Request):
         request.session["access_token"] = token_info["access_token"]
         user_info = await kakao_api.get_user_info(token_info["access_token"])
         kakao_user_id = user_info["id"]
-        # TODO: DB에 있는지 검사해서 로그인 관련 기능 추가 필요
-
-        # 만약 DB에 없다면, 아래의 데이터를 프론트엔드에 반환하고 프론트엔드에서 회원가입 페이지로 이동, 회원가입 시 아래의 정보 전달
-        return {
-            "data": {
-                "oauth_type": "kakao",
-                "oauth_user_id": kakao_user_id,
-            }
-        }
+        ourfit_user_id = OauthService.get_user_id_by_oauth(
+            oauth_provider="kakao", oauth_user_id=kakao_user_id
+        )
+        token = create_jwt_token({"user_id": ourfit_user_id}) if ourfit_user_id else ""
+        response = Response(
+            content=json.dumps(
+                {
+                    "oauth_user_id": kakao_user_id,
+                    "provider": "kakao",
+                    "Authorization": f"Bearer {token}",
+                }
+            ),
+        )
+        return response
     else:
         return HTTPException(status_code=400, detail="Failed to get access token")

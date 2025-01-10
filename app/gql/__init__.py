@@ -5,11 +5,12 @@ from operator import itemgetter
 import strawberry
 from database import get_session
 from fastapi import Depends
-from middlewares.jwt_middleware import verify_jwt
 from sport.gql_types import QuerySport
 from sqlmodel import Session
 from strawberry.fastapi import BaseContext, GraphQLRouter
 from user.gql_types import MutationUser, QueryUser
+
+from app.security.jwt_manager import verify_jwt
 
 
 class GraphQLContext(BaseContext):
