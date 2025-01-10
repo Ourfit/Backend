@@ -40,7 +40,7 @@ def upgrade() -> None:
             sa.Column(
                 "email",
                 sa.String(255),
-                nullable=False,
+                nullable=True,
             ),
         )
 

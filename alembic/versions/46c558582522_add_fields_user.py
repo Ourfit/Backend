@@ -25,10 +25,6 @@ TABLE_NAME_USER = "user"
 def upgrade() -> None:
     op.add_column(
         TABLE_NAME_USER,
-        Column("oauth_provider", String(10), nullable=True),
-    )
-    op.add_column(
-        TABLE_NAME_USER,
         Column("gender", String(10), nullable=True),
     )
     op.add_column(
@@ -77,7 +73,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_column(TABLE_NAME_USER, "oauth_provider")
     op.drop_column(TABLE_NAME_USER, "gender")
     op.drop_column(TABLE_NAME_USER, "age")
     op.drop_column(TABLE_NAME_USER, "athletic_level")
