@@ -1,10 +1,10 @@
 # graphql이 아닌 gql이라고 명명한 이유: strawberry에서 graphql이라는 이름을 사용하고 있어서, 의존성 문제 발생
 import strawberry
+from database import get_session
 from fastapi import Depends
+from sport.gql_types import QuerySport
 from sqlmodel import Session
 from strawberry.fastapi import BaseContext, GraphQLRouter
-
-from database import get_session
 from user.gql_types import QueryUser
 
 
@@ -28,7 +28,7 @@ async def get_db_session_context(
 
 
 @strawberry.type
-class QueryDefault(QueryUser):
+class QueryDefault(QueryUser, QuerySport):
     # 다른 도메인의 query를 사용하려면, QueryDefault에 해당 도메인의 query를 상속 시키기 (ex. QueryDefault(QueryUser, QueryChallenge))
     @strawberry.field
     def hello(self) -> str:
