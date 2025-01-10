@@ -14,7 +14,7 @@ class SportType:
 @strawberry.type
 class QuerySport:
     @strawberry.field
-    def get_sport_list(self, info: Info) -> list[SportType] | None:
+    def sports(self, info: Info) -> list[SportType] | None:
         session: Session = info.context.session
         resolver = SportResolver(session)
         return resolver.get_sport_list()
