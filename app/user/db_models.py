@@ -10,7 +10,6 @@ class User(SQLModel, table=True):
     user_name: str = Field(max_length=255)
     email: str
     hashed_password: str
-    oauth_provider: str | None = None
     gender: str | None = None
     age: int | None = None
     athletic_level: AthleticLevel | None = None
@@ -30,3 +29,16 @@ class User(SQLModel, table=True):
         if not all(ord("가") <= ord(c) <= ord("힣") for c in user_name):
             return False
         return True
+
+
+class Oauth(SQLModel, table=True):
+    # 하나의 계정에 여러개의 Oauth가 연결될 수 있음
+    oauth_id: int | None = Field(default=None, primary_key=True)
+    user_id: int
+    provider: str
+
+    # 여러 플랫폼에서 int를 사용하는지 str을 사용하는지 몰라 일단 str로 설정
+    oauth_user_id: str
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    deleted_at: datetime | None = None
