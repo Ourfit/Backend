@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from .db_models import Oauth, User
+from .db_models import Oauth, User, UserSport
 
 
 class UserResolver:
@@ -24,6 +24,10 @@ class UserResolver:
             provider=oauth_provider, user_id=user.user_id, oauth_user_id=oauth_user_id
         )
         self.session.add(oauth)
-        self.session.commit()
-        self.session.refresh(user)
         return user
+
+    def create_user_sports(self, user_id: int, sport_ids: list[int]) -> None:
+        for sport_id in sport_ids:
+            user_sport = UserSport(user_id=user_id, sport_id=sport_id)
+            self.session.add(user_sport)
+        self.session.flush()

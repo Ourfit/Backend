@@ -65,3 +65,23 @@ class Oauth(SQLModel, table=True):
         )
     )
     deleted_at: datetime | None = None
+
+
+class UserSport(SQLModel, table=True):
+    user_sport_id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.user_id")
+    sport_id: int = Field(foreign_key="sport.sport_id")
+    created_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+        )
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=sa.func.now(),
+            onupdate=sa.func.now(),
+            nullable=False,
+        )
+    )
+    deleted_at: datetime | None = None

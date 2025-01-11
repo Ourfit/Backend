@@ -78,6 +78,7 @@ class MutationUser:
         profile_image_url: str | None = None,
         oauth_provider: str | None = None,
         oauth_user_id: str | None = None,
+        sports_ids: list[int] | None = None,
     ) -> UserType:
         session: Session = info.context.session
         resolver = UserResolver(session)
@@ -91,6 +92,8 @@ class MutationUser:
             profile_image_url=profile_image_url,
         )
         resolver.create_user_and_oauth(user, oauth_provider, oauth_user_id)
+        resolver.create_user_sports(user.user_id, sports_ids)
+        session.commit()
 
         return UserType(
             user_id=user.user_id, user_name=user.user_name, email=user.email
