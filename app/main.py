@@ -5,10 +5,9 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import RedirectResponse
 from gql import graphql_app
 from oauth.kakao_manager import KakaoAPI
+from security.jwt_manager import create_jwt_token
 from starlette.middleware.sessions import SessionMiddleware
 from user.service import OauthService
-
-from app.security.jwt_manager import create_jwt_token
 
 app = FastAPI()
 # TODO: secret_key를 환경변수로 설정
