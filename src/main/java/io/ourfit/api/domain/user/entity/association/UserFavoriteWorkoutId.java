@@ -10,7 +10,7 @@ import org.hibernate.Hibernate;
 
 @Embeddable
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserFavoriteWorkoutId implements Serializable {
 

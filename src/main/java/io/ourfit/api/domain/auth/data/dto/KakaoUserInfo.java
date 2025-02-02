@@ -25,6 +25,11 @@ public record KakaoUserInfo(String id, @JsonProperty("kakao_account") KakaoAccou
   }
 
   @Override
+  public String getName() {
+    return this.kakaoAccount.name;
+  }
+
+  @Override
   public OAuth2ProviderType getProvider() {
     return OAuth2ProviderType.KAKAO;
   }
@@ -32,6 +37,7 @@ public record KakaoUserInfo(String id, @JsonProperty("kakao_account") KakaoAccou
   /**
    * 카카오 계정 정보 (사용자에게 동의 받은 항목만 포함)
    *
+   * @param name 사용자 이름
    * @param hasEmail 이메일 소유 여부
    * @param isEmailValid 이메일 유효 여부
    * @param isEmailVerified 이메일 인증 여부
@@ -39,5 +45,5 @@ public record KakaoUserInfo(String id, @JsonProperty("kakao_account") KakaoAccou
    */
   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public record KakaoAccount(
-      Boolean hasEmail, Boolean isEmailValid, Boolean isEmailVerified, String email) {}
+      String name, Boolean hasEmail, Boolean isEmailValid, Boolean isEmailVerified, String email) {}
 }

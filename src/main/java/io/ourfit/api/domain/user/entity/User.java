@@ -1,5 +1,9 @@
 package io.ourfit.api.domain.user.entity;
 
+import io.ourfit.api.domain.auth.data.dto.OAuth2UserInfo;
+import io.ourfit.api.domain.user.dto.internal.UserBasicInfoUpdateDto;
+import io.ourfit.api.domain.user.dto.internal.UserSignUpDto;
+import io.ourfit.api.domain.user.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkout;
 import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkoutPlace;
 import io.ourfit.api.domain.user.entity.enums.GenderType;
@@ -8,12 +12,15 @@ import io.ourfit.api.domain.user.entity.enums.RoleType;
 import io.ourfit.api.domain.user.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
 import io.ourfit.api.global.data.entity.SecuredBaseEntity;
+import io.ourfit.api.global.utils.StreamUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 
@@ -46,7 +53,7 @@ public class User extends SecuredBaseEntity {
   private Long id;
 
   @Column(name = "oauth_id", nullable = false)
-  private String oauthId;
+  private String oAuthId;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "oauth_type", nullable = false)
@@ -82,12 +89,8 @@ public class User extends SecuredBaseEntity {
   private SkillLevelType skillLevelType;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "weekday_preference_type", nullable = false)
-  private TimePrefrenceType weekdayPreferenceType;
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "weekend_preference_type", nullable = false)
-  private TimePrefrenceType weekendPreferenceType;
+  @Column(name = "preference_type", nullable = false)
+  private TimePrefrenceType preferredWorkoutTime;
 
   @URL(protocol = "https")
   @Column(name = "profile_image_url")
@@ -106,8 +109,8 @@ public class User extends SecuredBaseEntity {
   @Column(name = "region3", nullable = false, length = 50)
   private String region3;
 
-  @Column(name = "nick_name_changed_at")
-  private LocalDateTime nickNameChangedAt;
+  @Column(name = "nick_name_updated_at")
+  private LocalDateTime nickNameUpdatedAt;
 
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
@@ -119,4 +122,69 @@ public class User extends SecuredBaseEntity {
   @Builder.Default
   @OneToMany(mappedBy = "user")
   private List<UserFavoriteWorkoutPlace> favoriteWorkoutPlaces = new ArrayList<>();
+
+  public static User of(OAuth2UserInfo oAuth2UserInfo, UserSignUpDto signUpDto) {
+    return User.builder()
+        .oAuthId(oAuth2UserInfo.getId())
+        .oAuthProviderType(oAuth2UserInfo.getProvider())
+        .roleType(RoleType.USER)
+        .email(oAuth2UserInfo.getEmail())
+        .name(oAuth2UserInfo.getName())
+        .nickName(signUpDto.nickname())
+        .age(signUpDto.age())
+        .genderType(signUpDto.gender())
+        .skillLevelType(signUpDto.skillLevel())
+        .preferredWorkoutTime(signUpDto.preferredWorkoutTime())
+        .region1(signUpDto.region1())
+        .region2(signUpDto.region2())
+        .region3(signUpDto.region3())
+        .build();
+  }
+
+  public boolean isSuperAdmin() {
+    return this.roleType.isSuperAdmin();
+  }
+
+  public boolean isAdmin() {
+    return this.roleType.isAdmin();
+  }
+
+  public void updateBasicInfo(UserBasicInfoUpdateDto updateDto) {
+    if (updateDto.nickname() != null) {
+      this.nickName = updateDto.nickname();
+      this.nickNameUpdatedAt = LocalDateTime.now();
+    }
+    if (updateDto.age() != null) {
+      this.age = updateDto.age();
+    }
+    if (Stream.of(updateDto.region1(), updateDto.region2(), updateDto.region3())
+        .allMatch(Objects::nonNull)) {
+      this.region1 = updateDto.region1();
+      this.region2 = updateDto.region2();
+      this.region3 = updateDto.region3();
+    }
+    if (updateDto.skillLevel() != null) {
+      this.skillLevelType = updateDto.skillLevel();
+    }
+  }
+
+  public void updateWorkoutPreferences(UserWorkoutPreferencesUpdateDto updateDto) {
+    if (updateDto.preferredWorkoutTime() != null) {
+      this.preferredWorkoutTime = updateDto.preferredWorkoutTime();
+    }
+    if (!updateDto.favoritePlaces().isEmpty()) {
+      // TODO: clear하고 새로 넣기 OR 변경된 것만 업데이트?
+      this.favoriteWorkoutPlaces =
+          StreamUtils.convert(
+              updateDto.favoritePlaces(), place -> UserFavoriteWorkoutPlace.of(this, place));
+    }
+  }
+
+  public void updateFavoriteWorkouts(List<UserFavoriteWorkout> favoriteWorkouts) {
+    this.favoriteWorkouts = favoriteWorkouts;
+  }
+
+  public void updateProfileImage(String profileImageUrl) {
+    this.profileImageUrl = profileImageUrl;
+  }
 }

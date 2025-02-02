@@ -10,7 +10,6 @@ import lombok.*;
 @Entity
 @Table(name = "user_favorite_workout")
 @Getter
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserFavoriteWorkout extends BaseEntity {
@@ -28,4 +27,9 @@ public class UserFavoriteWorkout extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "workout_id", nullable = false)
   private Workout workout;
+
+  public static UserFavoriteWorkout of(User user, Workout workout) {
+    UserFavoriteWorkoutId id = new UserFavoriteWorkoutId(user.getId(), workout.getId());
+    return new UserFavoriteWorkout(id, user, workout);
+  }
 }

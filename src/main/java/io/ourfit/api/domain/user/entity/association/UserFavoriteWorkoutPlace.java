@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.user.entity.association;
 
+import io.ourfit.api.domain.user.dto.internal.UserFavoritePlacesUpsertDto;
 import io.ourfit.api.domain.user.entity.User;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -30,4 +31,12 @@ public class UserFavoriteWorkoutPlace extends BaseEntity {
 
   @Column(name = "address", nullable = false)
   private String address;
+
+  public static UserFavoriteWorkoutPlace of(User user, UserFavoritePlacesUpsertDto upsertDto) {
+    return UserFavoriteWorkoutPlace.builder()
+        .user(user)
+        .placeName(upsertDto.placeName())
+        .address(upsertDto.address())
+        .build();
+  }
 }

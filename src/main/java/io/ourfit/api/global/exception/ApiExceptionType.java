@@ -16,6 +16,7 @@ public enum ApiExceptionType {
   FORBIDDEN(403, "Forbidden", 403000),
 
   NOT_FOUND(404, "Not Found", 404000),
+  NOT_FOUND_USER(404, "Not Found: User not found", 404001),
 
   NOT_ALLOWED_METHOD(405, "Method Not Allowed", 405000),
 

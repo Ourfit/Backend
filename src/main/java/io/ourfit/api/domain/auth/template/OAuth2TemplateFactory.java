@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.auth.template;
 
-import ho.seong.cho.exception.custom.AuthenticationException;
-import ho.seong.cho.oauth.data.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
+import io.ourfit.api.global.exception.custom.AuthenticationException;
 import jakarta.validation.constraints.NotNull;
 
 public interface OAuth2TemplateFactory {
