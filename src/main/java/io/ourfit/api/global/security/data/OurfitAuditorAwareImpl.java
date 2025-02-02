@@ -6,7 +6,9 @@ import java.util.Optional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OurfitAuditorAwareImpl implements OurfitAuditorAware {
   /**
    * Spring Security의 {@link SecurityContextHolder}를 사용하여 현재 사용자 정보를 가져온다. <br>

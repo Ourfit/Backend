@@ -6,7 +6,7 @@ import java.time.DayOfWeek;
 @Converter
 public class DayOfWeekSetConverter extends AbstractSetConverter<DayOfWeek> {
 
-  public DayOfWeekSetConverter(Class<DayOfWeek> enumClass) {
-    super(enumClass);
+  public DayOfWeekSetConverter() {
+    super(DayOfWeek.class);
   }
 }

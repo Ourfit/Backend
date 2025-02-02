@@ -1,6 +1,5 @@
 package io.ourfit.api.infra.aws.s3;
 
-import static ho.seong.cho.aws.s3.MyS3ClientImpl.*;
 import static io.ourfit.api.infra.aws.s3.OurfitS3ClientImpl.DIRECTORY_PATH_PATTERN;
 
 import io.jsonwebtoken.lang.Assert;

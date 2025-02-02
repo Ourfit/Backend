@@ -27,6 +27,7 @@ public enum ApiExceptionType {
   TOO_MANY_REQUESTS(429, "Too Many Requests", 429000),
 
   INTERNAL_SERVER_ERROR(500, "Internal Server Error", 500000),
+  S3_ERROR(500, "Internal Server Error: AWS S3", 500001),
   ;
 
   /**
