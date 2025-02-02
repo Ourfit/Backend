@@ -1,0 +1,190 @@
+use ourfit;
+
+create table user
+(
+    id                      int unsigned auto_increment comment '서비스 내 고유 ID',
+    oauth_id                varchar(255)                                  not null comment '가입 시 사용한 OAuth 제공자가 부여한 고유 ID',
+    oauth_type              enum ('KAKAO')                                not null comment 'OAuth 제공자',
+    email                   varchar(255)                                  not null comment '이메일',
+    name                    varchar(50)                                   not null comment '이름',
+    nick_name               varchar(50)                                   not null comment '닉네임',
+    age                     tinyint unsigned                              not null comment '나이',
+    gender_type             enum ('F', 'M')                               not null comment '성별',
+    introduction            text         default null comment '간단 소개',
+    skill_level_type        enum ('BEGINNER', 'INTERMEDIATE', 'ADVANCED') not null comment '나의 운동 실력',
+    weekday_preference_type enum ('MORNING', 'AFTERNOON', 'EVENING')      not null comment '선호하는 평일 운동 시간대',
+    weekend_preference_type enum ('MORNING', 'AFTERNOON', 'EVENING')      not null comment '선호하는 주말 운동 시간대',
+    profile_image_url       varchar(255) default null comment '프로필 이미지 URL',
+    open_chat_url           varchar(255) default null comment '오픈 채팅 URL',
+    region1                 varchar(50)                                   not null comment '시/도 단위 지역',
+    region2                 varchar(50)                                   not null comment '시/군/구 단위 지역',
+    region3                 varchar(50)                                   not null comment '읍/면/동 단위 지역',
+    nick_name_changed_at    datetime     default null comment '닉네임 변경 일시',
+    created_at              datetime     default current_timestamp comment '생성일시',
+    created_by              int unsigned comment '생성자',
+    updated_at              datetime     default current_timestamp on update current_timestamp comment '수정일시',
+    updated_by              int unsigned default null comment '수정자',
+    deleted_at              datetime     default null comment '탈퇴일시',
+    primary key (id),
+    constraint uq_oauth unique (oauth_id, oauth_type),
+    constraint uq_email unique (email),
+    constraint uq_nick_name unique (nick_name),
+    index idx_region (region1, region2, region3)
+) engine = InnoDB
+  row_format = dynamic
+    comment '사용자 정보';
+
+create table workout_type
+(
+    id         int unsigned auto_increment,
+    code       varchar(50) not null comment '운동 유형 코드',
+    name       varchar(50) not null comment '운동 유형 이름',
+    created_at datetime default current_timestamp comment '생성일시',
+    updated_at datetime default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (id),
+    constraint uq_workout_type_name unique (code)
+) engine = InnoDB
+    comment '운동 종목 정보';
+
+insert into workout_type (code, name)
+values ('GYM', '헬스'),
+       ('PILATES', '필라테스'),
+       ('SWIMMING', '수영'),
+       ('DANCE', '댄스'),
+       ('SQUASH', '스쿼시'),
+       ('BOXING', '복싱'),
+       ('GOLF', '골프'),
+       ('TENNIS', '테니스'),
+       ('YOGA', '요가'),
+       ('CROSSFIT', '크로스핏'),
+       ('CLIMBING', '클라이밍'),
+       ('TAEKWONDO', '태권도'),
+       ('HAPKIDO', '합기도'),
+       ('AEROBICS', '에어로빅'),
+       ('BALLET', '발레'),
+       ('MUAY_THAI', '무에타이'),
+       ('BADMINTON', '배드민턴'),
+       ('BOWLING', '볼링'),
+       ('TABLE_TENNIS', '탁구'),
+       ('BASKETBALL', '농구'),
+       ('SOCCER', '축구'),
+       ('VOLLEYBALL', '배구'),
+       ('RUGBY', '럭비'),
+       ('JUDO', '유도'),
+       ('KENDO', '검도');
+
+create table user_favorite_workout
+(
+    user_id    int unsigned not null comment '사용자 ID',
+    workout_id int unsigned not null comment '운동 유형 ID',
+    created_at datetime default current_timestamp comment '생성일시',
+    updated_at datetime default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (user_id, workout_id),
+    constraint fk_user_favorite_workout_user_id foreign key (user_id) references user (id),
+    constraint fk_user_favorite_workout_workout_id foreign key (workout_id) references workout_type (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '사용자가 선호하는 운동 종목 정보';
+
+create table user_favorite_workout_place
+(
+    id         int unsigned auto_increment,
+    user_id    int unsigned not null comment '사용자 ID',
+    place_name varchar(100) not null comment '장소(시설)명',
+    address    varchar(255) not null comment '주소',
+    created_at datetime default current_timestamp comment '생성일시',
+    updated_at datetime default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (id),
+    constraint fk_user_favorite_workout_place_user_id foreign key (user_id) references user (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '사용자가 선호하는 운동 장소(시설) 정보';
+
+create table mate
+(
+    id           int unsigned auto_increment,
+    requester_id int unsigned                                                  not null comment '요청자 ID',
+    requestee_id int unsigned                                                  not null comment '요청 대상자 ID',
+    status_type  enum ('PENDING', 'MATCHED', 'CANCELED','REJECTED', 'DELETED') not null comment '메이트 상태',
+    created_at   datetime default current_timestamp comment '생성일시',
+    updated_at   datetime default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (id),
+    constraint fk_mate_requester_id foreign key (requester_id) references user (id),
+    constraint fk_mate_requestee_id foreign key (requestee_id) references user (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '운동 메이트 매칭 정보';
+
+create table mate_request_log
+(
+    id          int unsigned auto_increment,
+    mate_id     int unsigned                          not null comment '메이트 ID',
+    user_id     int unsigned                          not null comment '알림 대상 사용자 ID',
+    action_type enum ('REQUEST', 'RECEIVE', 'VIEWED') not null comment '로그 타입',
+    is_read     boolean  default false comment '확인 여부',
+    created_at  datetime default current_timestamp comment '생성일시',
+    updated_at  datetime default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (id),
+    constraint fk_mate_request_log_mate_id foreign key (mate_id) references mate (id),
+    constraint fk_mate_request_log_user_id foreign key (user_id) references user (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '운동 메이트 매칭 요청 알림 로그';
+
+create table mate_workout
+(
+    mate_id             int unsigned                                                               not null comment '메이트 ID',
+    place_name          varchar(100)                                                               not null comment '운동 장소(시설)명',
+    address             varchar(255)                                                               not null comment '주소',
+    workout_day_of_week set ('MONDAY', 'TUEDAY', 'WEDDAY', 'THUDAY', 'FRIDAY', 'SATDAY', 'SUNDAY') not null comment '함께 운동하는 요일',
+    workout_start_at    time                                                                       not null comment '함께 운동 시작 시간',
+    workout_end_at      time                                                                       not null comment '함께 운동 종료 시간',
+    created_at          datetime     default current_timestamp comment '생성일시',
+    created_by          int unsigned comment '생성자',
+    updated_at          datetime     default current_timestamp on update current_timestamp comment '수정일시',
+    updated_by          int unsigned default NULL comment '수정자',
+    primary key (mate_id),
+    constraint fk_mate_workout_mate_id foreign key (mate_id) references mate (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '운동 메이트 매칭 운동 정보';
+
+create table challenge
+(
+    id                          int unsigned auto_increment,
+    mate_id                     int unsigned                                                               not null comment '메이트 ID',
+    user_id                     int unsigned                                                               not null comment '도전자 ID',
+    goal_workout_count          tinyint unsigned                                                           not null comment '매주 목표 운동 횟수',
+    goal_workout_day_of_week    set ('MONDAY', 'TUEDAY', 'WEDDAY', 'THUDAY', 'FRIDAY', 'SATDAY', 'SUNDAY') not null comment '매주 목표 운동 요일',
+    challenge_duration_in_moths tinyint unsigned                                                           not null comment '매주 목표 운동 기간(월)',
+    start_at                    datetime                                                                   not null comment '챌린지 시작일시',
+    end_at                      datetime                                                                   not null comment '챌린지 종료일시',
+    created_at                  datetime default current_timestamp comment '생성일시',
+    updated_at                  datetime default current_timestamp on update current_timestamp comment '수정일시',
+    deleted_at                  datetime default null comment '삭제일시',
+    primary key (id),
+    constraint uq_challenge_mate_user unique (mate_id, user_id),
+    constraint fk_challenge_mate_id foreign key (mate_id) references mate (id),
+    constraint fk_challenge_user_id foreign key (user_id) references user (id),
+    check ( goal_workout_count > 0 )
+) engine = InnoDB
+  row_format = dynamic
+    comment '챌린지 정보';
+
+create table challenge_record
+(
+    id              int unsigned auto_increment,
+    challenge_id    int unsigned not null comment '챌린지 ID',
+    record_date     date         not null comment '운동 기록 날짜',
+    is_completed    boolean          default false comment '운동 완료 여부',
+    intensity_level tinyint unsigned default 2 comment '강도',
+    note            tinytext         default null comment '메모',
+    created_at      datetime         default current_timestamp comment '생성일시',
+    updated_at      datetime         default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (id),
+    constraint uq_challenge_record unique (challenge_id, record_date),
+    constraint fk_challenge_record_challenge_id foreign key (challenge_id) references challenge (id),
+    check ( intensity_level between 1 and 3 )
+) engine = InnoDB
+  row_format = dynamic
+    comment '챌린지 운동 기록';
