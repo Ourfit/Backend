@@ -22,7 +22,7 @@ dependencyManagement {
 }
 
 val queryDSLVersion by extra("5.1.0")
-val jjwtVersion by extra("0.11.5")
+val jjwtVersion by extra("0.12.6")
 val j2htmlVersion by extra("1.6.0")
 val flywayDBVersion by extra("10.15.0")
 
