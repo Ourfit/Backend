@@ -6,7 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.ourfit.api.domain.user.User;
+import io.ourfit.api.domain.user.entity.User;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
 import java.time.Clock;

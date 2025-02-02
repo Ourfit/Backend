@@ -3,7 +3,7 @@ package io.ourfit.api.domain.auth.data.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import io.ourfit.api.domain.user.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
 
 /**
  * 카카오 사용자 정보 DTO

@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.auth.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.ourfit.api.domain.user.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
 
 /** OAuth2 제공자로부터 받은 사용자 정보를 표준화하는 인터페이스 */
 @JsonIgnoreProperties(ignoreUnknown = true)

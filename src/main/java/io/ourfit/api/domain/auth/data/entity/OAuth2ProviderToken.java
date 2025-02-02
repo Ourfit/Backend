@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.auth.data.entity;
 
-import io.ourfit.api.domain.user.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;

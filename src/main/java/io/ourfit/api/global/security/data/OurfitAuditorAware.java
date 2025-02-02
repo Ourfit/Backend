@@ -1,6 +1,6 @@
 package io.ourfit.api.global.security.data;
 
-import io.ourfit.api.domain.user.User;
+import io.ourfit.api.domain.user.entity.User;
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.userdetails.UserDetails;

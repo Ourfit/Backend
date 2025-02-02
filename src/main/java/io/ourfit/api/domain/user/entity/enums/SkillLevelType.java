@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.user.enums;
+package io.ourfit.api.domain.user.entity.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,11 @@
-package io.ourfit.api.domain.user;
+package io.ourfit.api.domain.user.entity;
 
-import io.ourfit.api.domain.user.enums.GenderType;
-import io.ourfit.api.domain.user.enums.OAuth2ProviderType;
-import io.ourfit.api.domain.user.enums.SkillLevelType;
+import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkout;
+import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkoutPlace;
+import io.ourfit.api.domain.user.entity.enums.GenderType;
+import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.entity.enums.RoleType;
+import io.ourfit.api.domain.user.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
 import io.ourfit.api.global.data.entity.SecuredBaseEntity;
 import jakarta.persistence.*;
@@ -48,6 +51,10 @@ public class User extends SecuredBaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(name = "oauth_type", nullable = false)
   private OAuth2ProviderType oAuthProviderType;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role_type", nullable = false)
+  private RoleType roleType;
 
   @Email
   @Column(name = "email", nullable = false)

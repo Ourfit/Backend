@@ -1,5 +1,6 @@
-package io.ourfit.api.domain.user;
+package io.ourfit.api.domain.user.entity.association;
 
+import io.ourfit.api.domain.user.entity.User;
 import io.ourfit.api.domain.workout.Workout;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.user;
+package io.ourfit.api.domain.user.entity.association;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

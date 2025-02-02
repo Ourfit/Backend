@@ -1,12 +1,11 @@
 package io.ourfit.api.global.jwt.impl;
 
+import static io.ourfit.api.global.jwt.impl.JwtProperties.BEARER_PREFIX;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
-
-import static io.ourfit.api.global.jwt.impl.JwtProperties.BEARER_PREFIX;
 
 public final class JwtUtils {
 

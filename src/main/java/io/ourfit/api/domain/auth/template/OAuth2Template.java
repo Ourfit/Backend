@@ -2,7 +2,7 @@ package io.ourfit.api.domain.auth.template;
 
 import io.ourfit.api.domain.auth.data.dto.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.data.entity.OAuth2ProviderToken;
-import io.ourfit.api.domain.user.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import jakarta.validation.constraints.NotNull;
 
