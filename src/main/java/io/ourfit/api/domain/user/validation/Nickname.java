@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.user.validation;
 
+import io.ourfit.api.domain.user.validation.impl.NicknameValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;

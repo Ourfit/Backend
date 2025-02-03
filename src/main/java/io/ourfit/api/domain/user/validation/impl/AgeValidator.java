@@ -1,5 +1,6 @@
-package io.ourfit.api.domain.user.validation;
+package io.ourfit.api.domain.user.validation.impl;
 
+import io.ourfit.api.domain.user.validation.Age;
 import io.ourfit.api.global.validation.AbstractConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

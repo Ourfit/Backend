@@ -2,6 +2,7 @@ package io.ourfit.api.domain.user.entity;
 
 import io.ourfit.api.domain.auth.data.dto.OAuth2UserInfo;
 import io.ourfit.api.domain.user.dto.internal.UserBasicInfoUpdateDto;
+import io.ourfit.api.domain.user.dto.internal.UserProfileUpdateDto;
 import io.ourfit.api.domain.user.dto.internal.UserSignUpDto;
 import io.ourfit.api.domain.user.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkout;
@@ -16,6 +17,7 @@ import io.ourfit.api.global.utils.StreamUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.io.Serial;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,9 @@ import org.hibernate.validator.constraints.URL;
 public class User extends SecuredBaseEntity {
 
   @Serial private static final long serialVersionUID = 2025020101L;
+
+  /** 닉네임 변경 가능한 최소 간격 */
+  @Transient private static final Duration NICKNAME_UPDATE_INTERVAL = Duration.ofDays(30);
 
   @Id
   @Column(name = "id")
@@ -149,8 +154,16 @@ public class User extends SecuredBaseEntity {
     return this.roleType.isAdmin();
   }
 
+  public boolean isNicknameUpdatable() {
+    return this.nickNameUpdatedAt == null
+        || this.nickNameUpdatedAt.plus(NICKNAME_UPDATE_INTERVAL).isBefore(LocalDateTime.now());
+  }
+
   public void updateBasicInfo(UserBasicInfoUpdateDto updateDto) {
     if (updateDto.nickname() != null) {
+      if (!this.isNicknameUpdatable()) {
+        throw new IllegalStateException("Nickname can only be updated once every 30 days");
+      }
       this.nickName = updateDto.nickname();
       this.nickNameUpdatedAt = LocalDateTime.now();
     }
@@ -186,5 +199,14 @@ public class User extends SecuredBaseEntity {
 
   public void updateProfileImage(String profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
+  }
+
+  public void updateOpenChatUrl(UserProfileUpdateDto upsertDto) {
+    if (upsertDto.introduction() != null) {
+      this.introduction = upsertDto.introduction();
+    }
+    if (upsertDto.openChatUrl() != null) {
+      this.openChatUrl = upsertDto.openChatUrl();
+    }
   }
 }

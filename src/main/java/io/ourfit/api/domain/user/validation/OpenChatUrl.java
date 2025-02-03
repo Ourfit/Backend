@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.user.validation;
 
-import io.ourfit.api.domain.user.validation.impl.AgeValidator;
+import io.ourfit.api.domain.user.validation.impl.OpenChatUrlValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;
@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = AgeValidator.class)
-public @interface Age {
+@Constraint(validatedBy = OpenChatUrlValidator.class)
+public @interface OpenChatUrl {
 
   /**
    * 필드 값의 필수 여부를 지정한다. {@code true}이면 해당 값이 null이어도, 검증을 통과한다.
@@ -20,7 +20,7 @@ public @interface Age {
    */
   boolean required() default true;
 
-  String message() default "Age must be between 15 and 70";
+  String message() default "Invalid Kakao Open Chat URL";
 
   Class<?>[] groups() default {};
 

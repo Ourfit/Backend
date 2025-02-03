@@ -1,5 +1,6 @@
-package io.ourfit.api.domain.user.validation;
+package io.ourfit.api.domain.user.validation.impl;
 
+import io.ourfit.api.domain.user.validation.Nickname;
 import io.ourfit.api.global.validation.AbstractConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
