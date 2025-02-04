@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.user.controller;
 
-import io.ourfit.api.domain.user.dto.request.*;
-import io.ourfit.api.domain.user.dto.response.UserInfoResponse;
+import io.ourfit.api.domain.user.data.dto.request.*;
+import io.ourfit.api.domain.user.data.dto.response.UserInfoResponse;
 import io.ourfit.api.domain.user.service.UserService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.exception.ApiExceptionType;
@@ -56,11 +56,20 @@ public class UserController {
   }
 
   /** 내 기본 정보(닉네임, 나이, 지역, 운동 실력 등) 수정 */
-  @PatchMapping("/me/basic")
+  @PatchMapping("/me/basic-info")
   public ResponseEntity<BaseResponse<Void>> updateMyBasicInfo(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserBasicInfoUpdateRequest request) {
     this.userService.updateBasicInfo(userDetails.getId(), request.toDto());
+    return ResponseEntity.ok().build();
+  }
+
+  /** 프로필(자기소개, 오픈 채팅 링크) 등록/수정 */
+  @PutMapping("/me/profile")
+  public ResponseEntity<BaseResponse<Void>> updateMyProfile(
+      @AuthenticationPrincipal OurfitUserDetails userDetails,
+      @RequestBody @Valid UserProfileUpdateRequest request) {
+    this.userService.updateProfile(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
@@ -73,17 +82,8 @@ public class UserController {
     return ResponseEntity.ok().build();
   }
 
-  /** 프로필(자기소개, 오픈 채팅 링크) 등록/수정 */
-  @PatchMapping("/me/profile")
-  public ResponseEntity<BaseResponse<Void>> updateMyOpenChatUrl(
-      @AuthenticationPrincipal OurfitUserDetails userDetails,
-      @RequestBody @Valid UserProfileUpdateRequest request) {
-    this.userService.updateOpenChatUrl(userDetails.getId(), request.toDto());
-    return ResponseEntity.ok().build();
-  }
-
   /** 내 운동 선호 정보 수정 */
-  @PatchMapping("/me/workout-preferences")
+  @PutMapping("/me/workout-preferences")
   public ResponseEntity<BaseResponse<Void>> updateMyWorkoutPreferences(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserWorkoutPreferencesUpdateRequest request) {
@@ -96,5 +96,12 @@ public class UserController {
   public ResponseEntity<Void> create(@RequestBody @Valid UserSignUpRequest request) {
     this.userService.save(request.toDto());
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /** 회원 탈퇴 */
+  @DeleteMapping("/me")
+  public ResponseEntity<Void> delete(@AuthenticationPrincipal OurfitUserDetails userDetails) {
+    this.userService.delete(userDetails.getId());
+    return ResponseEntity.noContent().build();
   }
 }

@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.user.service;
 
-import io.ourfit.api.domain.user.dto.internal.*;
-import io.ourfit.api.domain.user.entity.User;
+import io.ourfit.api.domain.user.data.dto.internal.*;
+import io.ourfit.api.domain.user.data.entity.User;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +13,21 @@ public interface UserService {
 
   Page<UserInfoDto> findAllByConditions(UserSearchDto searchDto, Pageable pageable);
 
+  Optional<User> findById(final long id);
+
   Optional<User> findByIdWithFavorites(final long id);
 
-  Optional<User> findByEmail(String email);
+  Optional<User> findByOAuthId(String oAuthId);
+
+  boolean existsByOAuthId(String oAuthId);
 
   void updateBasicInfo(final long id, UserBasicInfoUpdateDto updateDto);
 
   void updateWorkoutPreferences(final long id, UserWorkoutPreferencesUpdateDto updateDto);
 
+  void updateProfile(final long id, UserProfileUpdateDto updateDto);
+
   void updateProfileImage(final long id, MultipartFile profileImage);
 
-  void updateOpenChatUrl(final long id, UserProfileUpdateDto updateDto);
+  void delete(final long id);
 }

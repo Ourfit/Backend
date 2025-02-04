@@ -3,7 +3,7 @@ package io.ourfit.api.domain.auth.template.impl;
 import io.ourfit.api.domain.auth.data.entity.OAuth2ProviderToken;
 import io.ourfit.api.domain.auth.template.OAuth2Template;
 import io.ourfit.api.domain.auth.template.OAuth2TemplateFactory;
-import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.global.exception.custom.AuthenticationException;
 import io.ourfit.api.infra.redis.OAuth2ProviderTokenRepository;
 import java.util.Collections;

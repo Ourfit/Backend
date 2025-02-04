@@ -1,7 +1,7 @@
 package io.ourfit.api.global.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.ourfit.api.domain.user.entity.User;
+import io.ourfit.api.domain.user.data.entity.User;
 import java.util.Optional;
 
 public interface JwtProvider {

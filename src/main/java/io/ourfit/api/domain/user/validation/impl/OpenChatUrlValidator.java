@@ -14,6 +14,7 @@ public class OpenChatUrlValidator extends AbstractConstraintValidator<OpenChatUr
   public void initialize(OpenChatUrl constraintAnnotation) {
     this.isRequired = constraintAnnotation.required();
   }
+
   @Override
   protected boolean isValidInternal(String value, ConstraintValidatorContext context) {
     if (value == null || value.isBlank()) {

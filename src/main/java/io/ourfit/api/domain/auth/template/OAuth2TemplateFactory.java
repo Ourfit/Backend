@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.auth.template;
 
-import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.global.exception.custom.AuthenticationException;
 import jakarta.validation.constraints.NotNull;
 

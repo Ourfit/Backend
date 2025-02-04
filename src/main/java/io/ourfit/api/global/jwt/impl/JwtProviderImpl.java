@@ -6,7 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.ourfit.api.domain.user.entity.User;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
 import java.time.Clock;
@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,15 +25,13 @@ public class JwtProviderImpl implements JwtProvider {
 
   private final Clock clock;
   private final JwtProperties jwtProperties;
-  private final UserDetailsService userDetailsService;
 
   @Override
   public OurfitToken create(User user) {
-    UserDetails userDetails = this.userDetailsService.loadUserByUsername(user.getName());
 
     final Date now = this.getCurrentTime();
-    final String accessToken = this.createAccessToken(userDetails, now);
-    final String refreshToken = this.createRefreshToken(user.getName(), now);
+    final String accessToken = this.createAccessToken(user, now);
+    final String refreshToken = this.createRefreshToken(user.getId(), now);
 
     return OurfitToken.builder()
         .accessToken(accessToken)
@@ -77,11 +73,8 @@ public class JwtProviderImpl implements JwtProvider {
     }
   }
 
-  private String createAccessToken(UserDetails userDetails, Date now) {
-    return this.createAccessToken(
-        userDetails.getUsername(),
-        userDetails.getAuthorities().iterator().next().getAuthority(),
-        now);
+  private String createAccessToken(User user, Date now) {
+    return this.createAccessToken(user.getId().toString(), user.getRoleType().name(), now);
   }
 
   private String createAccessToken(Claims claims, Date now) {
@@ -89,10 +82,10 @@ public class JwtProviderImpl implements JwtProvider {
         claims.getSubject(), claims.get(AUTHENTICATION_KEY, String.class), now);
   }
 
-  private String createAccessToken(String username, String claim, Date now) {
+  private String createAccessToken(String userId, String claim, Date now) {
     return Jwts.builder()
         .issuer(this.jwtProperties.issuer())
-        .subject(username)
+        .subject(userId)
         .issuedAt(now)
         .notBefore(now)
         .claim(AUTHENTICATION_KEY, claim)
@@ -101,10 +94,10 @@ public class JwtProviderImpl implements JwtProvider {
         .compact();
   }
 
-  private String createRefreshToken(String username, Date now) {
+  private String createRefreshToken(final long userId, Date now) {
     return Jwts.builder()
         .issuer(this.jwtProperties.issuer())
-        .subject(username)
+        .subject(Long.toString(userId))
         .issuedAt(now)
         .notBefore(now)
         .expiration(this.toDate(REFRESH_TOKEN_EXPIRATION))

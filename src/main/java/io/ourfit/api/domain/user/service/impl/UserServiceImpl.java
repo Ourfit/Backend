@@ -1,10 +1,10 @@
 package io.ourfit.api.domain.user.service.impl;
 
-import io.ourfit.api.domain.auth.data.dto.OAuth2UserInfo;
+import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.service.OAuth2Service;
-import io.ourfit.api.domain.user.dto.internal.*;
-import io.ourfit.api.domain.user.entity.User;
-import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkout;
+import io.ourfit.api.domain.user.data.dto.internal.*;
+import io.ourfit.api.domain.user.data.entity.User;
+import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
 import io.ourfit.api.domain.user.service.UserService;
 import io.ourfit.api.domain.workout.service.WorkoutService;
 import io.ourfit.api.global.exception.ApiExceptionType;
@@ -36,13 +36,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void save(UserSignUpDto signUpDto) {
-    OAuth2UserInfo oAuth2UserInfo =
-        this.oAuth2Service.authenticate(signUpDto.providerType(), signUpDto.code());
+    OAuth2UserInfo oAuth2UserInfo = this.oAuth2Service.getUserInfo(signUpDto.oAuthId());
     final User user = this.repository.save(User.of(oAuth2UserInfo, signUpDto));
     // 사용자 등록 후, 선호 운동 종목 등록
     List<UserFavoriteWorkout> favoriteWorkouts =
         this.buildFavoriteWorkouts(user, signUpDto.favoriteWorkouts());
-    user.updateFavoriteWorkouts(favoriteWorkouts);
+    user.setFavoriteWorkouts(favoriteWorkouts);
   }
 
   @Override
@@ -53,14 +52,26 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(readOnly = true)
+  public Optional<User> findById(final long id) {
+    return this.repository.findById(id);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public Optional<User> findByIdWithFavorites(final long id) {
     return this.repository.findByIdWithFavorites(id);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<User> findByEmail(String email) {
-    return this.repository.findByEmail(email);
+  public Optional<User> findByOAuthId(String oAuthId) {
+    return this.repository.findByOAuthId(oAuthId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public boolean existsByOAuthId(String oAuthId) {
+    return this.repository.existsByOAuthId(oAuthId);
   }
 
   @Override
@@ -78,9 +89,14 @@ public class UserServiceImpl implements UserService {
           if (!updateDto.favoriteWorkouts().isEmpty()) {
             List<UserFavoriteWorkout> favoriteWorkouts =
                 this.buildFavoriteWorkouts(user, updateDto.favoriteWorkouts());
-            user.updateFavoriteWorkouts(favoriteWorkouts);
+            user.setFavoriteWorkouts(favoriteWorkouts);
           }
         });
+  }
+
+  @Override
+  public void updateProfile(long id, UserProfileUpdateDto updateDto) {
+    this.executeIfPresent(id, user -> user.setProfile(updateDto));
   }
 
   @Override
@@ -89,18 +105,24 @@ public class UserServiceImpl implements UserService {
         id,
         user -> {
           final String profileImageUrl = this.s3Client.upload("버킷/이미지/경로", profileImage);
-          user.updateProfileImage(profileImageUrl);
+          user.setProfileImageUrl(profileImageUrl);
         });
   }
 
   @Override
-  public void updateOpenChatUrl(long id, UserProfileUpdateDto updateDto) {
-    this.executeIfPresent(id, user -> user.updateOpenChatUrl(updateDto));
+  public void delete(long id) {
+    this.executeIfPresent(
+        id,
+        user -> {
+          this.oAuth2Service.withdrawal(user.getOAuthId());
+          user.delete();
+        });
   }
 
   private void executeIfPresent(final long id, Consumer<User> presentAction) {
     this.repository
         .findById(id)
+        .filter(User::isEnabled)
         .ifPresentOrElse(
             presentAction,
             () -> {

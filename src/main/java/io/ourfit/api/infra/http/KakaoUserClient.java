@@ -1,6 +1,6 @@
 package io.ourfit.api.infra.http;
 
-import io.ourfit.api.domain.auth.data.dto.KakaoUserInfo;
+import io.ourfit.api.domain.auth.data.dto.internal.KakaoUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;

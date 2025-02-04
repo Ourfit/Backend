@@ -1,6 +1,6 @@
 package io.ourfit.api.infra.persistence;
 
-import io.ourfit.api.domain.user.entity.association.UserFavoriteWorkoutPlace;
+import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkoutPlace;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserFavoriteWorkoutPlaceRepository

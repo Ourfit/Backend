@@ -1,11 +1,11 @@
 package io.ourfit.api.domain.auth.template.impl;
 
 import io.ourfit.api.domain.auth.data.OAuth2Properties;
-import io.ourfit.api.domain.auth.data.dto.OAuth2UserInfo;
+import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.data.entity.OAuth2ProviderToken;
 import io.ourfit.api.domain.auth.data.entity.OAuth2ProviderTokenDto;
 import io.ourfit.api.domain.auth.template.AbstractOAuth2Template;
-import io.ourfit.api.domain.user.entity.enums.OAuth2ProviderType;
+import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.infra.http.KakaoOAuth2Client;
 import io.ourfit.api.infra.http.KakaoUserClient;
 import io.ourfit.api.infra.redis.OAuth2ProviderTokenRepository;

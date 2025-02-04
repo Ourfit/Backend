@@ -1,7 +1,7 @@
 package io.ourfit.api.infra.persistence;
 
-import io.ourfit.api.domain.user.dto.internal.UserInfoDto;
-import io.ourfit.api.domain.user.dto.internal.UserSearchDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserInfoDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
