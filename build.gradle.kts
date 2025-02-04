@@ -22,7 +22,7 @@ dependencyManagement {
 }
 
 val queryDSLVersion by extra("5.1.0")
-val jjwtVersion by extra("0.11.5")
+val jjwtVersion by extra("0.12.6")
 val j2htmlVersion by extra("1.6.0")
 val flywayDBVersion by extra("10.15.0")
 
@@ -49,8 +49,6 @@ dependencies {
     // AWS SDK
     implementation(platform("software.amazon.awssdk:bom:2.24.0"))
     implementation("software.amazon.awssdk:s3")
-    implementation("software.amazon.awssdk:ses")
-    implementation("software.amazon.awssdk:sns")
     // Lombok
     implementation("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

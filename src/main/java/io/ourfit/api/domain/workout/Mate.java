@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.workout;
 
-import io.ourfit.api.domain.user.User;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.workout.enums.MateStatusType;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
