@@ -1,7 +1,7 @@
 package io.ourfit.api.infra.persistence;
 
+import io.ourfit.api.domain.user.data.dto.internal.MatesCandidateSearchDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserInfoDto;
-import io.ourfit.api.domain.user.data.dto.internal.UserSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,5 +14,5 @@ public interface UserQRepository {
    * @param pageable 페이징 정보
    * @return 조회된 사용자 목록
    */
-  Page<UserInfoDto> findAllByConditions(UserSearchDto searchDto, Pageable pageable);
+  Page<UserInfoDto> findMateCandidates(MatesCandidateSearchDto searchDto, Pageable pageable);
 }

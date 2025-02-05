@@ -11,7 +11,7 @@ public class EnumerableValidator extends AbstractConstraintValidator<Enumerable,
 
   @Override
   public void initialize(Enumerable constraintAnnotation) {
-    this.enumClass = constraintAnnotation.targetClass();
+    this.enumClass = constraintAnnotation.type();
     this.isRequired = constraintAnnotation.required();
   }
 

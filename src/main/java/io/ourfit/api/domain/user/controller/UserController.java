@@ -25,14 +25,15 @@ public class UserController {
 
   private final UserService userService;
 
-  @GetMapping
+  /** 메이트 관련 사용자 목록 조회 */
+  @GetMapping("/mates")
   public ResponseEntity<BaseResponse<Page<UserInfoResponse>>> getUsers(
       UserSearchRequest request,
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     Page<UserInfoResponse> response =
         this.userService
-            .findAllByConditions(request.toDto(userDetails.getUser()), pageable)
+            .findMateCandidates(request.toDto(userDetails.getUser()), pageable)
             .map(UserInfoResponse::fromBasic);
 
     return ResponseEntity.ok(BaseResponse.of(response));

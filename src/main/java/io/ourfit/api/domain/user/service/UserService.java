@@ -11,7 +11,7 @@ public interface UserService {
 
   void save(UserSignUpDto signUpDto);
 
-  Page<UserInfoDto> findAllByConditions(UserSearchDto searchDto, Pageable pageable);
+  Page<UserInfoDto> findMateCandidates(MatesCandidateSearchDto searchDto, Pageable pageable);
 
   Optional<User> findById(final long id);
 

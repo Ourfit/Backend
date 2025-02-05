@@ -1,19 +1,23 @@
-package io.ourfit.api.infra.persistence;
+package io.ourfit.api.infra.persistence.impl;
 
 import static com.querydsl.core.group.GroupBy.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.jsonwebtoken.lang.Collections;
+import io.ourfit.api.domain.mate.QMate;
+import io.ourfit.api.domain.user.data.dto.internal.MatesCandidateSearchDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserFavoriteWorkoutDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserInfoDto;
-import io.ourfit.api.domain.user.data.dto.internal.UserSearchDto;
-import io.ourfit.api.domain.user.entity.QUser;
-import io.ourfit.api.domain.user.entity.association.QUserFavoriteWorkout;
-import io.ourfit.api.domain.workout.QWorkout;
+import io.ourfit.api.domain.user.data.entity.QUser;
+import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
+import io.ourfit.api.domain.workout.data.entity.QWorkout;
+import io.ourfit.api.domain.workout.enums.MateStatusType;
 import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
 import io.ourfit.api.global.utils.QueryUtils;
+import io.ourfit.api.infra.persistence.UserQRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,12 +36,14 @@ public class UserQRepositoryImpl implements UserQRepository {
   private static final QUserFavoriteWorkout favoriteWorkout =
       QUserFavoriteWorkout.userFavoriteWorkout;
   private static final QWorkout qWorkout = QWorkout.workout;
+  private static final QMate qMate = QMate.mate;
 
   private final JPAQueryFactory queryFactory;
 
   @Override
   @Transactional(readOnly = true)
-  public Page<UserInfoDto> findAllByConditions(UserSearchDto searchDto, Pageable pageable) {
+  public Page<UserInfoDto> findMateCandidates(
+      MatesCandidateSearchDto searchDto, Pageable pageable) {
     List<UserInfoDto> contents =
         QueryUtils.toList(
             this.queryFactory
@@ -48,6 +54,7 @@ public class UserQRepositoryImpl implements UserQRepository {
                 .on(favoriteWorkout.workout.eq(qWorkout))
                 .where(
                     this.region3Eqauls(searchDto),
+                    this.isNotMatchedWithMate(),
                     this.preferredTimesIn(searchDto),
                     this.workoutsIn(searchDto))
                 .transform(
@@ -78,6 +85,7 @@ public class UserQRepositoryImpl implements UserQRepository {
                         .from(qUser)
                         .where(
                             this.region3Eqauls(searchDto),
+                            this.isNotMatchedWithMate(),
                             this.preferredTimesIn(searchDto),
                             this.workoutsIn(searchDto))
                         .fetchOne())
@@ -86,11 +94,20 @@ public class UserQRepositoryImpl implements UserQRepository {
     return new PageImpl<>(contents, pageable, totalCount);
   }
 
-  private BooleanExpression region3Eqauls(UserSearchDto searchDto) {
+  private BooleanExpression region3Eqauls(MatesCandidateSearchDto searchDto) {
     return qUser.region3.eq(searchDto.region3());
   }
 
-  private BooleanExpression preferredTimesIn(UserSearchDto searchDto) {
+  private BooleanExpression isNotMatchedWithMate() {
+    return JPAExpressions.selectOne()
+        .from(qMate)
+        .where(
+            qMate.requestee.eq(qUser).or(qMate.requester.eq(qUser)),
+            qMate.statusType.eq(MateStatusType.MATCHED))
+        .notExists();
+  }
+
+  private BooleanExpression preferredTimesIn(MatesCandidateSearchDto searchDto) {
     List<TimePrefrenceType> preferredTimes = searchDto.preferredTimes();
     if (Collections.isEmpty(preferredTimes)) {
       return null;
@@ -98,7 +115,7 @@ public class UserQRepositoryImpl implements UserQRepository {
     return qUser.preferredWorkoutTime.in(preferredTimes);
   }
 
-  private BooleanExpression workoutsIn(UserSearchDto searchDto) {
+  private BooleanExpression workoutsIn(MatesCandidateSearchDto searchDto) {
     Set<String> workoutCodes = searchDto.workoutTypes();
     if (Collections.isEmpty(workoutCodes)) {
       return null;

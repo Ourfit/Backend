@@ -28,15 +28,15 @@ import java.util.Set;
  */
 public record UserSignUpRequest(
     @NotEmpty String oAuthId,
-    @Enumerable(targetClass = OAuth2ProviderType.class) String provider,
+    @Enumerable(type = OAuth2ProviderType.class) String provider,
     @Nickname String nickname,
     @NotEmpty String region1,
     @NotEmpty String region2,
     @NotEmpty String region3,
-    @Enumerable(targetClass = GenderType.class) String gender,
+    @Enumerable(type = GenderType.class) String gender,
     @Age Integer age,
-    @Enumerable(targetClass = SkillLevelType.class) String skillLevel,
-    @Enumerable(targetClass = TimePrefrenceType.class) String preferredWorkoutTime,
+    @Enumerable(type = SkillLevelType.class) String skillLevel,
+    @Enumerable(type = TimePrefrenceType.class) String preferredWorkoutTime,
     @Size(min = 1, max = 3) Set<String> favoriteWorkouts) {
 
   public UserSignUpDto toDto() {

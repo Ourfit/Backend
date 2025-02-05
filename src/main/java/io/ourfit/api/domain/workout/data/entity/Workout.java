@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.workout;
+package io.ourfit.api.domain.workout.data.entity;
 
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;

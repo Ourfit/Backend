@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.user.data.entity.association;
 
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.workout.Workout;
+import io.ourfit.api.domain.workout.data.entity.Workout;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;

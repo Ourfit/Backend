@@ -1,5 +1,6 @@
-package io.ourfit.api.domain.workout;
+package io.ourfit.api.domain.challenge;
 
+import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.converter.DayOfWeekSetConverter;
 import io.ourfit.api.global.data.entity.BaseEntity;

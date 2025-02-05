@@ -1,5 +1,6 @@
 package io.ourfit.api.global.validation;
 
+import io.ourfit.api.global.validation.impl.EnumerableCollectionValidator;
 import io.ourfit.api.global.validation.impl.EnumerableValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -10,7 +11,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = EnumerableValidator.class)
+@Constraint(validatedBy = {EnumerableValidator.class, EnumerableCollectionValidator.class})
 public @interface Enumerable {
 
   /**
@@ -18,7 +19,7 @@ public @interface Enumerable {
    *
    * @return Enum 클래스 정보
    */
-  Class<? extends Enum<?>> targetClass();
+  Class<? extends Enum<?>> type();
 
   /**
    * 필드 값의 필수 여부를 지정한다. {@code true}이면 해당 값이 null이어도, 검증을 통과한다.

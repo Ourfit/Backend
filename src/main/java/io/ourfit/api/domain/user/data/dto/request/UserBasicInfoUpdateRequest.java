@@ -22,7 +22,7 @@ public record UserBasicInfoUpdateRequest(
     String region1,
     String region2,
     String region3,
-    @Enumerable(targetClass = SkillLevelType.class, required = false) String skillLevel) {
+    @Enumerable(type = SkillLevelType.class, required = false) String skillLevel) {
 
   public UserBasicInfoUpdateDto toDto() {
     return new UserBasicInfoUpdateDto(

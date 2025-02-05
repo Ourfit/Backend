@@ -2,7 +2,7 @@ package io.ourfit.api.domain.user.data.dto.response;
 
 import io.ourfit.api.domain.user.data.dto.internal.UserFavoriteWorkoutDto;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
-import io.ourfit.api.domain.workout.Workout;
+import io.ourfit.api.domain.workout.data.entity.Workout;
 
 /**
  * 사용자 선호하는 운동 종류 응답 DTO

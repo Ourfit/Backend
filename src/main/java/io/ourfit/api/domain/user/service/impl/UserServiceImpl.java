@@ -46,8 +46,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<UserInfoDto> findAllByConditions(UserSearchDto searchDto, Pageable pageable) {
-    return this.qRepository.findAllByConditions(searchDto, pageable);
+  public Page<UserInfoDto> findMateCandidates(
+      MatesCandidateSearchDto searchDto, Pageable pageable) {
+    return this.qRepository.findMateCandidates(searchDto, pageable);
   }
 
   @Override
@@ -65,13 +66,13 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(readOnly = true)
   public Optional<User> findByOAuthId(String oAuthId) {
-    return this.repository.findByOAuthId(oAuthId);
+    return this.repository.findByoAuthId(oAuthId);
   }
 
   @Override
   @Transactional(readOnly = true)
   public boolean existsByOAuthId(String oAuthId) {
-    return this.repository.existsByOAuthId(oAuthId);
+    return this.repository.existsByoAuthId(oAuthId);
   }
 
   @Override

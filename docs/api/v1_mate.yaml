@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Mates API
+  description: 메이트 API
+  version: 0.0.1
+servers:
+  - url: https://dev.not-available-yet.com
+    description: Development
+  - url: https://not-available-yet.com
+    description: Production
+paths:
+  /v1/mates/{requesteeId}:
+    post:
+      summary: 메이트 신청 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: requesteeId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청 대상 사용자 ID
+          example: 13
+      responses:
+        201:
+          description: 메이트 신청 성공
+  /v1/mates/{mateId}/accept:
+    post:
+      summary: 메이트 수락 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: mateId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청 ID
+          example: 5
+      responses:
+        200:
+          description: 메이트 수락 성공
+  /v1/mates/{mateId}:
+    delete:
+      summary: 메이트 해제 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: mateId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청 ID
+          example: 5
+      responses:
+        200:
+          description: 메이트 해제 성공
+  /v1/mates/{mateId}/workout-places:
+    put:
+      summary: 메이트와 함께 운동하는 시설(장소) 설정 API
+      description: |
+        메이트와 함께 운동하는 장소 정보(이름, 주소)를 설정할 수 있습니다.
+        기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                placeName:
+                  type: string
+                  example: "에이블짐 잠실점"
+                  description: 운동하는 장소 이름
+                address:
+                  type: string
+                  example: "서울특별시 송파구 올림픽로35가길 11 지하1층 001호"
+                  description: 운동하는 장소 주소
+      responses:
+        200:
+          description: 메이트와 함께 운동하는 시설(장소) 설정 성공
+  /v1/mates/{mateId}/workout-times:
+    put:
+      summary: 메이트와 함께 운동하는 시간 설정 API
+      description: |
+        메이트와 함께 운동하는 요일, 시작 - 종료 시간을 설정할 수 있습니다.
+        기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workoutDays:
+                  type: array
+                  items:
+                    type: string
+                    enum: [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+                    example: [ "MONDAY", "WEDNESDAY", "FRIDAY" ]
+                    description: 함께 운동하는 요일
+                startAt:
+                  type: string
+                  example: "06:00:00"
+                  description: 함께 운동 시작 시간(HH:mm:ss)
+                endAt:
+                  type: string
+                  example: "07:00:00"
+                  description: 함께 운동 종료 시간(HH:mm:ss)
+      responses:
+        200:
+          description: 메이트와 함께 운동하는 시간 설정 성공
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

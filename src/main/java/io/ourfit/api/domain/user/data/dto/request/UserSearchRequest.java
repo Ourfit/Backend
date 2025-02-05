@@ -1,10 +1,11 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
-import io.ourfit.api.domain.user.data.dto.internal.UserSearchDto;
+import io.ourfit.api.domain.user.data.dto.internal.MatesCandidateSearchDto;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
 import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
 import io.ourfit.api.global.utils.StreamUtils;
+import io.ourfit.api.global.validation.Enumerable;
 import java.util.Set;
 
 /**
@@ -15,13 +16,15 @@ import java.util.Set;
  * @param workoutTypes 조회할 운동 종류
  */
 public record UserSearchRequest(
-    String gender, Set<String> peferredTimes, Set<String> workoutTypes) {
+    String gender,
+    @Enumerable(type = TimePrefrenceType.class, required = false) Set<String> peferredTimes,
+    Set<String> workoutTypes) {
 
-  public UserSearchDto toDto(User user) {
-    return new UserSearchDto(
+  public MatesCandidateSearchDto toDto(User user) {
+    return new MatesCandidateSearchDto(
         user.getRegion3(),
         GenderType.valueOf(this.gender),
-        StreamUtils.convert(this.peferredTimes, TimePrefrenceType::valueOf),
+        StreamUtils.mapToList(this.peferredTimes, TimePrefrenceType::valueOf),
         this.workoutTypes);
   }
 }

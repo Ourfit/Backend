@@ -109,8 +109,10 @@ create table mate
     requester_id int unsigned                                                  not null comment '요청자 ID',
     requestee_id int unsigned                                                  not null comment '요청 대상자 ID',
     status_type  enum ('PENDING', 'MATCHED', 'CANCELED','REJECTED', 'DELETED') not null comment '메이트 상태',
+    matched_at   datetime default null comment '메이트 매칭 일시',
     created_at   datetime default current_timestamp comment '생성일시',
     updated_at   datetime default current_timestamp on update current_timestamp comment '수정일시',
+    deleted_at   datetime default null comment '삭제일시',
     primary key (id),
     constraint fk_mate_requester_id foreign key (requester_id) references user (id),
     constraint fk_mate_requestee_id foreign key (requestee_id) references user (id)
@@ -118,7 +120,7 @@ create table mate
   row_format = dynamic
     comment '운동 메이트 매칭 정보';
 
-create table mate_request_log
+create table mate_log
 (
     id          int unsigned auto_increment,
     mate_id     int unsigned                          not null comment '메이트 ID',

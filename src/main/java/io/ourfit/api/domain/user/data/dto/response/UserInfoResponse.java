@@ -49,7 +49,8 @@ public record UserInfoResponse(
         .introduction(userInfoDto.introduction())
         .preferredWorkoutTime(userInfoDto.preferredWorkoutTime().name())
         .favoriteWorkouts(
-            StreamUtils.convert(userInfoDto.favoriteWorkouts(), UserFavoriteWorkoutResponse::from))
+            StreamUtils.mapToList(
+                userInfoDto.favoriteWorkouts(), UserFavoriteWorkoutResponse::from))
         .build();
   }
 
@@ -62,7 +63,7 @@ public record UserInfoResponse(
         .introduction(user.getIntroduction())
         .preferredWorkoutTime(user.getPreferredWorkoutTime().name())
         .favoriteWorkouts(
-            StreamUtils.convert(user.getFavoriteWorkouts(), UserFavoriteWorkoutResponse::from))
+            StreamUtils.mapToList(user.getFavoriteWorkouts(), UserFavoriteWorkoutResponse::from))
         .build();
   }
 
@@ -77,9 +78,9 @@ public record UserInfoResponse(
         .introduction(user.getIntroduction())
         .preferredWorkoutTime(user.getPreferredWorkoutTime().name())
         .favoriteWorkouts(
-            StreamUtils.convert(user.getFavoriteWorkouts(), UserFavoriteWorkoutResponse::from))
+            StreamUtils.mapToList(user.getFavoriteWorkouts(), UserFavoriteWorkoutResponse::from))
         .favoritePlaces(
-            StreamUtils.convert(
+            StreamUtils.mapToList(
                 user.getFavoriteWorkoutPlaces(), UserFavoriteWorkoutPlaceResponse::from))
         .createdAt(user.getCreatedAt().toString())
         .nicknameUpdatedAt(Objects.toString(user.getNickNameUpdatedAt(), "-"))

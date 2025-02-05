@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @EntityGraph(attributePaths = {"favoriteWorkouts", "favoriteWorkoutPlaces"})
   Optional<User> findByIdWithFavorites(Long id);
 
-  Optional<User> findByOAuthId(String oAuthId);
+  Optional<User> findByoAuthId(String oAuthId);
 
-  boolean existsByOAuthId(String oAuthId);
+  boolean existsByoAuthId(String oAuthId);
 }

@@ -1,6 +1,6 @@
 package io.ourfit.api.infra.persistence;
 
-import io.ourfit.api.domain.workout.Workout;
+import io.ourfit.api.domain.workout.data.entity.Workout;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 

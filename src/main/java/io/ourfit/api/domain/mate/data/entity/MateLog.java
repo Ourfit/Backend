@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.workout;
+package io.ourfit.api.domain.mate.data.entity;
 
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.workout.enums.MateLogActionType;
@@ -9,12 +9,12 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name = "mate_request_log")
+@Table(name = "mate_log")
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MateRequestLog extends BaseEntity {
+public class MateLog extends BaseEntity {
 
   @Serial private static final long serialVersionUID = 2025020101L;
 
@@ -38,4 +38,12 @@ public class MateRequestLog extends BaseEntity {
   @ColumnDefault("0")
   @Column(name = "is_read")
   private Boolean isRead;
+
+  public static MateLog fromEntity(Mate mate) {
+    return MateLog.builder().mate(mate).user(mate.getRequestee()).isRead(false).build();
+  }
+
+  public void read() {
+    this.isRead = true;
+  }
 }

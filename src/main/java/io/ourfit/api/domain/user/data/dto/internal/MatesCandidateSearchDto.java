@@ -13,7 +13,7 @@ import java.util.Set;
  * @param preferredTimes 검색할 선호 시간대
  * @param workoutTypes 검색할 운동 종류
  */
-public record UserSearchDto(
+public record MatesCandidateSearchDto(
     String region3,
     GenderType gender,
     List<TimePrefrenceType> preferredTimes,
