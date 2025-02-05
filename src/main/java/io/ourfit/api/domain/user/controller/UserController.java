@@ -6,6 +6,7 @@ import io.ourfit.api.domain.user.service.UserService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -92,6 +93,7 @@ public class UserController {
   }
 
   /** 회원 가입 */
+  @PublicApi
   @PostMapping
   public ResponseEntity<Void> create(@RequestBody @Valid UserSignUpRequest request) {
     this.userService.save(request.toDto());

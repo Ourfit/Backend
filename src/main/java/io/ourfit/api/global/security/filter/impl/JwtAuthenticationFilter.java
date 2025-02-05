@@ -1,8 +1,8 @@
-package io.ourfit.api.global.filter.impl;
+package io.ourfit.api.global.security.filter.impl;
 
-import io.ourfit.api.global.filter.AbstractSecurityFilter;
 import io.ourfit.api.global.jwt.impl.JwtUtils;
 import io.ourfit.api.global.security.authentication.JwtAuthenticationToken;
+import io.ourfit.api.global.security.filter.AbstractSecurityFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -131,12 +131,13 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - profileImage
               properties:
                 profileImage:
                   type: string
                   format: binary
                   description: "프로필 이미지 파일"
-                  required: true
       responses:
         200:
           description: "사용자 프로필 이미지 수정 성공"
@@ -168,61 +169,63 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - oAuthId
+              - provider
+              - nickname
+              - region1
+              - region2
+              - region3
+              - gender
+              - age
+              - skillLevel
+              - preferredWorkoutTime
+              - favoriteWorkouts
             properties:
               oAuthId:
                 type: string
                 example: "57291628"
                 description: "OAuth2 ID"
-                required: true
               provider:
                 type: string
                 enum: [ "KAKAO" ]
                 description: "OAuth2 제공자"
-                required: true
               nickname:
                 type: string
                 example: "닉네임입니다"
                 description: "닉네임"
-                required: true
               region1:
                 type: string
                 example: "서울특별시"
                 description: "지역(시/도)"
-                required: true
               region2:
                 type: string
                 example: "송파구"
                 description: "지역(시/군/구)"
-                required: true
               region3:
                 type: string
                 example: "잠실동"
                 description: "지역(읍/면/동)"
-                required: true
               gender:
                 type: string
                 enum: [ 'F', 'M' ]
                 description: "성별"
-                required: true
               age:
                 type: integer
                 example: 20
                 description: "나이"
                 minimum: 15
                 maximum: 70
-                required: true
               skillLevel:
                 type: string
                 enum: [ 'BEGINNER', 'INTERMEDIATE', 'ADVANCED' ]
                 description: "운동 실력"
-                required: true
               preferredWorkoutTime:
                 type: array
                 items:
                   type: string
                   enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
                 description: "선호하는 시간대"
-                required: true
               favoriteWorkouts:
                 type: array
                 items:
@@ -230,9 +233,8 @@ components:
                   enum: [ "GYM", "PILATES", "SWIMMING", "DANCE", "SQUASH", "BOXING", "GOLF", "TENNIS", "YOGA", "CROSSFIT" ]
                   description: "운동 종목 코드"
                 description: "선호하는 운동 종목"
-                required: true
     UserBasicInfoUpdateRequest:
-      description: "사용자 기본 정보(닉네임, 나이, 지역, 운동 실력 등) 수정 요청(변경하려는 값만 전달)"
+      description: "사용자 기본 정보 수정 요청"
       required: true
       content:
         application/json:
@@ -243,34 +245,28 @@ components:
                 type: string
                 example: "닉네임입니다"
                 description: "변경할 닉네임"
-                required: false
               age:
                 type: integer
                 example: 20
                 description: "변경할 나이"
                 minimum: 15
                 maximum: 70
-                required: false
               region1:
                 type: string
                 example: "서울특별시"
                 description: "변경할 지역(시/도)"
-                required: false
               region2:
                 type: string
                 example: "송파구"
                 description: "변경할 지역(시/군/구)"
-                required: false
               region3:
                 type: string
                 example: "잠실동"
                 description: "변경할 지역(읍/면/동)"
-                required: false
               skillLevel:
                 type: string
                 enum: [ 'BEGINNER', 'INTERMEDIATE', 'ADVANCED' ]
                 description: "변경할 운동 실력"
-                required: false
     UserProfileUpdateRequest:
       description: "사용자 프로필(자기소개, 오픈 채팅 URL) 등록/수정 요청"
       required: true
@@ -278,18 +274,19 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - introduction
+              - openChatUrl
             properties:
               introduction:
                 type: string
                 example: "안녕하세요. 자기소개입니다."
                 description: "변경할 자기소개"
-                required: true
               openChatUrl:
                 type: string
                 format: uri
                 example: "https://open.kakao.com/o/gjgjgjgj"
                 description: "변경할 오픈 채팅 URL"
-                required: true
     UserWorkoutPreferencesUpdateRequest:
       description: "사용자 운동 선호 정보(선호하는 운동 종목, 운동 시설) 등록/수정 요청"
       required: true
@@ -297,6 +294,10 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - preferredWorkoutTime
+              - favoriteWorkouts
+              - favoritePlaces
             properties:
               preferredWorkoutTime:
                 type: string
@@ -309,7 +310,6 @@ components:
                   enum: [ "GYM", "PILATES", "SWIMMING", "DANCE", "SQUASH", "BOXING", "GOLF", "TENNIS", "YOGA", "CROSSFIT" ]
                   description: "운동 종목 코드"
                 description: "변경할 선호하는 운동 종목"
-                required: true
               favoritePlaces:
                 type: array
                 items:
@@ -319,14 +319,11 @@ components:
                       type: string
                       example: "에이블짐 잠실점"
                       description: "운동 시설 이름"
-                      required: true
                     address:
                       type: string
                       example: "서울특별시 송파구 올림픽로35가길 11 지하1층 001호"
                       description: "운동 시설 주소"
-                      required: true
                 description: "변경할 선호하는 운동 시설"
-                required: true
   responses:
     PagedUserInfoResponse:
       description: "사용자 목록 조회 응답"

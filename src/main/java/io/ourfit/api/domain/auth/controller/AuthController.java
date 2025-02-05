@@ -5,6 +5,7 @@ import io.ourfit.api.domain.auth.data.dto.request.TokenRenewRequest;
 import io.ourfit.api.domain.auth.service.AuthService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.jwt.OurfitToken;
+import io.ourfit.api.global.security.data.annotation.PublicApi;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@PublicApi
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/auth")

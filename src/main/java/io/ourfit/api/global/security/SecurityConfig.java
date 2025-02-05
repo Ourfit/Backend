@@ -2,7 +2,8 @@ package io.ourfit.api.global.security;
 
 import static org.springframework.http.HttpMethod.*;
 
-import io.ourfit.api.global.filter.SecurityFilterFactory;
+import io.ourfit.api.global.security.filter.SecurityFilterFactory;
+import io.ourfit.api.global.security.filter.impl.PublicApiAccessControlFilter;
 import io.ourfit.api.global.security.web.AccessDeniedHandlerImpl;
 import io.ourfit.api.global.security.web.AuthEntryPointImpl;
 import java.util.List;
@@ -64,7 +65,9 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .denyAll())
-        .addFilterAfter(this.filterFactory.jwtAuth(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
+            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .exceptionHandling(
             exception ->
                 exception
@@ -98,7 +101,9 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .permitAll())
-        .addFilterAfter(this.filterFactory.jwtAuth(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
+            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .build();
   }
 
