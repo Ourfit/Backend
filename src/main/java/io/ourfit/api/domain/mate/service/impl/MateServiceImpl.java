@@ -1,14 +1,17 @@
 package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.entity.Mate;
+import io.ourfit.api.domain.mate.data.entity.MateHistory;
 import io.ourfit.api.domain.mate.service.MateService;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserService;
-import io.ourfit.api.domain.workout.enums.MateStatusType;
+import io.ourfit.api.domain.workout.data.enums.MateActionType;
+import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.infra.persistence.MateHistoryRepository;
 import io.ourfit.api.infra.persistence.MateQRepository;
 import io.ourfit.api.infra.persistence.MateRepository;
 import java.util.Arrays;
@@ -27,6 +30,7 @@ public class MateServiceImpl implements MateService {
 
   private final MateRepository repository;
   private final MateQRepository qRepository;
+  private final MateHistoryRepository historyRepository;
   private final MateWorkoutService workoutService;
   private final UserService userService;
 
@@ -36,44 +40,54 @@ public class MateServiceImpl implements MateService {
         this.userService
             .findById(meId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
-    User mate =
+    User myMate =
         this.userService
             .findById(receiverId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 
-    if (this.qRepository.existsPendingRequestBetweenUsers(me, mate)) {
+    if (this.qRepository.existsPendingRequestBetweenUsers(me, myMate)) {
       throw new DuplicatedException(ApiExceptionType.RESOURCE_IDENTICAL);
     }
 
-    this.repository.save(Mate.of(me, mate));
+    Mate mate = this.repository.save(Mate.of(me, myMate));
+    this.historyRepository.save(MateHistory.from(MateActionType.APPLY, mate));
   }
 
   @Override
-  public void accept(final long meId, final long mateId) {
+  public void accept(final long mateId, final long meId) {
     this.ifFoundThen(
         mateId,
         mate -> {
           mate.accept();
           this.workoutService.initialize(mate);
+          this.historyRepository.save(MateHistory.from(MateActionType.ACCEPT, mate));
         },
         mate -> mate.canAccept(meId));
   }
 
   @Override
-  public void unmate(final long meId, final long mateId) {
-    this.ifFoundThen(mateId, Mate::unmate, mate -> mate.canUnmate(meId));
+  public void unmate(final long mateId, final long meId) {
+    this.ifFoundThen(
+        mateId,
+        mate -> {
+          mate.unmate();
+          this.historyRepository.save(MateHistory.from(MateActionType.UNMATE, mate));
+        },
+        mate -> mate.canUnmate(meId));
   }
 
   @Override
-  public Optional<Mate> findByIdAndStatus(long mateId, MateStatusType statusType) {
-    return Optional.empty();
+  @Transactional(readOnly = true)
+  public Optional<Mate> findByIdAndStatus(long mateId, MateStatusType status) {
+    return this.repository.findByIdAndStatusType(mateId, status);
   }
 
+  @SafeVarargs
   private void ifFoundThen(
       final long id, Consumer<Mate> presentAction, Predicate<Mate>... filters) {
     this.repository
         .findById(id)
-        .filter(mate -> Arrays.stream(filters).allMatch(filter -> filter.test(mate)))
+        .map(mate -> doFilters(mate, IllegalStateException::new, filters))
         .ifPresentOrElse(
             presentAction,
             () -> {
@@ -81,24 +95,10 @@ public class MateServiceImpl implements MateService {
             });
   }
 
-  private void ifFoundThen(
-      final long id,
-      Consumer<Mate> presentAction,
-      Supplier<RuntimeException> exceptionSupplier,
-      Predicate<Mate>... filters) {
-    this.repository
-        .findById(id)
-        .map(mate -> doFilters(mate, exceptionSupplier, filters))
-        .ifPresentOrElse(
-            presentAction,
-            () -> {
-              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND);
-            });
-  }
-
+  @SafeVarargs
   private static Mate doFilters(
       Mate mate, Supplier<RuntimeException> exSupplier, Predicate<Mate>... filters) {
-    if (Arrays.stream(filters).anyMatch(filter -> !filter.test(mate))) {
+    if (Arrays.stream(filters).anyMatch(filter -> filter.test(mate))) {
       throw exSupplier.get();
     }
     return mate;

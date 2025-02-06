@@ -2,7 +2,7 @@ package io.ourfit.api.global.security.filter.impl;
 
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.filter.AbstractSecurityFilter;
-import io.ourfit.api.global.web.HandlerMethodAnnotationResolver;
+import io.ourfit.api.global.web.resolver.HandlerMethodAnnotationResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

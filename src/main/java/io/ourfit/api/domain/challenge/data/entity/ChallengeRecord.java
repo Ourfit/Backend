@@ -1,5 +1,6 @@
-package io.ourfit.api.domain.challenge;
+package io.ourfit.api.domain.challenge.data.entity;
 
+import io.ourfit.api.domain.challenge.data.dto.internal.NewChallengeRecordDto;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
@@ -40,4 +41,15 @@ public class ChallengeRecord extends BaseEntity {
   @Lob
   @Column(name = "note", columnDefinition = "text")
   private String note;
+
+  public static ChallengeRecord of(
+      Challenge challenge, NewChallengeRecordDto newChallengeRecordDto) {
+    return ChallengeRecord.builder()
+        .challenge(challenge)
+        .recordDate(LocalDate.now())
+        .isCompleted(true)
+        .intensityLevel(newChallengeRecordDto.intensityLevel())
+        .note(null)
+        .build();
+  }
 }

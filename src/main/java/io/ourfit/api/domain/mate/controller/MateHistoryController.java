@@ -1,0 +1,37 @@
+package io.ourfit.api.domain.mate.controller;
+
+import io.ourfit.api.domain.mate.data.dto.response.MateHistoryResponse;
+import io.ourfit.api.domain.mate.service.MateHistoryService;
+import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/v1/mates")
+public class MateHistoryController {
+
+  private final MateHistoryService service;
+
+  /** 나와 관련된 내역 조회 */
+  @GetMapping("/me/history")
+  public ResponseEntity<BaseResponse<Page<MateHistoryResponse>>> getMyMateHistories(
+      Pageable pageable, @AuthenticationPrincipal OurfitUserDetails userDetails) {
+    Page<MateHistoryResponse> responses =
+        this.service.findAllByUserId(userDetails.getId(), pageable).map(MateHistoryResponse::from);
+    return ResponseEntity.ok(BaseResponse.from(responses));
+  }
+
+  /** 특정 알림을 읽음 처리 */
+  @PatchMapping("/history/{historyId}/read")
+  public ResponseEntity<Void> markAsRead(
+      @PathVariable final long historyId, @AuthenticationPrincipal OurfitUserDetails userDetails) {
+    this.service.markAsRead(userDetails.getId(), historyId);
+    return ResponseEntity.noContent().build();
+  }
+}

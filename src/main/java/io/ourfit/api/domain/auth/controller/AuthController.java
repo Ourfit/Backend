@@ -27,7 +27,7 @@ public class AuthController {
       @RequestBody @Valid final TokenIssueRequest request) {
     OurfitToken ourfitToken = this.authService.issue(request.oAuthId());
 
-    return ResponseEntity.ok((BaseResponse.of(ourfitToken)));
+    return ResponseEntity.ok((BaseResponse.from(ourfitToken)));
   }
 
   @PostMapping("/tokens/refresh")
@@ -35,6 +35,6 @@ public class AuthController {
       @RequestBody final TokenRenewRequest request) {
     OurfitToken locatTokenDto =
         this.authService.renew(request.accessToken(), request.refreshToken());
-    return ResponseEntity.ok((BaseResponse.of(locatTokenDto)));
+    return ResponseEntity.ok((BaseResponse.from(locatTokenDto)));
   }
 }

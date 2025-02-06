@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.user.validation.impl;
 
 import io.ourfit.api.domain.user.validation.OpenChatUrl;
-import io.ourfit.api.global.validation.AbstractConstraintValidator;
+import io.ourfit.api.global.web.validation.AbstractConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 

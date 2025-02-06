@@ -22,6 +22,6 @@ public class WorkoutController {
   public ResponseEntity<BaseResponse<List<WorkoutResponse>>> getAllWorkoutTypes() {
     List<WorkoutResponse> response =
         StreamUtils.mapToList(this.workoutService.findAll(), WorkoutResponse::from);
-    return ResponseEntity.ok(BaseResponse.of(response));
+    return ResponseEntity.ok(BaseResponse.from(response));
   }
 }

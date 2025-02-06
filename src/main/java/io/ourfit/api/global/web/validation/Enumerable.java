@@ -1,7 +1,7 @@
-package io.ourfit.api.global.validation;
+package io.ourfit.api.global.web.validation;
 
-import io.ourfit.api.global.validation.impl.EnumerableCollectionValidator;
-import io.ourfit.api.global.validation.impl.EnumerableValidator;
+import io.ourfit.api.global.web.validation.impl.EnumerableCollectionValidator;
+import io.ourfit.api.global.web.validation.impl.EnumerableValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;

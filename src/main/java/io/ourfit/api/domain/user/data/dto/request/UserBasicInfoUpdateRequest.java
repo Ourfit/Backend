@@ -4,7 +4,7 @@ import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.user.validation.Age;
 import io.ourfit.api.domain.user.validation.Nickname;
-import io.ourfit.api.global.validation.Enumerable;
+import io.ourfit.api.global.web.validation.Enumerable;
 
 /**
  * 사용자의 기본 정보 수정 요청 DTO

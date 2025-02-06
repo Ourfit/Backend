@@ -14,8 +14,8 @@ import io.ourfit.api.domain.user.data.dto.internal.UserInfoDto;
 import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
 import io.ourfit.api.domain.workout.data.entity.QWorkout;
-import io.ourfit.api.domain.workout.enums.MateStatusType;
-import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
+import io.ourfit.api.domain.workout.data.enums.MateStatusType;
+import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.utils.QueryUtils;
 import io.ourfit.api.infra.persistence.UserQRepository;
 import java.util.List;
@@ -102,7 +102,7 @@ public class UserQRepositoryImpl implements UserQRepository {
     return JPAExpressions.selectOne()
         .from(qMate)
         .where(
-            qMate.requestee.eq(qUser).or(qMate.requester.eq(qUser)),
+            qMate.me.eq(qUser).or(qMate.myMate.eq(qUser)),
             qMate.statusType.eq(MateStatusType.MATCHED))
         .notExists();
   }

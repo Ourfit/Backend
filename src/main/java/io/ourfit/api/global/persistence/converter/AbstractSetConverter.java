@@ -1,4 +1,4 @@
-package io.ourfit.api.global.converter;
+package io.ourfit.api.global.persistence.converter;
 
 import jakarta.persistence.AttributeConverter;
 import java.util.Arrays;

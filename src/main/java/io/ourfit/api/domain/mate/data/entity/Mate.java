@@ -1,8 +1,7 @@
 package io.ourfit.api.domain.mate.data.entity;
 
-import io.ourfit.api.domain.mate.service.impl.MateEntityListener;
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.workout.enums.MateStatusType;
+import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
@@ -19,7 +18,6 @@ import lombok.*;
     })
 @Getter
 @Builder
-@EntityListeners(MateEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Mate extends BaseEntity {

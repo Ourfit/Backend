@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.mate.data.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.ourfit.api.global.validation.Enumerable;
+import io.ourfit.api.global.web.validation.Enumerable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;

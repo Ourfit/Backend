@@ -3,7 +3,7 @@ package io.ourfit.api.infra.persistence.impl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.ourfit.api.domain.mate.data.entity.QMate;
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.workout.enums.MateStatusType;
+import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.infra.persistence.MateQRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,8 +25,8 @@ public class MateQRepositoryImpl implements MateQRepository {
             .from(qMate)
             .where(
                 qMate.statusType.eq(MateStatusType.PENDING),
-                qMate.requester.eq(requester),
-                qMate.requestee.eq(requestee))
+                qMate.me.eq(requester),
+                qMate.myMate.eq(requestee))
             .fetchFirst()
         != null;
   }

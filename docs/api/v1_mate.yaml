@@ -9,13 +9,13 @@ servers:
   - url: https://not-available-yet.com
     description: Production
 paths:
-  /v1/mates/{requesteeId}:
+  /v1/mates/{receiverId}:
     post:
       summary: 메이트 신청 API
       security:
         - bearerAuth: [ ]
       parameters:
-        - name: requesteeId
+        - name: receiverId
           in: path
           required: true
           schema:

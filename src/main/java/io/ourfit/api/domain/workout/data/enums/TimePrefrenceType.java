@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.workout.enums;
+package io.ourfit.api.domain.workout.data.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

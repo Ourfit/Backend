@@ -1,4 +1,4 @@
-package io.ourfit.api.global.converter;
+package io.ourfit.api.global.persistence.converter;
 
 import io.ourfit.api.global.exception.custom.InternalProcessingException;
 import io.ourfit.api.global.utils.RandomGenerator;

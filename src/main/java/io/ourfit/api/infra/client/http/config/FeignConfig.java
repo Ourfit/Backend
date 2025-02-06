@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableFeignClients(basePackages = "io.ourfit.api.infra.http")
+@EnableFeignClients(basePackages = "io.ourfit.api.infra.client.http")
 public class FeignConfig {
 
   /** Feign Client 로깅 레벨 설정 */

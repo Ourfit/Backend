@@ -122,21 +122,24 @@ create table mate
   row_format = dynamic
     comment '운동 메이트 매칭 정보';
 
-create table mate_log
+create table mate_history
 (
     id          int unsigned auto_increment,
-    mate_id     int unsigned                          not null comment '메이트 ID',
-    user_id     int unsigned                          not null comment '알림 대상 사용자 ID',
-    action_type enum ('REQUEST', 'RECEIVE', 'VIEWED') not null comment '로그 타입',
-    is_read     boolean  default false comment '확인 여부',
-    created_at  datetime default current_timestamp comment '생성일시',
-    updated_at  datetime default current_timestamp on update current_timestamp comment '수정일시',
+    mate_id     int unsigned                                  not null comment '메이트 ID',
+    actor_id    int unsigned                                  not null comment '행동을 수행한 사용자 ID',
+    target_id   int unsigned                                  not null comment '행동의 대상이 되는 사용자 ID',
+    action_type enum ('APPLY', 'RECEIVE', 'ACCEPT', 'UNMATE') not null comment '로그 타입',
+    actor_read  boolean                                       not null default false comment '행동을 수행한 사용자가 이 이력을 읽었는지 여부',
+    target_read boolean                                       not null default false comment '대상이 되는 사용자가 이 이력을 읽었는지 여부',
+    created_at  datetime                                               default current_timestamp comment '생성일시',
+    updated_at  datetime                                               default current_timestamp on update current_timestamp comment '수정일시',
     primary key (id),
-    constraint fk_mate_log_mate_id foreign key (mate_id) references mate (id),
-    constraint fk_mate_log_user_id foreign key (user_id) references user (id)
+    constraint fk_mate_history_mate_id foreign key (mate_id) references mate (id),
+    constraint fk_mate_history_actor_id foreign key (actor_id) references user (id),
+    constraint fk_mate_history_target_id foreign key (target_id) references user (id)
 ) engine = InnoDB
   row_format = dynamic
-    comment '운동 메이트 매칭 요청 알림 로그';
+    comment '운동 메이트 이력';
 
 create table mate_workout
 (

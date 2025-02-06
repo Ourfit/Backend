@@ -2,7 +2,7 @@ package io.ourfit.api.global.security.filter;
 
 import io.ourfit.api.global.security.filter.impl.JwtAuthenticationFilter;
 import io.ourfit.api.global.security.filter.impl.PublicApiAccessControlFilter;
-import io.ourfit.api.global.web.HandlerMethodAnnotationResolver;
+import io.ourfit.api.global.web.resolver.HandlerMethodAnnotationResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.stereotype.Component;

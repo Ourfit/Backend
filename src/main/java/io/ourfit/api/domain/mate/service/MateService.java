@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.mate.service;
 
 import io.ourfit.api.domain.mate.data.entity.Mate;
-import io.ourfit.api.domain.workout.enums.MateStatusType;
+import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import java.util.Optional;
 
 public interface MateService {
@@ -17,18 +17,18 @@ public interface MateService {
   /**
    * 메이트 수락
    *
-   * @param meId 수락하는 사용자 ID (신청받은 사용자)
    * @param mateId 메이트 ID
+   * @param meId 수락하는 사용자 ID (신청받은 사용자)
    */
-  void accept(long meId, long mateId);
+  void accept(long mateId, long meId);
 
   /**
    * 메이트 해제
    *
-   * @param meId 해제를 수행하는 사용자 ID
    * @param mateId 메이트 ID
+   * @param meId 해제를 수행하는 사용자 ID
    */
-  void unmate(long meId, long mateId);
+  void unmate(long mateId, long meId);
 
-  Optional<Mate> findByIdAndStatus(long mateId, MateStatusType statusType);
+  Optional<Mate> findByIdAndStatus(long mateId, MateStatusType status);
 }

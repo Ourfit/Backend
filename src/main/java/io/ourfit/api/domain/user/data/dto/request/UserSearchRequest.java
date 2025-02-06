@@ -3,9 +3,9 @@ package io.ourfit.api.domain.user.data.dto.request;
 import io.ourfit.api.domain.user.data.dto.internal.MatesCandidateSearchDto;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
-import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
+import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.utils.StreamUtils;
-import io.ourfit.api.global.validation.Enumerable;
+import io.ourfit.api.global.web.validation.Enumerable;
 import java.util.Set;
 
 /**

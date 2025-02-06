@@ -36,7 +36,7 @@ public class UserController {
             .findMateCandidates(request.toDto(userDetails.getUser()), pageable)
             .map(UserInfoResponse::fromBasic);
 
-    return ResponseEntity.ok(BaseResponse.of(response));
+    return ResponseEntity.ok(BaseResponse.from(response));
   }
 
   @GetMapping("/{id}")
@@ -47,7 +47,7 @@ public class UserController {
             .map(UserInfoResponse::fromDetailed)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 
-    return ResponseEntity.ok(BaseResponse.of(userInfoResponse));
+    return ResponseEntity.ok(BaseResponse.from(userInfoResponse));
   }
 
   /** 내 정보 조회 */

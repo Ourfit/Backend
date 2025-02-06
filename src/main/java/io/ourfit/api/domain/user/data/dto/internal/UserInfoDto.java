@@ -2,7 +2,7 @@ package io.ourfit.api.domain.user.data.dto.internal;
 
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
-import io.ourfit.api.domain.workout.enums.TimePrefrenceType;
+import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import java.util.List;
 
 /**

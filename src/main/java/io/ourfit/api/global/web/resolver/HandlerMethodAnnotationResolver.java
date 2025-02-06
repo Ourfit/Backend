@@ -1,4 +1,4 @@
-package io.ourfit.api.global.web;
+package io.ourfit.api.global.web.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;

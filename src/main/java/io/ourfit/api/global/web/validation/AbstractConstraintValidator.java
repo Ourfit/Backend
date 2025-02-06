@@ -1,4 +1,4 @@
-package io.ourfit.api.global.validation;
+package io.ourfit.api.global.web.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

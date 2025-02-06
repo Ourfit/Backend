@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.workout.enums;
+package io.ourfit.api.domain.workout.data.enums;
 
 /** 메이트 상태 타입 */
 public enum MateStatusType {
