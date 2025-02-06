@@ -168,7 +168,8 @@ public class User extends SecuredBaseEntity {
   public void updateBasicInfo(UserBasicInfoUpdateDto updateDto) {
     if (updateDto.nickname() != null) {
       if (!this.isNicknameUpdatable()) {
-        throw new IllegalStateException("Nickname can only be updated once every 30 days");
+        throw new IllegalStateException(
+            "Nickname can only be updated once every 30 daySinceAccepted");
       }
       this.nickName = updateDto.nickname();
       this.nickNameUpdatedAt = LocalDateTime.now();

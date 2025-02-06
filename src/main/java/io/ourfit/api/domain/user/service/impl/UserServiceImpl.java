@@ -77,12 +77,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void updateBasicInfo(final long id, UserBasicInfoUpdateDto updateDto) {
-    this.executeIfPresent(id, user -> user.updateBasicInfo(updateDto));
+    this.ifFoundThen(id, user -> user.updateBasicInfo(updateDto));
   }
 
   @Override
   public void updateWorkoutPreferences(final long id, UserWorkoutPreferencesUpdateDto updateDto) {
-    this.executeIfPresent(
+    this.ifFoundThen(
         id,
         user -> {
           user.updateWorkoutPreferences(updateDto);
@@ -97,12 +97,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void updateProfile(long id, UserProfileUpdateDto updateDto) {
-    this.executeIfPresent(id, user -> user.setProfile(updateDto));
+    this.ifFoundThen(id, user -> user.setProfile(updateDto));
   }
 
   @Override
   public void updateProfileImage(long id, MultipartFile profileImage) {
-    this.executeIfPresent(
+    this.ifFoundThen(
         id,
         user -> {
           final String profileImageUrl = this.s3Client.upload("버킷/이미지/경로", profileImage);
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void delete(long id) {
-    this.executeIfPresent(
+    this.ifFoundThen(
         id,
         user -> {
           this.oAuth2Service.withdrawal(user.getOAuthId());
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
         });
   }
 
-  private void executeIfPresent(final long id, Consumer<User> presentAction) {
+  private void ifFoundThen(final long id, Consumer<User> presentAction) {
     this.repository
         .findById(id)
         .filter(User::isEnabled)

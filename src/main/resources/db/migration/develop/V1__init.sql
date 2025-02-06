@@ -105,17 +105,19 @@ create table user_favorite_workout_place
 
 create table mate
 (
-    id           int unsigned auto_increment,
-    requester_id int unsigned                                                  not null comment '요청자 ID',
-    requestee_id int unsigned                                                  not null comment '요청 대상자 ID',
-    status_type  enum ('PENDING', 'MATCHED', 'CANCELED','REJECTED', 'DELETED') not null comment '메이트 상태',
-    matched_at   datetime default null comment '메이트 매칭 일시',
-    created_at   datetime default current_timestamp comment '생성일시',
-    updated_at   datetime default current_timestamp on update current_timestamp comment '수정일시',
-    deleted_at   datetime default null comment '삭제일시',
+    id          int unsigned auto_increment,
+    me_id       int unsigned                                                  not null comment '요청자 ID',
+    my_mate_id  int unsigned                                                  not null comment '요청 대상자 ID',
+    status_type enum ('PENDING', 'MATCHED', 'CANCELED','REJECTED', 'DELETED') not null comment '메이트 상태',
+    accepted_at datetime default null comment '메이트 매칭 일시',
+    created_at  datetime default current_timestamp comment '생성일시',
+    updated_at  datetime default current_timestamp on update current_timestamp comment '수정일시',
+    deleted_at  datetime default null comment '삭제일시',
     primary key (id),
-    constraint fk_mate_requester_id foreign key (requester_id) references user (id),
-    constraint fk_mate_requestee_id foreign key (requestee_id) references user (id)
+    constraint fk_mate_me foreign key (me_id) references user (id),
+    constraint fk_mate_my_mate foreign key (my_mate_id) references user (id),
+    index idx_mate_me (status_type, me_id),
+    index idx_mate_my_mate (status_type, my_mate_id)
 ) engine = InnoDB
   row_format = dynamic
     comment '운동 메이트 매칭 정보';
@@ -130,8 +132,8 @@ create table mate_log
     created_at  datetime default current_timestamp comment '생성일시',
     updated_at  datetime default current_timestamp on update current_timestamp comment '수정일시',
     primary key (id),
-    constraint fk_mate_request_log_mate_id foreign key (mate_id) references mate (id),
-    constraint fk_mate_request_log_user_id foreign key (user_id) references user (id)
+    constraint fk_mate_log_mate_id foreign key (mate_id) references mate (id),
+    constraint fk_mate_log_user_id foreign key (user_id) references user (id)
 ) engine = InnoDB
   row_format = dynamic
     comment '운동 메이트 매칭 요청 알림 로그';

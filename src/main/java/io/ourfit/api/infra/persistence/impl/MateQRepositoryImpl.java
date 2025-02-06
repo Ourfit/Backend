@@ -1,7 +1,7 @@
 package io.ourfit.api.infra.persistence.impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import io.ourfit.api.domain.mate.QMate;
+import io.ourfit.api.domain.mate.data.entity.QMate;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.workout.enums.MateStatusType;
 import io.ourfit.api.infra.persistence.MateQRepository;

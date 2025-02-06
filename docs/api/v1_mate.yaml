@@ -57,7 +57,7 @@ paths:
       responses:
         200:
           description: 메이트 해제 성공
-  /v1/mates/{mateId}/workout-places:
+  /v1/mates/{mateId}/workouts/places:
     put:
       summary: 메이트와 함께 운동하는 시설(장소) 설정 API
       description: |
@@ -82,7 +82,7 @@ paths:
       responses:
         200:
           description: 메이트와 함께 운동하는 시설(장소) 설정 성공
-  /v1/mates/{mateId}/workout-times:
+  /v1/mates/{mateId}/workouts/times:
     put:
       summary: 메이트와 함께 운동하는 시간 설정 API
       description: |

@@ -39,8 +39,13 @@ public class MateLog extends BaseEntity {
   @Column(name = "is_read")
   private Boolean isRead;
 
-  public static MateLog fromEntity(Mate mate) {
-    return MateLog.builder().mate(mate).user(mate.getRequestee()).isRead(false).build();
+  public static MateLog fromEntity(MateLogActionType actionType, Mate mate) {
+    return MateLog.builder()
+        .mate(mate)
+        .user(mate.getMyMate())
+        .actionType(actionType)
+        .isRead(false)
+        .build();
   }
 
   public void read() {

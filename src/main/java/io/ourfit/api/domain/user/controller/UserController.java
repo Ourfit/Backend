@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/v1/users")
 public class UserController {
 
-  private final UserService userService;
+  private final UserService service;
 
   /** 메이트 관련 사용자 목록 조회 */
   @GetMapping("/mates")
@@ -32,7 +32,7 @@ public class UserController {
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     Page<UserInfoResponse> response =
-        this.userService
+        this.service
             .findMateCandidates(request.toDto(userDetails.getUser()), pageable)
             .map(UserInfoResponse::fromBasic);
 
@@ -42,7 +42,7 @@ public class UserController {
   @GetMapping("/{id}")
   public ResponseEntity<BaseResponse<UserInfoResponse>> getUser(@PathVariable final long id) {
     UserInfoResponse userInfoResponse =
-        this.userService
+        this.service
             .findByIdWithFavorites(id)
             .map(UserInfoResponse::fromDetailed)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
@@ -62,7 +62,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyBasicInfo(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserBasicInfoUpdateRequest request) {
-    this.userService.updateBasicInfo(userDetails.getId(), request.toDto());
+    this.service.updateBasicInfo(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
@@ -71,7 +71,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyProfile(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserProfileUpdateRequest request) {
-    this.userService.updateProfile(userDetails.getId(), request.toDto());
+    this.service.updateProfile(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
@@ -80,7 +80,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyProfileImage(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestPart("profileImage") MultipartFile profileImage) {
-    this.userService.updateProfileImage(userDetails.getId(), profileImage);
+    this.service.updateProfileImage(userDetails.getId(), profileImage);
     return ResponseEntity.ok().build();
   }
 
@@ -89,7 +89,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyWorkoutPreferences(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserWorkoutPreferencesUpdateRequest request) {
-    this.userService.updateWorkoutPreferences(userDetails.getId(), request.toDto());
+    this.service.updateWorkoutPreferences(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
@@ -97,14 +97,14 @@ public class UserController {
   @PublicApi
   @PostMapping
   public ResponseEntity<Void> create(@RequestBody @Valid UserSignUpRequest request) {
-    this.userService.save(request.toDto());
+    this.service.save(request.toDto());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /** 회원 탈퇴 */
   @DeleteMapping("/me")
   public ResponseEntity<Void> delete(@AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.userService.delete(userDetails.getId());
+    this.service.delete(userDetails.getId());
     return ResponseEntity.noContent().build();
   }
 }

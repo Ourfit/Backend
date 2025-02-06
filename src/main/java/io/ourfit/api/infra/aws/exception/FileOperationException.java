@@ -1,4 +1,4 @@
-package io.ourfit.api.infra.exception;
+package io.ourfit.api.infra.aws.exception;
 
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.OurfitApiException;

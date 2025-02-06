@@ -7,7 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.jsonwebtoken.lang.Collections;
-import io.ourfit.api.domain.mate.QMate;
+import io.ourfit.api.domain.mate.data.entity.QMate;
 import io.ourfit.api.domain.user.data.dto.internal.MatesCandidateSearchDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserFavoriteWorkoutDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserInfoDto;

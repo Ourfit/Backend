@@ -1,4 +1,4 @@
-package io.ourfit.api.infra.http.config;
+package io.ourfit.api.infra.client.http.config;
 
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;

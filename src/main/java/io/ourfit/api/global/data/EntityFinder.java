@@ -1,9 +1,10 @@
 package io.ourfit.api.global.data;
 
+import io.ourfit.api.global.data.entity.BaseEntity;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-@FunctionalInterface
-public interface EntityFinder<T, ID> {
+public interface EntityFinder<T extends BaseEntity, ID> {
 
-  void executeIfPresent(ID id, Consumer<T> presentConsumer);
+  void ifFoundThen(ID id, Consumer<T> action, Predicate<T>... filters);
 }

@@ -1,4 +1,4 @@
-package io.ourfit.api.infra.http;
+package io.ourfit.api.infra.client.http;
 
 import io.ourfit.api.domain.auth.data.dto.internal.KakaoUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;

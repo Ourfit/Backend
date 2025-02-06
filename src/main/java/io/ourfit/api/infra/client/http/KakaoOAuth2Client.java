@@ -1,7 +1,7 @@
-package io.ourfit.api.infra.http;
+package io.ourfit.api.infra.client.http;
 
 import io.ourfit.api.domain.auth.data.entity.KakaoOAuth2TokenDto;
-import io.ourfit.api.infra.http.config.KakaoOAuth2ClientConfig;
+import io.ourfit.api.infra.client.http.config.KakaoOAuth2ClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
