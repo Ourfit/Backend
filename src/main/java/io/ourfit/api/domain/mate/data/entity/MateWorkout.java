@@ -2,8 +2,8 @@ package io.ourfit.api.domain.mate.data.entity;
 
 import io.ourfit.api.domain.mate.data.dto.internal.MateWorkoutPlacesUpsertDto;
 import io.ourfit.api.domain.mate.data.dto.internal.MateWorkoutTimeUpsertDto;
-import io.ourfit.api.global.persistence.converter.DayOfWeekSetConverter;
 import io.ourfit.api.global.data.entity.SecuredBaseEntity;
+import io.ourfit.api.global.persistence.converter.DayOfWeekSetConverter;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.time.DayOfWeek;

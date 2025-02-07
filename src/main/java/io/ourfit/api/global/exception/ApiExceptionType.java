@@ -23,6 +23,7 @@ public enum ApiExceptionType {
   CONFLICT(409, "Conflict", 409000),
   RESOURCE_ALREADY_EXISTS(409, "Conflict: The requested resource already exists", 409001),
   RESOURCE_IDENTICAL(409, "Conflict: The requested resource is identical", 409002),
+  ENTITY_ILLEGAL_STATE(409, "Conflict: Entity is in illegal state", 409003),
 
   TOO_MANY_REQUESTS(429, "Too Many Requests", 429000),
 

@@ -2,23 +2,20 @@ package io.ourfit.api.domain.user.service.impl;
 
 import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.service.OAuth2Service;
-import io.ourfit.api.domain.user.data.dto.internal.*;
+import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
-import io.ourfit.api.domain.user.service.UserService;
+import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.workout.service.WorkoutService;
-import io.ourfit.api.global.exception.ApiExceptionType;
-import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.global.data.EntityFinder;
 import io.ourfit.api.infra.aws.s3.OurfitS3Client;
-import io.ourfit.api.infra.persistence.UserQRepository;
 import io.ourfit.api.infra.persistence.UserRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserCommandServiceImpl implements UserCommandService {
 
   private final UserRepository repository;
-  private final UserQRepository qRepository;
+  private final EntityFinder<User, Long> userEntityFinder;
   private final OAuth2Service oAuth2Service;
   private final WorkoutService workoutService;
   private final OurfitS3Client s3Client;
@@ -45,44 +42,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public Page<UserInfoDto> findMateCandidates(
-      MatesCandidateSearchDto searchDto, Pageable pageable) {
-    return this.qRepository.findMateCandidates(searchDto, pageable);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<User> findById(final long id) {
-    return this.repository.findById(id);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<User> findByIdWithFavorites(final long id) {
-    return this.repository.findByIdWithFavorites(id);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<User> findByOAuthId(String oAuthId) {
-    return this.repository.findByoAuthId(oAuthId);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean existsByOAuthId(String oAuthId) {
-    return this.repository.existsByoAuthId(oAuthId);
-  }
-
-  @Override
   public void updateBasicInfo(final long id, UserBasicInfoUpdateDto updateDto) {
-    this.ifFoundThen(id, user -> user.updateBasicInfo(updateDto));
+    this.userEntityFinder.ifFoundThen(id, user -> user.updateBasicInfo(updateDto));
   }
 
   @Override
   public void updateWorkoutPreferences(final long id, UserWorkoutPreferencesUpdateDto updateDto) {
-    this.ifFoundThen(
+    this.userEntityFinder.ifFoundThen(
         id,
         user -> {
           user.updateWorkoutPreferences(updateDto);
@@ -97,12 +63,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void updateProfile(long id, UserProfileUpdateDto updateDto) {
-    this.ifFoundThen(id, user -> user.setProfile(updateDto));
+    this.userEntityFinder.ifFoundThen(id, user -> user.setProfile(updateDto));
   }
 
   @Override
   public void updateProfileImage(long id, MultipartFile profileImage) {
-    this.ifFoundThen(
+    this.userEntityFinder.ifFoundThen(
         id,
         user -> {
           final String profileImageUrl = this.s3Client.upload("버킷/이미지/경로", profileImage);
@@ -112,23 +78,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void delete(long id) {
-    this.ifFoundThen(
+    this.userEntityFinder.ifFoundThen(
         id,
         user -> {
           this.oAuth2Service.withdrawal(user.getOAuthId());
           user.delete();
         });
-  }
-
-  private void ifFoundThen(final long id, Consumer<User> presentAction) {
-    this.repository
-        .findById(id)
-        .filter(User::isEnabled)
-        .ifPresentOrElse(
-            presentAction,
-            () -> {
-              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER);
-            });
   }
 
   private List<UserFavoriteWorkout> buildFavoriteWorkouts(User user, Set<String> favoriteWorkouts) {

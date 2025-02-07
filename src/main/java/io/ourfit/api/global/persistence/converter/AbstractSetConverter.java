@@ -19,7 +19,7 @@ public abstract class AbstractSetConverter<T extends Enum<T>>
   @Override
   public String convertToDatabaseColumn(Set<T> attributes) {
     if (attributes == null || attributes.isEmpty()) {
-      return "";
+      return null;
     }
     return attributes.stream().map(Enum::name).collect(Collectors.joining(SET_DELIMITER));
   }

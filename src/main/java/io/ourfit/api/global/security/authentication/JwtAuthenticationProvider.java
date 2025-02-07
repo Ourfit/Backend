@@ -1,7 +1,7 @@
 package io.ourfit.api.global.security.authentication;
 
 import io.jsonwebtoken.Claims;
-import io.ourfit.api.domain.user.service.UserService;
+import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetailsImpl;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
-  private final UserService userService;
+  private final UserQueryService userQueryService;
   private final JwtProvider jwtProvider;
 
   @Override
@@ -33,7 +33,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         .flatMap(this.jwtProvider::parse)
         .map(Claims::getSubject)
         .map(Long::parseLong)
-        .flatMap(this.userService::findById)
+        .flatMap(this.userQueryService::findById)
         .map(OurfitUserDetailsImpl::from)
         .map(JwtAuthenticationToken::authenticated)
         .orElseThrow(() -> new BadCredentialsException("Invalid token"));

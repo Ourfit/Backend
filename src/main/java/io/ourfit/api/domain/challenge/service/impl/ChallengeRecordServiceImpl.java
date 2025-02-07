@@ -5,7 +5,7 @@ import io.ourfit.api.domain.challenge.data.entity.Challenge;
 import io.ourfit.api.domain.challenge.data.entity.ChallengeRecord;
 import io.ourfit.api.domain.challenge.service.ChallengeRecordService;
 import io.ourfit.api.domain.challenge.service.ChallengeService;
-import io.ourfit.api.domain.user.service.UserService;
+import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.infra.persistence.ChallengeRecordRepository;
@@ -20,13 +20,13 @@ public class ChallengeRecordServiceImpl implements ChallengeRecordService {
 
   private final ChallengeRecordRepository repository;
   private final ChallengeService challengeService;
-  private final UserService userService;
+  private final UserQueryService userQueryService;
 
   @Override
   public void create(
       final long challengeId, final long userId, NewChallengeRecordDto newRecordDto) {
     var challenger =
-        this.userService
+        this.userQueryService
             .findById(userId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 

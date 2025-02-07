@@ -5,7 +5,7 @@ import io.ourfit.api.domain.mate.data.entity.MateHistory;
 import io.ourfit.api.domain.mate.service.MateService;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.user.service.UserService;
+import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.domain.workout.data.enums.MateActionType;
 import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.global.exception.ApiExceptionType;
@@ -32,16 +32,16 @@ public class MateServiceImpl implements MateService {
   private final MateQRepository qRepository;
   private final MateHistoryRepository historyRepository;
   private final MateWorkoutService workoutService;
-  private final UserService userService;
+  private final UserQueryService userQueryService;
 
   @Override
   public void apply(final long meId, final long receiverId) {
     User me =
-        this.userService
+        this.userQueryService
             .findById(meId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
     User myMate =
-        this.userService
+        this.userQueryService
             .findById(receiverId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 
