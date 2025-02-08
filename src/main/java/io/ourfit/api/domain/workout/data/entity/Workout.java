@@ -3,7 +3,9 @@ package io.ourfit.api.domain.workout.data.entity;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
+import java.util.Objects;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 @Entity
 @Table(
@@ -31,4 +33,21 @@ public class Workout extends BaseEntity {
 
   @Column(name = "name", nullable = false, length = 50)
   private String name;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || Hibernate.getClass(this) != Hibernate.getClass(obj)) {
+      return false;
+    }
+    Workout that = (Workout) obj;
+    return this.code.equals(that.code);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.code);
+  }
 }

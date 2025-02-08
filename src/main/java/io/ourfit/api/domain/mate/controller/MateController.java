@@ -1,7 +1,8 @@
 package io.ourfit.api.domain.mate.controller;
 
 import io.ourfit.api.domain.mate.data.dto.response.MateInfoResponse;
-import io.ourfit.api.domain.mate.service.MateService;
+import io.ourfit.api.domain.mate.service.MateCommandService;
+import io.ourfit.api.domain.mate.service.MateQueryService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/mates")
 public class MateController {
 
-  private final MateService service;
+  private final MateCommandService commandService;
+  private final MateQueryService queryService;
 
   /** 메이트 신청 */
   @PostMapping("/{receiverId}")
   public ResponseEntity<Void> applyMate(
       @PathVariable final long receiverId, @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.service.apply(userDetails.getId(), receiverId);
+    this.commandService.apply(userDetails.getId(), receiverId);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -29,7 +31,7 @@ public class MateController {
   @PostMapping("/{mateId}/accept")
   public ResponseEntity<Void> acceptMate(
       @PathVariable final long mateId, @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.service.accept(userDetails.getId(), mateId);
+    this.commandService.accept(userDetails.getId(), mateId);
     return ResponseEntity.ok().build();
   }
 
@@ -37,7 +39,7 @@ public class MateController {
   @DeleteMapping("/{mateId}")
   public ResponseEntity<Void> unmate(
       @PathVariable final long mateId, @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.service.unmate(userDetails.getId(), mateId);
+    this.commandService.unmate(userDetails.getId(), mateId);
     return ResponseEntity.ok().build();
   }
 
@@ -45,6 +47,12 @@ public class MateController {
   @GetMapping("/me")
   public ResponseEntity<BaseResponse<MateInfoResponse>> getMyMate(
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    return ResponseEntity.ok().build();
+    MateInfoResponse response =
+        this.queryService
+            .findCurrentMateInfo(userDetails.getUser())
+            .map(MateInfoResponse::from)
+            .orElse(null);
+
+    return ResponseEntity.ok(BaseResponse.from(response));
   }
 }

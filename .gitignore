@@ -39,7 +39,6 @@ out/
 .vscode/
 
 ### Property ###
-/src/**/*.properties
 *.key
 *.p12
 *.pem
@@ -56,9 +55,6 @@ out/
 
 ### Querydsl ###
 src/generated/
-
-### OpenAPI ###
-docs/**/schemas.yaml
 
 ### Properties ###
 **/main/resources/certificates

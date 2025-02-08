@@ -6,6 +6,7 @@ import io.ourfit.api.infra.persistence.WorkoutRepository;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class WorkoutServiceImpl implements WorkoutService {
   private final WorkoutRepository repository;
 
   @Override
+  @Cacheable(value = "WORKOUT_TYPES", key = "0", unless = "#result.isEmpty()")
   @Transactional(readOnly = true)
   public List<Workout> findAll() {
     return this.repository.findAll();

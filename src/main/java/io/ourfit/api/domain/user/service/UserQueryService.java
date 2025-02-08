@@ -8,7 +8,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserQueryService {
 
-  Page<UserInfoDto> findMateCandidates(MatesCandidateSearchDto searchDto, Pageable pageable);
+  Page<UserInfoDto> findMateCandidates(
+      User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable);
 
   Optional<User> findById(final long id);
 
@@ -17,4 +18,6 @@ public interface UserQueryService {
   Optional<User> findByOAuthId(String oAuthId);
 
   boolean existsByOAuthId(String oAuthId);
+
+  boolean existsByNickname(String nickname);
 }

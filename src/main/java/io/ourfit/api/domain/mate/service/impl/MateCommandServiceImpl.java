@@ -2,37 +2,43 @@ package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.entity.MateHistory;
-import io.ourfit.api.domain.mate.service.MateService;
+import io.ourfit.api.domain.mate.service.MateCommandService;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.domain.workout.data.enums.MateActionType;
-import io.ourfit.api.domain.workout.data.enums.MateStatusType;
+import io.ourfit.api.global.data.AbstractEntityFinder;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.infra.persistence.MateHistoryRepository;
 import io.ourfit.api.infra.persistence.MateQRepository;
 import io.ourfit.api.infra.persistence.MateRepository;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
-public class MateServiceImpl implements MateService {
+public class MateCommandServiceImpl extends AbstractEntityFinder<Mate, Long>
+    implements MateCommandService {
 
-  private final MateRepository repository;
   private final MateQRepository qRepository;
   private final MateHistoryRepository historyRepository;
   private final MateWorkoutService workoutService;
   private final UserQueryService userQueryService;
+
+  public MateCommandServiceImpl(
+      MateRepository repository,
+      MateQRepository qRepository,
+      MateHistoryRepository historyRepository,
+      MateWorkoutService workoutService,
+      UserQueryService userQueryService) {
+    super(repository);
+    this.qRepository = qRepository;
+    this.historyRepository = historyRepository;
+    this.workoutService = workoutService;
+    this.userQueryService = userQueryService;
+  }
 
   @Override
   public void apply(final long meId, final long receiverId) {
@@ -74,33 +80,5 @@ public class MateServiceImpl implements MateService {
           this.historyRepository.save(MateHistory.from(MateActionType.UNMATE, mate));
         },
         mate -> mate.canUnmate(meId));
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<Mate> findByIdAndStatus(long mateId, MateStatusType status) {
-    return this.repository.findByIdAndStatusType(mateId, status);
-  }
-
-  @SafeVarargs
-  private void ifFoundThen(
-      final long id, Consumer<Mate> presentAction, Predicate<Mate>... filters) {
-    this.repository
-        .findById(id)
-        .map(mate -> doFilters(mate, IllegalStateException::new, filters))
-        .ifPresentOrElse(
-            presentAction,
-            () -> {
-              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND);
-            });
-  }
-
-  @SafeVarargs
-  private static Mate doFilters(
-      Mate mate, Supplier<RuntimeException> exSupplier, Predicate<Mate>... filters) {
-    if (Arrays.stream(filters).anyMatch(filter -> filter.test(mate))) {
-      throw exSupplier.get();
-    }
-    return mate;
   }
 }

@@ -20,7 +20,7 @@ public @interface OpenChatUrl {
    */
   boolean required() default true;
 
-  String message() default "Invalid Kakao Open Chat URL";
+  String message() default "{io.ourfit.api.validator.constraints.OpenChatUrl.message}";
 
   Class<?>[] groups() default {};
 

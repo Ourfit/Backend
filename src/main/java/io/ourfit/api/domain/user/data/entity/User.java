@@ -13,15 +13,13 @@ import io.ourfit.api.domain.user.data.entity.enums.RoleType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.data.entity.SecuredBaseEntity;
+import io.ourfit.api.global.exception.custom.IllegalEntityStateException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.io.Serial;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
@@ -121,14 +119,19 @@ public class User extends SecuredBaseEntity {
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
 
-  @Setter
   @Builder.Default
-  @OneToMany(mappedBy = "user")
-  private List<UserFavoriteWorkout> favoriteWorkouts = new ArrayList<>();
+  @OneToMany(
+      mappedBy = "user",
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+      orphanRemoval = true)
+  private Set<UserFavoriteWorkout> favoriteWorkouts = new HashSet<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<UserFavoriteWorkoutPlace> favoriteWorkoutPlaces = new ArrayList<>();
+  @OneToMany(
+      mappedBy = "user",
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+      orphanRemoval = true)
+  private Set<UserFavoriteWorkoutPlace> favoriteWorkoutPlaces = new HashSet<>();
 
   public static User of(OAuth2UserInfo oAuth2UserInfo, UserSignUpDto signUpDto) {
     return User.builder()
@@ -168,8 +171,7 @@ public class User extends SecuredBaseEntity {
   public void updateBasicInfo(UserBasicInfoUpdateDto updateDto) {
     if (updateDto.nickname() != null) {
       if (!this.isNicknameUpdatable()) {
-        throw new IllegalStateException(
-            "Nickname can only be updated once every 30 daySinceAccepted");
+        throw new IllegalEntityStateException();
       }
       this.nickName = updateDto.nickname();
       this.nickNameUpdatedAt = LocalDateTime.now();
@@ -193,7 +195,7 @@ public class User extends SecuredBaseEntity {
       this.preferredWorkoutTime = updateDto.preferredWorkoutTime();
     }
 
-    Set<UserFavoriteWorkoutPlace> newFavoritePlaces = updateDto.toFavoriteWorkoutPlaces();
+    Set<UserFavoriteWorkoutPlace> newFavoritePlaces = updateDto.toFavoriteWorkoutPlaces(this);
     this.favoriteWorkoutPlaces.removeIf(item -> !newFavoritePlaces.contains(item));
     this.favoriteWorkoutPlaces.addAll(newFavoritePlaces);
   }
@@ -201,6 +203,11 @@ public class User extends SecuredBaseEntity {
   public void setProfile(UserProfileUpdateDto upsertDto) {
     this.introduction = upsertDto.introduction();
     this.openChatUrl = upsertDto.openChatUrl();
+  }
+
+  public void setFavoriteWorkouts(Set<UserFavoriteWorkout> favoriteWorkouts) {
+    this.favoriteWorkouts.removeIf(item -> !favoriteWorkouts.contains(item));
+    this.favoriteWorkouts.addAll(favoriteWorkouts);
   }
 
   public void delete() {

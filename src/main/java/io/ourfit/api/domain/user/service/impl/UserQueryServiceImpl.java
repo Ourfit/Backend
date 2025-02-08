@@ -23,8 +23,8 @@ public class UserQueryServiceImpl implements UserQueryService {
   @Override
   @Transactional(readOnly = true)
   public Page<UserInfoDto> findMateCandidates(
-      MatesCandidateSearchDto searchDto, Pageable pageable) {
-    return this.qRepository.findMateCandidates(searchDto, pageable);
+      User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
+    return this.qRepository.findMateCandidates(requestedUser, searchDto, pageable);
   }
 
   @Override
@@ -49,5 +49,11 @@ public class UserQueryServiceImpl implements UserQueryService {
   @Transactional(readOnly = true)
   public boolean existsByOAuthId(String oAuthId) {
     return this.repository.existsByoAuthId(oAuthId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public boolean existsByNickname(String nickname) {
+    return this.repository.existsByNickName(nickname);
   }
 }

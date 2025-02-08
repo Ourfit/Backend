@@ -27,6 +27,6 @@ public class EnumerableCollectionValidator
             value ->
                 Arrays.stream(this.enumClass.getEnumConstants())
                     .map(Enum::name)
-                    .anyMatch(name -> name.equalsIgnoreCase(value)));
+                    .anyMatch(name -> name.equals(value)));
   }
 }

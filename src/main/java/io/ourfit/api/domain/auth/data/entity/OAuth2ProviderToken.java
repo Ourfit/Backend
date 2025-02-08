@@ -38,7 +38,7 @@ public class OAuth2ProviderToken {
         .idToken(providerTokenDto.getIdToken())
         .accessTokenExpiresIn(providerTokenDto.getAccessTokenExpiresIn())
         .refreshTokenExpiresIn(providerTokenDto.getRefreshTokenExpiresIn())
-        .timeToLive(providerTokenDto.getAccessTokenExpiresIn().longValue())
+        .timeToLive(providerTokenDto.getRefreshTokenExpiresIn().longValue())
         .build();
   }
 }

@@ -27,7 +27,6 @@ public class MateWorkout extends SecuredBaseEntity {
 
   @MapsId
   @OneToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "mate_id", nullable = false)
   private Mate mate;
 
   @Column(name = "place_name", length = 100)

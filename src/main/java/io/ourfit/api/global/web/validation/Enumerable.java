@@ -8,6 +8,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.hibernate.validator.constraints.Range;
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -26,9 +27,10 @@ public @interface Enumerable {
    *
    * @return 필수 여부
    */
+  @Range
   boolean required() default true;
 
-  String message() default "Invalid value for this enum type";
+  String message() default "{io.ourfit.api.validator.constraints.Enumerable.message}";
 
   Class<?>[] groups() default {};
 

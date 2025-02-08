@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
+import io.ourfit.api.global.jwt.TokenException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -34,6 +35,7 @@ public class JwtProviderImpl implements JwtProvider {
     final String refreshToken = this.createRefreshToken(user.getId(), now);
 
     return OurfitToken.builder()
+        .grantType(BEARER_PREFIX)
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .accessTokenExpiresIn(ACCESS_TOKEN_EXPIRATION.toSeconds())
@@ -43,8 +45,7 @@ public class JwtProviderImpl implements JwtProvider {
 
   @Override
   public OurfitToken renew(String oldAccessToken, String refreshToken) {
-    Claims claims =
-        this.parse(refreshToken).orElseThrow(() -> new RuntimeException("Claims not found"));
+    Claims claims = this.parse(refreshToken).orElseThrow(TokenException::new);
 
     // Validations here...
 

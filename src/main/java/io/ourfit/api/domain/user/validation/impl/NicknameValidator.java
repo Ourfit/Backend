@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class NicknameValidator extends AbstractConstraintValidator<Nickname, String> {
 
-  private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[가-힣]{1,12}$");
+  public static final Pattern NICKNAME_PATTERN = Pattern.compile("^[가-힣]{1,12}$");
 
   @Override
   public void initialize(Nickname constraintAnnotation) {

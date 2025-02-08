@@ -1,10 +1,6 @@
 package io.ourfit.api.domain.mate.service;
 
-import io.ourfit.api.domain.mate.data.entity.Mate;
-import io.ourfit.api.domain.workout.data.enums.MateStatusType;
-import java.util.Optional;
-
-public interface MateService {
+public interface MateCommandService {
 
   /**
    * 메이트 신청
@@ -29,6 +25,4 @@ public interface MateService {
    * @param meId 해제를 수행하는 사용자 ID
    */
   void unmate(long mateId, long meId);
-
-  Optional<Mate> findByIdAndStatus(long mateId, MateStatusType status);
 }

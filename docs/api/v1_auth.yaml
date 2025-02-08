@@ -102,7 +102,7 @@ components:
                 description: "유효한 갱신 토큰"
   responses:
     OurfitToken:
-      description: "JWT 토큰 정보"
+      description: "가입 또는 로그인 성공 후, 발급된 JWT 토큰 정보"
       content:
         application/json:
           schema:

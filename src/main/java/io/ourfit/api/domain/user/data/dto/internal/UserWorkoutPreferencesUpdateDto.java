@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.user.data.dto.internal;
 
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkoutPlace;
 import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import java.util.List;
@@ -18,9 +19,9 @@ public record UserWorkoutPreferencesUpdateDto(
     Set<String> favoriteWorkouts,
     List<UserFavoritePlacesUpsertDto> favoritePlaces) {
 
-  public Set<UserFavoriteWorkoutPlace> toFavoriteWorkoutPlaces() {
+  public Set<UserFavoriteWorkoutPlace> toFavoriteWorkoutPlaces(User user) {
     return favoritePlaces.stream()
-        .map(place -> UserFavoriteWorkoutPlace.of(null, place))
+        .map(place -> UserFavoriteWorkoutPlace.of(user, place))
         .collect(Collectors.toSet());
   }
 }

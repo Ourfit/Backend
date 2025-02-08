@@ -1,12 +1,17 @@
 package io.ourfit.api.domain.user.controller;
 
+import io.ourfit.api.domain.user.data.dto.internal.MateCandidateSearchDto;
 import io.ourfit.api.domain.user.data.dto.request.*;
 import io.ourfit.api.domain.user.data.dto.response.UserInfoResponse;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.exception.ApiExceptionType;
+import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.global.jwt.JwtProvider;
+import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
@@ -26,16 +31,19 @@ public class UserController {
 
   private final UserQueryService queryService;
   private final UserCommandService commandService;
+  private final JwtProvider jwtProvider;
 
   /** 메이트 관련 사용자 목록 조회 */
   @GetMapping("/mates")
   public ResponseEntity<BaseResponse<Page<UserInfoResponse>>> getUsers(
-      UserSearchRequest request,
+      MateCandidateSearchRequest request,
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    Page<UserInfoResponse> response =
+    var currentUser = userDetails.getUser();
+    var response =
         this.queryService
-            .findMateCandidates(request.toDto(userDetails.getUser()), pageable)
+            .findMateCandidates(
+                currentUser, MateCandidateSearchDto.fromRequest(request, currentUser), pageable)
             .map(UserInfoResponse::fromBasic);
 
     return ResponseEntity.ok(BaseResponse.from(response));
@@ -64,6 +72,9 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyBasicInfo(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserBasicInfoUpdateRequest request) {
+    if (request == null || request.isEmpty()) {
+      throw new InvalidParameterException(ApiExceptionType.RESOURCE_IDENTICAL);
+    }
     this.commandService.updateBasicInfo(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
@@ -98,9 +109,11 @@ public class UserController {
   /** 회원 가입 */
   @PublicApi
   @PostMapping
-  public ResponseEntity<Void> create(@RequestBody @Valid UserSignUpRequest request) {
-    this.commandService.save(request.toDto());
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+  public ResponseEntity<BaseResponse<OurfitToken>> create(
+      @RequestBody @Valid UserSignUpRequest request) {
+    User user = this.commandService.save(request.toDto());
+    OurfitToken ourfitToken = this.jwtProvider.create(user);
+    return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.from(ourfitToken));
   }
 
   /** 회원 탈퇴 */

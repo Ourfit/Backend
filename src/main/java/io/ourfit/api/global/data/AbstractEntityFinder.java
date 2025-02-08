@@ -9,14 +9,11 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
-public class DefaultEntityFinder<T extends BaseEntity, ID>
-    implements EntityFinder<T, ID> {
+public class AbstractEntityFinder<T extends BaseEntity, ID> implements EntityFinder<T, ID> {
 
-  private final JpaRepository<T, ID> repository;
+  protected final JpaRepository<T, ID> repository;
 
   @Override
   @SafeVarargs

@@ -20,7 +20,7 @@ public @interface Nickname {
    */
   boolean required() default true;
 
-  String message() default "Nickname is not valid";
+  String message() default "{io.ourfit.api.validator.constraints.Nickname.message}";
 
   Class<?>[] groups() default {};
 

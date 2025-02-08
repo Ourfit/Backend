@@ -12,4 +12,8 @@ public class InvalidParameterException extends OurfitApiException {
     super(ApiExceptionType.INVALID_PARAMETER);
     log.debug(message);
   }
+
+  public InvalidParameterException(ApiExceptionType apiExceptionType) {
+    super(apiExceptionType);
+  }
 }

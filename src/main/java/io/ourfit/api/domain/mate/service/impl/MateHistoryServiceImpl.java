@@ -2,6 +2,7 @@ package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.dto.internal.MateHistoryDto;
 import io.ourfit.api.domain.mate.service.MateHistoryService;
+import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.infra.persistence.MateHistoryQRepository;
 import io.ourfit.api.infra.persistence.MateHistoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class MateHistoryServiceImpl implements MateHistoryService {
         .ifPresentOrElse(
             history -> history.markAsRead(userId),
             () -> {
-              throw new IllegalArgumentException("해당 알림이 존재하지 않습니다.");
+              throw new NoSuchEntityException();
             });
   }
 }

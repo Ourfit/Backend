@@ -96,9 +96,9 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .permitAll())
-        //        .addFilterBefore(
-        //            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
-        //        .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
+        .addFilterBefore(
+            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .build();
   }
 

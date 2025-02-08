@@ -2,6 +2,7 @@ package io.ourfit.api.domain.mate.data.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.ourfit.api.global.web.validation.Enumerable;
+import jakarta.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
@@ -15,5 +16,10 @@ import java.util.Set;
  */
 public record MateWorkoutTimeUpsertRequest(
     @Enumerable(type = DayOfWeek.class) Set<String> workoutDays,
-    @JsonFormat(pattern = "HH:mm:ss") LocalTime startAt,
-    @JsonFormat(pattern = "HH:mm:ss") LocalTime endAt) {}
+    @NotNull @JsonFormat(pattern = "HH:mm:ss") LocalTime startAt,
+    @NotNull @JsonFormat(pattern = "HH:mm:ss") LocalTime endAt) {
+
+  public boolean isTimeSettingInValid() {
+    return this.startAt.isAfter(this.endAt);
+  }
+}

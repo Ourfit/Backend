@@ -10,65 +10,70 @@ import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.workout.service.WorkoutService;
-import io.ourfit.api.global.data.EntityFinder;
+import io.ourfit.api.global.data.AbstractEntityFinder;
 import io.ourfit.api.infra.aws.s3.OurfitS3Client;
 import io.ourfit.api.infra.persistence.UserRepository;
-import java.util.List;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
-public class UserCommandServiceImpl implements UserCommandService {
+public class UserCommandServiceImpl extends AbstractEntityFinder<User, Long>
+    implements UserCommandService {
 
-  private final UserRepository repository;
-  private final EntityFinder<User, Long> userEntityFinder;
   private final OAuth2Service oAuth2Service;
   private final WorkoutService workoutService;
   private final OurfitS3Client s3Client;
 
+  public UserCommandServiceImpl(
+      UserRepository repository,
+      OAuth2Service oAuth2Service,
+      WorkoutService workoutService,
+      OurfitS3Client s3Client) {
+    super(repository);
+    this.oAuth2Service = oAuth2Service;
+    this.workoutService = workoutService;
+    this.s3Client = s3Client;
+  }
+
   @Override
-  public void save(UserSignUpDto signUpDto) {
+  public User save(UserSignUpDto signUpDto) {
     OAuth2UserInfo oAuth2UserInfo = this.oAuth2Service.getUserInfo(signUpDto.oAuthId());
     final User user = this.repository.save(User.of(oAuth2UserInfo, signUpDto));
     // 사용자 등록 후, 선호 운동 종목 등록
-    List<UserFavoriteWorkout> favoriteWorkouts =
-        this.buildFavoriteWorkouts(user, signUpDto.favoriteWorkouts());
-    user.setFavoriteWorkouts(favoriteWorkouts);
+    user.setFavoriteWorkouts(this.buildFavoriteWorkouts(user, signUpDto.favoriteWorkouts()));
+    return user;
   }
 
   @Override
   public void updateBasicInfo(final long id, UserBasicInfoUpdateDto updateDto) {
-    this.userEntityFinder.ifFoundThen(id, user -> user.updateBasicInfo(updateDto));
+    this.ifFoundThen(id, user -> user.updateBasicInfo(updateDto));
   }
 
   @Override
   public void updateWorkoutPreferences(final long id, UserWorkoutPreferencesUpdateDto updateDto) {
-    this.userEntityFinder.ifFoundThen(
+    this.ifFoundThen(
         id,
         user -> {
           user.updateWorkoutPreferences(updateDto);
-
           if (!updateDto.favoriteWorkouts().isEmpty()) {
-            List<UserFavoriteWorkout> favoriteWorkouts =
-                this.buildFavoriteWorkouts(user, updateDto.favoriteWorkouts());
-            user.setFavoriteWorkouts(favoriteWorkouts);
+            user.setFavoriteWorkouts(
+                this.buildFavoriteWorkouts(user, updateDto.favoriteWorkouts()));
           }
         });
   }
 
   @Override
-  public void updateProfile(long id, UserProfileUpdateDto updateDto) {
-    this.userEntityFinder.ifFoundThen(id, user -> user.setProfile(updateDto));
+  public void updateProfile(final long id, UserProfileUpdateDto updateDto) {
+    this.ifFoundThen(id, user -> user.setProfile(updateDto));
   }
 
   @Override
-  public void updateProfileImage(long id, MultipartFile profileImage) {
-    this.userEntityFinder.ifFoundThen(
+  public void updateProfileImage(final long id, MultipartFile profileImage) {
+    this.ifFoundThen(
         id,
         user -> {
           final String profileImageUrl = this.s3Client.upload("버킷/이미지/경로", profileImage);
@@ -77,8 +82,8 @@ public class UserCommandServiceImpl implements UserCommandService {
   }
 
   @Override
-  public void delete(long id) {
-    this.userEntityFinder.ifFoundThen(
+  public void delete(final long id) {
+    this.ifFoundThen(
         id,
         user -> {
           this.oAuth2Service.withdrawal(user.getOAuthId());
@@ -86,9 +91,9 @@ public class UserCommandServiceImpl implements UserCommandService {
         });
   }
 
-  private List<UserFavoriteWorkout> buildFavoriteWorkouts(User user, Set<String> favoriteWorkouts) {
+  private Set<UserFavoriteWorkout> buildFavoriteWorkouts(User user, Set<String> favoriteWorkouts) {
     return this.workoutService.findAllByCodeIn(favoriteWorkouts).stream()
         .map(workout -> UserFavoriteWorkout.of(user, workout))
-        .toList();
+        .collect(Collectors.toUnmodifiableSet());
   }
 }

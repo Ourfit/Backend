@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.mate.data.entity;
 
+import io.ourfit.api.domain.challenge.data.entity.Challenge;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.global.data.entity.BaseEntity;
@@ -7,6 +8,8 @@ import jakarta.persistence.*;
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
 @Entity
@@ -47,6 +50,14 @@ public class Mate extends BaseEntity {
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
 
+  @Builder.Default
+  @OneToMany(
+      mappedBy = "mate",
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.MERGE, CascadeType.MERGE},
+      orphanRemoval = true)
+  private Set<Challenge> challenges = new HashSet<>();
+
   public static Mate of(User me, User myMate) {
     return Mate.builder().me(me).myMate(myMate).statusType(MateStatusType.PENDING).build();
   }
@@ -74,9 +85,11 @@ public class Mate extends BaseEntity {
     if (this.acceptedAt == null) {
       return -1;
     }
-    if (this.statusType == MateStatusType.UNMATED) {
-      return ChronoUnit.DAYS.between(this.acceptedAt, this.deletedAt);
-    }
-    return ChronoUnit.DAYS.between(this.acceptedAt, LocalDateTime.now());
+
+    LocalDateTime endDate =
+        this.statusType == MateStatusType.UNMATED ? this.deletedAt : LocalDateTime.now();
+    final long daysBetween = ChronoUnit.DAYS.between(this.acceptedAt, endDate);
+
+    return Math.max(1, daysBetween + 1); // 수락한 날부터 1일로 계산
   }
 }

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
  */
 public record MateHistoryDto(
     long id,
+    long mateId,
     MateActionType actionType,
     boolean isRead,
     long actorId,

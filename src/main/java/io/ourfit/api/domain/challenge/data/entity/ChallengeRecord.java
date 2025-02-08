@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.challenge.data.entity;
 
-import io.ourfit.api.domain.challenge.data.dto.internal.NewChallengeRecordDto;
+import io.ourfit.api.domain.challenge.data.dto.internal.ChallengeRecordAsDoneDto;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
@@ -27,6 +27,7 @@ public class ChallengeRecord extends BaseEntity {
   @JoinColumn(name = "challenge_id", nullable = false)
   private Challenge challenge;
 
+  @Setter
   @Column(name = "record_date", nullable = false)
   private LocalDate recordDate;
 
@@ -34,22 +35,37 @@ public class ChallengeRecord extends BaseEntity {
   @Column(name = "is_completed")
   private Boolean isCompleted;
 
-  @ColumnDefault("'2'")
-  @Column(name = "intensity_level", columnDefinition = "tinyint unsinged")
+  @Column(name = "intensity_level", columnDefinition = "tinyint unsigned")
   private Short intensityLevel;
 
   @Lob
   @Column(name = "note", columnDefinition = "text")
   private String note;
 
-  public static ChallengeRecord of(
-      Challenge challenge, NewChallengeRecordDto newChallengeRecordDto) {
+  public static ChallengeRecord ofNew(Challenge challenge, LocalDate recordDate) {
     return ChallengeRecord.builder()
         .challenge(challenge)
-        .recordDate(LocalDate.now())
-        .isCompleted(true)
-        .intensityLevel(newChallengeRecordDto.intensityLevel())
+        .recordDate(recordDate)
+        .isCompleted(false)
+        .intensityLevel(null)
         .note(null)
         .build();
+  }
+
+  public void markAsDone(ChallengeRecordAsDoneDto recordDto) {
+    this.isCompleted = true;
+    this.intensityLevel = recordDto.intensityLevel();
+  }
+
+  public boolean isChallengeDay() {
+    return this.recordDate.equals(LocalDate.now());
+  }
+
+  public boolean isDone() {
+    return this.isCompleted;
+  }
+
+  public boolean isNotDone() {
+    return !this.isCompleted;
   }
 }

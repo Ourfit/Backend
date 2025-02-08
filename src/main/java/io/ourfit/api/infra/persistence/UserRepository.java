@@ -15,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findByoAuthId(String oAuthId);
 
   boolean existsByoAuthId(String oAuthId);
+
+  boolean existsByNickName(String nickname);
 }

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum ApiExceptionType {
   BAD_REQUEST(400, "Bad Request", 400000),
   INVALID_PARAMETER(400, "Bad Request: Required parameters are invalid or missing.", 400001),
+  INVALID_DATE_FORMAT(400, "Bad Request: Invalid date format.", 400002),
+  INVALID_DATE_RANGE(400, "Bad Request: Invalid date range.", 400003),
 
   UNAUTHORIZED(401, "Unauthorized", 401000),
   INVALID_TOKEN(401, "Unauthorized: Invalid JWT (expired or not matched)", 401001),

@@ -16,7 +16,7 @@ paths:
         $ref: "#/components/requestBodies/UserSignUpRequest"
       responses:
         201:
-          description: "회원가입 성공"
+          $ref: "v1_auth.yaml#/components/responses/OurfitToken"
   /v1/users/mates:
     get:
       summary: 메이트 탐색 API
@@ -162,6 +162,35 @@ paths:
       responses:
         200:
           description: "사용자 운동 선호 정보 수정 성공"
+  /v1/users/check-availability:
+    get:
+      summary: 사용자 정보 중복 확인 API
+      description: |
+        사용자 정보 중 특정 필드(닉네임, 이메일, OAuth ID 등)의 중복 여부를 확인할 수 있습니다.
+        - 확인 가능한 필드: 닉네임
+      parameters:
+        - name: field
+          in: query
+          required: true
+          schema:
+                type: string
+                enum: [ "nickname" ]
+                example: "nickname"
+                description: "중복 여부를 확인 할 필드"
+        - name: value
+          in: query
+          required: true
+          schema:
+              type: string
+              example: "수영장영수"
+              description: "중복 여부를 확인 할 값"
+      responses:
+        204:
+          description: "사용 가능한 값 (중복되지 않음)"
+        400:
+          description: "잘못된 형식의 값 (유효성 검사 실패)"
+        409:
+          description: "형식은 유효하지만, 이미 사용 중인 값 (중복됨)"
 components:
   securitySchemes:
     bearerAuth:

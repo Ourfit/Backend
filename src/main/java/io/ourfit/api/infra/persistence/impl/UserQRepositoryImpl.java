@@ -8,10 +8,11 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.jsonwebtoken.lang.Collections;
 import io.ourfit.api.domain.mate.data.entity.QMate;
-import io.ourfit.api.domain.user.data.dto.internal.MatesCandidateSearchDto;
+import io.ourfit.api.domain.user.data.dto.internal.MateCandidateSearchDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserFavoriteWorkoutDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserInfoDto;
 import io.ourfit.api.domain.user.data.entity.QUser;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
 import io.ourfit.api.domain.workout.data.entity.QWorkout;
 import io.ourfit.api.domain.workout.data.enums.MateStatusType;
@@ -33,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserQRepositoryImpl implements UserQRepository {
 
   private static final QUser qUser = QUser.user;
-  private static final QUserFavoriteWorkout favoriteWorkout =
+  private static final QUserFavoriteWorkout qFavoriteWorkout =
       QUserFavoriteWorkout.userFavoriteWorkout;
   private static final QWorkout qWorkout = QWorkout.workout;
   private static final QMate qMate = QMate.mate;
@@ -43,18 +44,20 @@ public class UserQRepositoryImpl implements UserQRepository {
   @Override
   @Transactional(readOnly = true)
   public Page<UserInfoDto> findMateCandidates(
-      MatesCandidateSearchDto searchDto, Pageable pageable) {
+      User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
     List<UserInfoDto> contents =
         QueryUtils.toList(
             this.queryFactory
                 .from(qUser)
-                .leftJoin(favoriteWorkout)
-                .on(favoriteWorkout.user.eq(qUser))
+                .leftJoin(qFavoriteWorkout)
+                .on(qFavoriteWorkout.user.eq(qUser))
                 .leftJoin(qWorkout)
-                .on(favoriteWorkout.workout.eq(qWorkout))
+                .on(qFavoriteWorkout.workout.eq(qWorkout))
                 .where(
-                    this.region3Eqauls(searchDto),
+                    qUser.ne(requestedUser),
                     this.isNotMatchedWithMate(),
+                    this.region3Eqauls(searchDto),
+                    this.genderEquals(searchDto),
                     this.preferredTimesIn(searchDto),
                     this.workoutsIn(searchDto))
                 .transform(
@@ -73,8 +76,8 @@ public class UserQRepositoryImpl implements UserQRepository {
                                 list(
                                     Projections.constructor(
                                         UserFavoriteWorkoutDto.class,
-                                        qWorkout.code,
-                                        qWorkout.name))))));
+                                        qFavoriteWorkout.workout.code,
+                                        qFavoriteWorkout.workout.name))))));
 
     final long totalCount =
         Optional.of(this.queryFactory)
@@ -83,19 +86,21 @@ public class UserQRepositoryImpl implements UserQRepository {
                     query
                         .select(qUser.count())
                         .from(qUser)
+                        .leftJoin(qFavoriteWorkout)
+                        .on(qFavoriteWorkout.user.eq(qUser))
+                        .leftJoin(qWorkout)
+                        .on(qFavoriteWorkout.workout.eq(qWorkout))
                         .where(
-                            this.region3Eqauls(searchDto),
+                            qUser.ne(requestedUser),
                             this.isNotMatchedWithMate(),
+                            this.region3Eqauls(searchDto),
+                            this.genderEquals(searchDto),
                             this.preferredTimesIn(searchDto),
                             this.workoutsIn(searchDto))
                         .fetchOne())
             .orElse(0L);
 
     return new PageImpl<>(contents, pageable, totalCount);
-  }
-
-  private BooleanExpression region3Eqauls(MatesCandidateSearchDto searchDto) {
-    return qUser.region3.eq(searchDto.region3());
   }
 
   private BooleanExpression isNotMatchedWithMate() {
@@ -107,7 +112,18 @@ public class UserQRepositoryImpl implements UserQRepository {
         .notExists();
   }
 
-  private BooleanExpression preferredTimesIn(MatesCandidateSearchDto searchDto) {
+  private BooleanExpression region3Eqauls(MateCandidateSearchDto searchDto) {
+    return qUser.region3.eq(searchDto.region3());
+  }
+
+  private BooleanExpression genderEquals(MateCandidateSearchDto searchDto) {
+    if (searchDto.gender() == null) {
+      return null;
+    }
+    return qUser.genderType.eq(searchDto.gender());
+  }
+
+  private BooleanExpression preferredTimesIn(MateCandidateSearchDto searchDto) {
     List<TimePrefrenceType> preferredTimes = searchDto.preferredTimes();
     if (Collections.isEmpty(preferredTimes)) {
       return null;
@@ -115,11 +131,16 @@ public class UserQRepositoryImpl implements UserQRepository {
     return qUser.preferredWorkoutTime.in(preferredTimes);
   }
 
-  private BooleanExpression workoutsIn(MatesCandidateSearchDto searchDto) {
+  private BooleanExpression workoutsIn(MateCandidateSearchDto searchDto) {
     Set<String> workoutCodes = searchDto.workoutTypes();
     if (Collections.isEmpty(workoutCodes)) {
       return null;
     }
-    return favoriteWorkout.workout.code.in(workoutCodes);
+    return qUser.id.in(
+        JPAExpressions.select(qFavoriteWorkout.user.id)
+            .from(qFavoriteWorkout)
+            .join(qWorkout)
+            .on(qFavoriteWorkout.workout.eq(qWorkout))
+            .where(qWorkout.code.in(searchDto.workoutTypes())));
   }
 }

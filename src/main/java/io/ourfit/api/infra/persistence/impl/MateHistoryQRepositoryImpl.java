@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.ourfit.api.domain.mate.data.dto.internal.MateHistoryDto;
+import io.ourfit.api.domain.mate.data.entity.QMate;
 import io.ourfit.api.domain.mate.data.entity.QMateHistory;
 import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.infra.persistence.MateHistoryQRepository;
@@ -25,8 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
 
   private static final QMateHistory qMateHistory = QMateHistory.mateHistory;
-  private static final QUser qActor = QUser.user;
-  private static final QUser qTarget = QUser.user;
+  private static final QMate qMate = QMate.mate;
+  private static final QUser qActor = new QUser("actor");
+  private static final QUser qTarget = new QUser("target");
 
   private final JPAQueryFactory queryFactory;
 
@@ -39,6 +41,7 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
                 Projections.constructor(
                     MateHistoryDto.class,
                     qMateHistory.id,
+                    qMate.id,
                     qMateHistory.actionType,
                     isRead(userId),
                     qActor.id,
@@ -47,6 +50,7 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
                     qTarget.nickName,
                     qMateHistory.createdAt))
             .from(qMateHistory)
+            .innerJoin(qMateHistory.mate, qMate)
             .innerJoin(qMateHistory.actor, qActor)
             .innerJoin(qMateHistory.target, qTarget)
             .where(qActor.id.eq(userId).or(qTarget.id.eq(userId)))

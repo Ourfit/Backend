@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.ourfit.api.global.data.RedisSerializable;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -55,11 +56,13 @@ public class CacheConfig {
         .addMixIn(RedisSerializable.class, RedisSerializableMixin.class)
         .activateDefaultTyping(
             BasicPolymorphicTypeValidator.builder()
-                .allowIfBaseType(RedisSerializable.class)
+                .allowIfBaseType(Object.class)
+                .allowIfBaseType("java.util")
                 .build(),
-            ObjectMapper.DefaultTyping.NON_FINAL,
+            ObjectMapper.DefaultTyping.NON_FINAL_AND_ENUMS,
             JsonTypeInfo.As.PROPERTY)
-        .build();
+        .build()
+        .registerModule(new JavaTimeModule());
   }
 
   /** 캐시에 저장되는 객체들의 타입 정보를 JSON에 포함시키기 위한 Jackson Mixin 클래스 */
