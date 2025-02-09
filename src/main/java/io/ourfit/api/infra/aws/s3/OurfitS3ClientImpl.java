@@ -3,7 +3,7 @@ package io.ourfit.api.infra.aws.s3;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.infra.aws.AbstractAwsClient;
 import io.ourfit.api.infra.aws.config.AwsProperties;
-import io.ourfit.api.infra.exception.FileOperationException;
+import io.ourfit.api.infra.aws.exception.FileOperationException;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;

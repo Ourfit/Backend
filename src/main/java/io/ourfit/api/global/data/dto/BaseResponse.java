@@ -13,7 +13,7 @@ public record BaseResponse<T>(String message, T data) {
     return new BaseResponse<>("OK", null);
   }
 
-  public static <T> BaseResponse<T> of(final T data) {
+  public static <T> BaseResponse<T> from(final T data) {
     return new BaseResponse<>("OK", data);
   }
 }

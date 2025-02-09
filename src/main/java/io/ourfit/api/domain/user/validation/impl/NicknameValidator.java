@@ -1,13 +1,13 @@
 package io.ourfit.api.domain.user.validation.impl;
 
 import io.ourfit.api.domain.user.validation.Nickname;
-import io.ourfit.api.global.validation.AbstractConstraintValidator;
+import io.ourfit.api.global.web.validation.AbstractConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
 public class NicknameValidator extends AbstractConstraintValidator<Nickname, String> {
 
-  private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[가-힣]{1,12}$");
+  public static final Pattern NICKNAME_PATTERN = Pattern.compile("^[가-힣]{1,12}$");
 
   @Override
   public void initialize(Nickname constraintAnnotation) {

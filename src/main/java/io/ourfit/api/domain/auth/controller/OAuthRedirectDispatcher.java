@@ -3,14 +3,18 @@ package io.ourfit.api.domain.auth.controller;
 import io.jsonwebtoken.lang.Assert;
 import io.ourfit.api.domain.auth.template.OAuth2TemplateFactory;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
-import io.ourfit.api.domain.user.service.UserService;
+import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.security.data.annotation.PublicApi;
+import io.ourfit.api.global.security.data.enums.AccessLevel;
+import io.ourfit.api.global.security.data.enums.KeyValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
 
+@PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/oauth2/{provider}/redirect")
@@ -23,7 +27,7 @@ public class OAuthRedirectDispatcher {
   private static final String STATUS_NEW = "new";
 
   private final OAuth2TemplateFactory templateFactory;
-  private final UserService userService;
+  private final UserQueryService userQueryService;
 
   @GetMapping
   public ResponseEntity<BaseResponse<Void>> handleOAuth2Callback(
@@ -41,6 +45,6 @@ public class OAuthRedirectDispatcher {
   }
 
   private String getRegistrationStatus(String oAuthId) {
-    return this.userService.existsByOAuthId(oAuthId) ? STATUS_REGISTERED : STATUS_NEW;
+    return this.userQueryService.existsByOAuthId(oAuthId) ? STATUS_REGISTERED : STATUS_NEW;
   }
 }

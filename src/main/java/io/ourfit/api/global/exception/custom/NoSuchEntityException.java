@@ -14,4 +14,8 @@ public class NoSuchEntityException extends OurfitApiException {
   public NoSuchEntityException(ApiExceptionType apiExceptionType) {
     super(apiExceptionType);
   }
+
+  public NoSuchEntityException() {
+    this(ApiExceptionType.NOT_FOUND);
+  }
 }

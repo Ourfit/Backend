@@ -20,7 +20,7 @@ public @interface Age {
    */
   boolean required() default true;
 
-  String message() default "Age must be between 15 and 70";
+  String message() default "{io.ourfit.api.validator.constraints.Age.message}";
 
   Class<?>[] groups() default {};
 

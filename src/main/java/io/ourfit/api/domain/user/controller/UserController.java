@@ -1,11 +1,18 @@
 package io.ourfit.api.domain.user.controller;
 
+import io.ourfit.api.domain.user.data.dto.internal.MateCandidateSearchDto;
 import io.ourfit.api.domain.user.data.dto.request.*;
 import io.ourfit.api.domain.user.data.dto.response.UserInfoResponse;
-import io.ourfit.api.domain.user.service.UserService;
+import io.ourfit.api.domain.user.data.entity.User;
+import io.ourfit.api.domain.user.service.UserCommandService;
+import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.exception.ApiExceptionType;
+import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.global.jwt.JwtProvider;
+import io.ourfit.api.global.jwt.OurfitToken;
+import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,30 +29,35 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/v1/users")
 public class UserController {
 
-  private final UserService userService;
+  private final UserQueryService queryService;
+  private final UserCommandService commandService;
+  private final JwtProvider jwtProvider;
 
-  @GetMapping
+  /** 메이트 관련 사용자 목록 조회 */
+  @GetMapping("/mates")
   public ResponseEntity<BaseResponse<Page<UserInfoResponse>>> getUsers(
-      UserSearchRequest request,
+      MateCandidateSearchRequest request,
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    Page<UserInfoResponse> response =
-        this.userService
-            .findAllByConditions(request.toDto(userDetails.getUser()), pageable)
+    var currentUser = userDetails.getUser();
+    var response =
+        this.queryService
+            .findMateCandidates(
+                currentUser, MateCandidateSearchDto.fromRequest(request, currentUser), pageable)
             .map(UserInfoResponse::fromBasic);
 
-    return ResponseEntity.ok(BaseResponse.of(response));
+    return ResponseEntity.ok(BaseResponse.from(response));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<BaseResponse<UserInfoResponse>> getUser(@PathVariable final long id) {
     UserInfoResponse userInfoResponse =
-        this.userService
+        this.queryService
             .findByIdWithFavorites(id)
             .map(UserInfoResponse::fromDetailed)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 
-    return ResponseEntity.ok(BaseResponse.of(userInfoResponse));
+    return ResponseEntity.ok(BaseResponse.from(userInfoResponse));
   }
 
   /** 내 정보 조회 */
@@ -60,7 +72,10 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyBasicInfo(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserBasicInfoUpdateRequest request) {
-    this.userService.updateBasicInfo(userDetails.getId(), request.toDto());
+    if (request == null || request.isEmpty()) {
+      throw new InvalidParameterException(ApiExceptionType.RESOURCE_IDENTICAL);
+    }
+    this.commandService.updateBasicInfo(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
@@ -69,7 +84,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyProfile(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserProfileUpdateRequest request) {
-    this.userService.updateProfile(userDetails.getId(), request.toDto());
+    this.commandService.updateProfile(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
@@ -78,7 +93,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyProfileImage(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestPart("profileImage") MultipartFile profileImage) {
-    this.userService.updateProfileImage(userDetails.getId(), profileImage);
+    this.commandService.updateProfileImage(userDetails.getId(), profileImage);
     return ResponseEntity.ok().build();
   }
 
@@ -87,21 +102,24 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> updateMyWorkoutPreferences(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserWorkoutPreferencesUpdateRequest request) {
-    this.userService.updateWorkoutPreferences(userDetails.getId(), request.toDto());
+    this.commandService.updateWorkoutPreferences(userDetails.getId(), request.toDto());
     return ResponseEntity.ok().build();
   }
 
   /** 회원 가입 */
+  @PublicApi
   @PostMapping
-  public ResponseEntity<Void> create(@RequestBody @Valid UserSignUpRequest request) {
-    this.userService.save(request.toDto());
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+  public ResponseEntity<BaseResponse<OurfitToken>> create(
+      @RequestBody @Valid UserSignUpRequest request) {
+    User user = this.commandService.save(request.toDto());
+    OurfitToken ourfitToken = this.jwtProvider.create(user);
+    return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.from(ourfitToken));
   }
 
   /** 회원 탈퇴 */
   @DeleteMapping("/me")
   public ResponseEntity<Void> delete(@AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.userService.delete(userDetails.getId());
+    this.commandService.delete(userDetails.getId());
     return ResponseEntity.noContent().build();
   }
 }

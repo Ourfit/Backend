@@ -2,14 +2,17 @@ package io.ourfit.api.global.security;
 
 import static org.springframework.http.HttpMethod.*;
 
-import io.ourfit.api.global.filter.SecurityFilterFactory;
+import io.ourfit.api.global.security.filter.SecurityFilterFactory;
+import io.ourfit.api.global.security.filter.impl.PublicApiAccessControlFilter;
 import io.ourfit.api.global.security.web.AccessDeniedHandlerImpl;
 import io.ourfit.api.global.security.web.AuthEntryPointImpl;
+import io.ourfit.api.global.utils.StreamUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,15 +33,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private static final List<String> DEFAULT_PERMIT_METHODS =
-      List.of(
-          GET.name(),
-          HEAD.name(),
-          POST.name(),
-          PUT.name(),
-          PATCH.name(),
-          DELETE.name(),
-          OPTIONS.name());
+  private static final List<HttpMethod> DEFAULT_PERMIT_METHODS =
+      List.of(GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS);
 
   private final SecurityFilterFactory filterFactory;
 
@@ -64,7 +60,9 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .denyAll())
-        .addFilterAfter(this.filterFactory.jwtAuth(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
+            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .exceptionHandling(
             exception ->
                 exception
@@ -98,7 +96,9 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .permitAll())
-        .addFilterAfter(this.filterFactory.jwtAuth(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
+            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .build();
   }
 
@@ -114,7 +114,8 @@ public class SecurityConfig {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.addAllowedOriginPattern("*");
     corsConfiguration.addAllowedHeader("*");
-    corsConfiguration.setAllowedMethods(DEFAULT_PERMIT_METHODS);
+    corsConfiguration.setAllowedMethods(
+        StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));
     corsConfiguration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

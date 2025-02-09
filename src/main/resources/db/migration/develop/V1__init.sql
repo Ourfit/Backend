@@ -105,43 +105,50 @@ create table user_favorite_workout_place
 
 create table mate
 (
-    id           int unsigned auto_increment,
-    requester_id int unsigned                                                  not null comment '요청자 ID',
-    requestee_id int unsigned                                                  not null comment '요청 대상자 ID',
-    status_type  enum ('PENDING', 'MATCHED', 'CANCELED','REJECTED', 'DELETED') not null comment '메이트 상태',
-    created_at   datetime default current_timestamp comment '생성일시',
-    updated_at   datetime default current_timestamp on update current_timestamp comment '수정일시',
+    id          int unsigned auto_increment,
+    me_id       int unsigned                                                  not null comment '요청자 ID',
+    my_mate_id  int unsigned                                                  not null comment '요청 대상자 ID',
+    status_type enum ('PENDING', 'MATCHED', 'CANCELED','REJECTED', 'UNMATED') not null comment '메이트 상태',
+    accepted_at datetime default null comment '메이트 매칭 일시',
+    created_at  datetime default current_timestamp comment '생성일시',
+    updated_at  datetime default current_timestamp on update current_timestamp comment '수정일시',
+    deleted_at  datetime default null comment '삭제일시',
     primary key (id),
-    constraint fk_mate_requester_id foreign key (requester_id) references user (id),
-    constraint fk_mate_requestee_id foreign key (requestee_id) references user (id)
+    constraint fk_mate_me foreign key (me_id) references user (id),
+    constraint fk_mate_my_mate foreign key (my_mate_id) references user (id),
+    index idx_mate_me (status_type, me_id),
+    index idx_mate_my_mate (status_type, my_mate_id)
 ) engine = InnoDB
   row_format = dynamic
     comment '운동 메이트 매칭 정보';
 
-create table mate_request_log
+create table mate_history
 (
     id          int unsigned auto_increment,
-    mate_id     int unsigned                          not null comment '메이트 ID',
-    user_id     int unsigned                          not null comment '알림 대상 사용자 ID',
-    action_type enum ('REQUEST', 'RECEIVE', 'VIEWED') not null comment '로그 타입',
-    is_read     boolean  default false comment '확인 여부',
-    created_at  datetime default current_timestamp comment '생성일시',
-    updated_at  datetime default current_timestamp on update current_timestamp comment '수정일시',
+    mate_id     int unsigned                                  not null comment '메이트 ID',
+    actor_id    int unsigned                                  not null comment '행동을 수행한 사용자 ID',
+    target_id   int unsigned                                  not null comment '행동의 대상이 되는 사용자 ID',
+    action_type enum ('APPLY', 'RECEIVE', 'ACCEPT', 'UNMATE') not null comment '로그 타입',
+    actor_read  boolean                                       not null default false comment '행동을 수행한 사용자가 이 이력을 읽었는지 여부',
+    target_read boolean                                       not null default false comment '대상이 되는 사용자가 이 이력을 읽었는지 여부',
+    created_at  datetime                                               default current_timestamp comment '생성일시',
+    updated_at  datetime                                               default current_timestamp on update current_timestamp comment '수정일시',
     primary key (id),
-    constraint fk_mate_request_log_mate_id foreign key (mate_id) references mate (id),
-    constraint fk_mate_request_log_user_id foreign key (user_id) references user (id)
+    constraint fk_mate_history_mate_id foreign key (mate_id) references mate (id),
+    constraint fk_mate_history_actor_id foreign key (actor_id) references user (id),
+    constraint fk_mate_history_target_id foreign key (target_id) references user (id)
 ) engine = InnoDB
   row_format = dynamic
-    comment '운동 메이트 매칭 요청 알림 로그';
+    comment '운동 메이트 이력';
 
 create table mate_workout
 (
     mate_id             int unsigned                                                                       not null comment '메이트 ID',
-    place_name          varchar(100)                                                                       not null comment '운동 장소(시설)명',
-    address             varchar(255)                                                                       not null comment '주소',
-    workout_day_of_week set ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY') not null comment '함께 운동하는 요일',
-    workout_start_at    time                                                                               not null comment '함께 운동 시작 시간',
-    workout_end_at      time                                                                               not null comment '함께 운동 종료 시간',
+    place_name          varchar(100)                                                                       null comment '운동 장소(시설)명',
+    address             varchar(255)                                                                       null comment '주소',
+    workout_day_of_week set ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY') null comment '함께 운동하는 요일',
+    workout_start_at    time                                                                               null comment '함께 운동 시작 시간',
+    workout_end_at      time                                                                               null comment '함께 운동 종료 시간',
     created_at          datetime     default current_timestamp comment '생성일시',
     created_by          int unsigned comment '생성자',
     updated_at          datetime     default current_timestamp on update current_timestamp comment '수정일시',
@@ -154,17 +161,17 @@ create table mate_workout
 
 create table challenge
 (
-    id                          int unsigned auto_increment,
-    mate_id                     int unsigned                                                                       not null comment '메이트 ID',
-    user_id                     int unsigned                                                                       not null comment '도전자 ID',
-    goal_workout_count          tinyint unsigned                                                                   not null comment '매주 목표 운동 횟수',
-    goal_workout_day_of_week    set ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY') not null comment '매주 목표 운동 요일',
-    challenge_duration_in_moths tinyint unsigned                                                                   not null comment '매주 목표 운동 기간(월)',
-    start_at                    datetime                                                                           not null comment '챌린지 시작일시',
-    end_at                      datetime                                                                           not null comment '챌린지 종료일시',
-    created_at                  datetime default current_timestamp comment '생성일시',
-    updated_at                  datetime default current_timestamp on update current_timestamp comment '수정일시',
-    deleted_at                  datetime default null comment '삭제일시',
+    id                           int unsigned auto_increment,
+    mate_id                      int unsigned                                                                       not null comment '메이트 ID',
+    user_id                      int unsigned                                                                       not null comment '도전자 ID',
+    goal_workout_count           tinyint unsigned                                                                   not null comment '매주 목표 운동 횟수',
+    goal_workout_day_of_week     set ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY') not null comment '매주 목표 운동 요일',
+    challenge_duration_in_months tinyint unsigned                                                                   not null comment '매주 목표 운동 기간(월)',
+    start_at                     date                                                                               not null comment '챌린지 시작일시',
+    end_at                       date                                                                               not null comment '챌린지 종료일시',
+    created_at                   datetime default current_timestamp comment '생성일시',
+    updated_at                   datetime default current_timestamp on update current_timestamp comment '수정일시',
+    deleted_at                   datetime default null comment '삭제일시',
     primary key (id),
     constraint uq_challenge_mate_user unique (mate_id, user_id),
     constraint fk_challenge_mate_id foreign key (mate_id) references mate (id),
@@ -178,9 +185,9 @@ create table challenge_record
 (
     id              int unsigned auto_increment,
     challenge_id    int unsigned not null comment '챌린지 ID',
-    record_date     date         not null comment '운동 기록 날짜',
+    record_date     date         not null comment '운동 기록(예정) 날짜',
     is_completed    boolean          default false comment '운동 완료 여부',
-    intensity_level tinyint unsigned default 2 comment '강도',
+    intensity_level tinyint unsigned default null comment '강도',
     note            tinytext         default null comment '메모',
     created_at      datetime         default current_timestamp comment '생성일시',
     updated_at      datetime         default current_timestamp on update current_timestamp comment '수정일시',

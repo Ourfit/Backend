@@ -1,0 +1,358 @@
+openapi: 3.0.0
+info:
+  title: Mates API
+  description: 메이트 관리 API
+  version: 0.0.1
+servers:
+  - url: https://dev.not-available-yet.com
+    description: Development
+  - url: https://not-available-yet.com
+    description: Production
+paths:
+  /v1/mates/me:
+    get:
+      summary: 내 메이트 정보 조회 API
+      description: |
+        사용자의 현재 메이트 정보를 조회할 수 있습니다.
+        
+        현재 매치된 메이트가 없는 경우, null을 반환합니다.
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          $ref: "#/components/responses/MateInfoResponse"
+  /v1/mates/me/history:
+    get:
+      summary: 내 메이트 신청/수락/해제 이력 조회 API
+      description: |
+        사용자의 메이트 신청/수락/해제 이력을 조회할 수 있습니다.
+        
+        최신 순으로 정렬되어 반환됩니다.
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          $ref: "#/components/responses/MateHistoryPageResponse"
+  /v1/mates/history/{historyId}/read:
+    get:
+      summary: 메이트 이력 읽음 처리 API
+      description: 메이트 신청/수락/해제 이력을 읽음 처리합니다.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: historyId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청/수락/해제 이력 ID
+          example: 5
+      responses:
+        204:
+          description: 읽음 처리 성공
+        404:
+          description: 이력이 존재하지 않음
+        409:
+          description: 이미 읽음 처리됨
+  /v1/mates/{receiverId}:
+    post:
+      summary: 메이트 신청 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: receiverId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청 대상 사용자 ID
+          example: 13
+      responses:
+        201:
+          description: 메이트 신청 성공
+        409:
+          description: 이미 같은 대상 사용자에게 신청했음
+  /v1/mates/{mateId}/accept:
+    post:
+      summary: 메이트 수락 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: mateId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청 ID
+          example: 5
+      responses:
+        200:
+          description: 메이트 수락 성공
+        404:
+          description: 메이트 정보를 찾을 수 없음
+        409:
+          description: 이 사용자에게 신청하지 않았거나, 수락 대기중인 상태가 아님
+  /v1/mates/{mateId}:
+    delete:
+      summary: 메이트 해제 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: mateId
+          in: path
+          required: true
+          schema:
+            type: number
+          description: 메이트 신청 ID
+          example: 5
+      responses:
+        200:
+          description: 메이트 해제 성공
+        404:
+          description: 메이트 정보를 찾을 수 없음
+        409:
+          description: 메이트 당사자(신청자 또는 수락자)가 아니거나, 매치된 상태(이미 해제되었거나, 수락하지 않음 등) 아님
+  /v1/mates/{mateId}/workouts/places:
+    put:
+      summary: 메이트와 함께 운동하는 시설(장소) 설정 API
+      description: |
+        메이트와 함께 운동하는 장소 정보(이름, 주소)를 설정할 수 있습니다.
+        기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                placeName:
+                  type: string
+                  example: "에이블짐 잠실점"
+                  description: 운동하는 장소 이름
+                address:
+                  type: string
+                  example: "서울특별시 송파구 올림픽로35가길 11 지하1층 001호"
+                  description: 운동하는 장소 주소
+      responses:
+        200:
+          description: 메이트와 함께 운동하는 시설(장소) 설정 성공
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+              - 장소 이름(`placeName`) 또는 주소(`address`)가 누락됨
+        404:
+          description: 메이트 정보를 찾을 수 없음
+  /v1/mates/{mateId}/workouts/times:
+    put:
+      summary: 메이트와 함께 운동하는 시간 설정 API
+      description: |
+        메이트와 함께 운동하는 요일, 시작 - 종료 시간을 설정할 수 있습니다.
+        기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workoutDays:
+                  type: array
+                  items:
+                    type: string
+                    enum: [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+                    example: [ "MONDAY", "WEDNESDAY", "FRIDAY" ]
+                    description: 함께 운동하는 요일
+                startAt:
+                  type: string
+                  example: "06:00:00"
+                  description: 함께 운동 시작 시간(HH:mm:ss)
+                endAt:
+                  type: string
+                  example: "07:00:00"
+                  description: 함께 운동 종료 시간(HH:mm:ss)
+      responses:
+        200:
+          description: 메이트와 함께 운동하는 시간 설정 성공
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+            - 요일(`workoutDays`)이 누락됨
+            - 시작(`startAt`) 또는 종료(`endAt`) 시간이 누락됨
+            - 시작(`startAt`) 시간이 종료(`endAt`)보다 이후 날짜임
+        404:
+          description: 메이트 정보를 찾을 수 없음
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    MateInfoResponse:
+      description: 내 메이트 정보 응답
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "schemas.yaml#/components/schemas/BaseResponse"
+              - type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/MeateInfoResponse"
+    MateHistoryPageResponse:
+      description: 내 메이트 정보 응답
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "schemas.yaml#/components/schemas/PageResponse"
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/MateHistoryResponse"
+  schemas:
+    MeateInfoResponse:
+      type: object
+      properties:
+        mateId:
+          type: number
+          example: 5
+          description: 메이트 ID
+          nullable: false
+        status:
+          type: string
+          enum: [ "PENDING", "MATCHED", "UNMATED" ]
+          example: "MATCHED"
+          description: 메이트 상태
+          nullable: false
+        daySinceAccepted:
+          type: number
+          example: 3
+          description: 메이트가 된 후 경과한 일 수
+          nullable: false
+        myMate:
+          description: 나의 메이트 정보
+          type: object
+          properties:
+            id:
+              type: number
+              example: 13
+              description: 사용자 ID
+              nullable: false
+            profileUrl:
+              type: string
+              format: uri
+              example: "https://aws.s3.com/profiles/1.jpg"
+              description: 프로필 이미지 URL
+              nullable: true
+            nickname:
+              type: string
+              example: "운초"
+              description: 닉네임
+              nullable: false
+            gender:
+              type: string
+              enum: [ "F", "M" ]
+              example: "F"
+              description: 성별
+            age:
+              type: number
+              example: 28
+              description: 나이
+              nullable: false
+        workout:
+          description: 메이트와 함께 운동 관련 정보
+          type: object
+          properties:
+            placeName:
+              type: string
+              example: "에이블짐 잠실점"
+              description: 운동하는 장소 이름
+              nullable: true
+            address:
+              type: string
+              example: "서울특별시 송파구 올림픽로35가길 11 지하1층 001호"
+              description: 운동하는 장소 주소
+              nullable: true
+            workoutDayOfWeek:
+              type: array
+              items:
+                type: string
+                enum: [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+                example: [ "MONDAY", "WEDNESDAY", "FRIDAY" ]
+                description: 함께 운동하는 요일
+              nullable: true
+            workoutStartAt:
+              type: string
+              example: "06:00:00"
+              description: 함께 운동 시작 시간(HH:mm:ss)
+              nullable: true
+            workoutEndAt:
+              type: string
+              example: "07:00:00"
+              description: 함께 운동 종료 시간(HH:mm:ss)
+              nullable: true
+      nullable: true
+    MateHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 5
+          description: 메이트 이력 ID
+          nullable: false
+        mateId:
+          type: number
+          example: 2
+          description: 메이트 ID
+          nullable: false
+        actionType:
+          type: string
+          enum: [ "APPLY", "ACCEPT", "UNMATE" ]
+          example: "REQUEST"
+          description: 메이트 신청/수락/해제 타입
+          nullable: false
+        isRead:
+          type: boolean
+          example: false
+          description: 읽음 여부
+          nullable: false
+        actorId:
+          type: number
+          example: 2
+          description: 행동을 수행한 사용자 ID
+          nullable: false
+        actorNickname:
+          type: string
+          example: "운초"
+          description: 행동을 수행한 사용자 닉네임
+          nullable: false
+        targetId:
+          type: number
+          example: 4
+          description: 행동의 대상이 된 사용자 ID
+          nullable: false
+        targetNickname:
+          type: string
+          example: "운동왕"
+          description: 행동의 대상이 된 사용자 닉네임
+          nullable: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2021-08-01T12:00:00"
+          description: 이력 생성 시간
+          nullable: false
+
+        

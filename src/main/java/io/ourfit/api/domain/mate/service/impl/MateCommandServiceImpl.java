@@ -1,0 +1,84 @@
+package io.ourfit.api.domain.mate.service.impl;
+
+import io.ourfit.api.domain.mate.data.entity.Mate;
+import io.ourfit.api.domain.mate.data.entity.MateHistory;
+import io.ourfit.api.domain.mate.service.MateCommandService;
+import io.ourfit.api.domain.mate.service.MateWorkoutService;
+import io.ourfit.api.domain.user.data.entity.User;
+import io.ourfit.api.domain.user.service.UserQueryService;
+import io.ourfit.api.domain.workout.data.enums.MateActionType;
+import io.ourfit.api.global.data.AbstractEntityFinder;
+import io.ourfit.api.global.exception.ApiExceptionType;
+import io.ourfit.api.global.exception.custom.DuplicatedException;
+import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.infra.persistence.MateHistoryRepository;
+import io.ourfit.api.infra.persistence.MateQRepository;
+import io.ourfit.api.infra.persistence.MateRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class MateCommandServiceImpl extends AbstractEntityFinder<Mate, Long>
+    implements MateCommandService {
+
+  private final MateQRepository qRepository;
+  private final MateHistoryRepository historyRepository;
+  private final MateWorkoutService workoutService;
+  private final UserQueryService userQueryService;
+
+  public MateCommandServiceImpl(
+      MateRepository repository,
+      MateQRepository qRepository,
+      MateHistoryRepository historyRepository,
+      MateWorkoutService workoutService,
+      UserQueryService userQueryService) {
+    super(repository);
+    this.qRepository = qRepository;
+    this.historyRepository = historyRepository;
+    this.workoutService = workoutService;
+    this.userQueryService = userQueryService;
+  }
+
+  @Override
+  public void apply(final long meId, final long receiverId) {
+    User me =
+        this.userQueryService
+            .findById(meId)
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
+    User myMate =
+        this.userQueryService
+            .findById(receiverId)
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
+
+    if (this.qRepository.existsPendingRequestBetweenUsers(me, myMate)) {
+      throw new DuplicatedException(ApiExceptionType.RESOURCE_IDENTICAL);
+    }
+
+    Mate mate = this.repository.save(Mate.of(me, myMate));
+    this.historyRepository.save(MateHistory.from(MateActionType.APPLY, mate));
+  }
+
+  @Override
+  public void accept(final long mateId, final long meId) {
+    this.ifFoundThen(
+        mateId,
+        mate -> {
+          mate.accept();
+          this.workoutService.initialize(mate);
+          this.historyRepository.save(MateHistory.from(MateActionType.ACCEPT, mate));
+        },
+        mate -> mate.canAccept(meId));
+  }
+
+  @Override
+  public void unmate(final long mateId, final long meId) {
+    this.ifFoundThen(
+        mateId,
+        mate -> {
+          mate.unmate();
+          this.historyRepository.save(MateHistory.from(MateActionType.UNMATE, mate));
+        },
+        mate -> mate.canUnmate(meId));
+  }
+}

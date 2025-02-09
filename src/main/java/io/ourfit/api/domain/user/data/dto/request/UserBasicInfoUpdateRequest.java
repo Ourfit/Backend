@@ -4,7 +4,9 @@ import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.user.validation.Age;
 import io.ourfit.api.domain.user.validation.Nickname;
-import io.ourfit.api.global.validation.Enumerable;
+import io.ourfit.api.global.web.validation.Enumerable;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * 사용자의 기본 정보 수정 요청 DTO
@@ -22,7 +24,7 @@ public record UserBasicInfoUpdateRequest(
     String region1,
     String region2,
     String region3,
-    @Enumerable(targetClass = SkillLevelType.class, required = false) String skillLevel) {
+    @Enumerable(type = SkillLevelType.class, required = false) String skillLevel) {
 
   public UserBasicInfoUpdateDto toDto() {
     return new UserBasicInfoUpdateDto(
@@ -31,6 +33,12 @@ public record UserBasicInfoUpdateRequest(
         this.region1,
         this.region2,
         this.region3,
-        SkillLevelType.valueOf(this.skillLevel));
+        SkillLevelType.findByName(this.skillLevel));
+  }
+
+  public boolean isEmpty() {
+    return Stream.of(
+            this.nickname, this.age, this.region1, this.region2, this.region3, this.skillLevel)
+        .allMatch(Objects::isNull);
   }
 }

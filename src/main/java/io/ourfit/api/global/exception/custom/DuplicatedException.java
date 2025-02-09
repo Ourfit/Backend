@@ -14,4 +14,8 @@ public class DuplicatedException extends OurfitApiException {
   public DuplicatedException(ApiExceptionType apiExceptionType) {
     super(apiExceptionType);
   }
+
+  public DuplicatedException() {
+    this(ApiExceptionType.RESOURCE_ALREADY_EXISTS);
+  }
 }

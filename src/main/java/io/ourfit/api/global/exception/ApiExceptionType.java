@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum ApiExceptionType {
   BAD_REQUEST(400, "Bad Request", 400000),
   INVALID_PARAMETER(400, "Bad Request: Required parameters are invalid or missing.", 400001),
+  INVALID_DATE_FORMAT(400, "Bad Request: Invalid date format.", 400002),
+  INVALID_DATE_RANGE(400, "Bad Request: Invalid date range.", 400003),
 
   UNAUTHORIZED(401, "Unauthorized", 401000),
   INVALID_TOKEN(401, "Unauthorized: Invalid JWT (expired or not matched)", 401001),
@@ -23,6 +25,7 @@ public enum ApiExceptionType {
   CONFLICT(409, "Conflict", 409000),
   RESOURCE_ALREADY_EXISTS(409, "Conflict: The requested resource already exists", 409001),
   RESOURCE_IDENTICAL(409, "Conflict: The requested resource is identical", 409002),
+  ENTITY_ILLEGAL_STATE(409, "Conflict: Entity is in illegal state", 409003),
 
   TOO_MANY_REQUESTS(429, "Too Many Requests", 429000),
 
