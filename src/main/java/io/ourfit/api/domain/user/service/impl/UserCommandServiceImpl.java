@@ -11,6 +11,7 @@ import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.workout.service.WorkoutService;
 import io.ourfit.api.global.data.AbstractEntityFinder;
+import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.infra.aws.s3.OurfitS3Client;
 import io.ourfit.api.infra.persistence.UserRepository;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserCommandServiceImpl extends AbstractEntityFinder<User, Long>
     implements UserCommandService {
 
+  private final UserRepository userRepository;
   private final OAuth2Service oAuth2Service;
   private final WorkoutService workoutService;
   private final OurfitS3Client s3Client;
@@ -34,6 +36,7 @@ public class UserCommandServiceImpl extends AbstractEntityFinder<User, Long>
       WorkoutService workoutService,
       OurfitS3Client s3Client) {
     super(repository);
+    this.userRepository = repository;
     this.oAuth2Service = oAuth2Service;
     this.workoutService = workoutService;
     this.s3Client = s3Client;
@@ -41,6 +44,11 @@ public class UserCommandServiceImpl extends AbstractEntityFinder<User, Long>
 
   @Override
   public User save(UserSignUpDto signUpDto) {
+    if (this.userRepository.existsByoAuthId(signUpDto.oAuthId())
+        || this.userRepository.existsByNickName(signUpDto.nickname())) {
+      throw new DuplicatedException();
+    }
+
     OAuth2UserInfo oAuth2UserInfo = this.oAuth2Service.getUserInfo(signUpDto.oAuthId());
     final User user = this.repository.save(User.of(oAuth2UserInfo, signUpDto));
     // 사용자 등록 후, 선호 운동 종목 등록
@@ -50,6 +58,10 @@ public class UserCommandServiceImpl extends AbstractEntityFinder<User, Long>
 
   @Override
   public void updateBasicInfo(final long id, UserBasicInfoUpdateDto updateDto) {
+    if (updateDto.nickname() != null
+        && this.userRepository.existsByNickName(updateDto.nickname())) {
+      throw new DuplicatedException();
+    }
     this.ifFoundThen(id, user -> user.updateBasicInfo(updateDto));
   }
 

@@ -70,6 +70,8 @@ paths:
       responses:
         201:
           description: 메이트 신청 성공
+        409:
+          description: 이미 같은 대상 사용자에게 신청했음
   /v1/mates/{mateId}/accept:
     post:
       summary: 메이트 수락 API
@@ -86,6 +88,10 @@ paths:
       responses:
         200:
           description: 메이트 수락 성공
+        404:
+          description: 메이트 정보를 찾을 수 없음
+        409:
+          description: 이 사용자에게 신청하지 않았거나, 수락 대기중인 상태가 아님
   /v1/mates/{mateId}:
     delete:
       summary: 메이트 해제 API
@@ -102,6 +108,10 @@ paths:
       responses:
         200:
           description: 메이트 해제 성공
+        404:
+          description: 메이트 정보를 찾을 수 없음
+        409:
+          description: 메이트 당사자(신청자 또는 수락자)가 아니거나, 매치된 상태(이미 해제되었거나, 수락하지 않음 등) 아님
   /v1/mates/{mateId}/workouts/places:
     put:
       summary: 메이트와 함께 운동하는 시설(장소) 설정 API
@@ -127,6 +137,14 @@ paths:
       responses:
         200:
           description: 메이트와 함께 운동하는 시설(장소) 설정 성공
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+              - 장소 이름(`placeName`) 또는 주소(`address`)가 누락됨
+        404:
+          description: 메이트 정보를 찾을 수 없음
   /v1/mates/{mateId}/workouts/times:
     put:
       summary: 메이트와 함께 운동하는 시간 설정 API
@@ -159,6 +177,16 @@ paths:
       responses:
         200:
           description: 메이트와 함께 운동하는 시간 설정 성공
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+            - 요일(`workoutDays`)이 누락됨
+            - 시작(`startAt`) 또는 종료(`endAt`) 시간이 누락됨
+            - 시작(`startAt`) 시간이 종료(`endAt`)보다 이후 날짜임
+        404:
+          description: 메이트 정보를 찾을 수 없음
 components:
   securitySchemes:
     bearerAuth:

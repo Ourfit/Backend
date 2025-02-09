@@ -15,7 +15,7 @@ import java.util.Set;
  * @param favoritePlaces 선호하는 시설(장소) 목록
  */
 public record UserWorkoutPreferencesUpdateRequest(
-    @Enumerable(type = TimePrefrenceType.class, required = false) String preferredWorkoutTime,
+    @Enumerable(type = TimePrefrenceType.class) String preferredWorkoutTime,
     Set<String> favoriteWorkouts,
     List<UserFavoritePlacesUpsertRequest> favoritePlaces) {
 

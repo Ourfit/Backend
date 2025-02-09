@@ -17,6 +17,21 @@ paths:
       responses:
         201:
           $ref: "v1_auth.yaml#/components/responses/OurfitToken"
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+              - 필수 값이 누락되었거나, ENUM에 정의되지 않은 값이 포함됨
+              - 나이(`age`)가 15세 미만 또는 70세 초과임
+              - 선호하는 운동 종목(`favoriteWorkouts`) 규칙 위반 (1개 이상, 3개 이하)
+        409:
+          description: |
+            이미 등록된 사용자가 존재함
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+              - OAuth ID가 이미 사용 중인 경우
+              - 닉네임이 이미 사용 중인 경우
   /v1/users/mates:
     get:
       summary: 메이트 탐색 API
@@ -103,7 +118,7 @@ paths:
       description: |
         사용자의 기본 정보를 수정할 수 있습니다.
         요청 본문에는 변경하려는 필드만 포함하면 되며, 기존 값을 유지하려는 필드는 제외할 수 있습니다.
-        - 수정 가능한 필드: 닉네임, 나이, 지역, 운동 실력
+          - 수정 가능한 필드: 닉네임, 나이, 지역, 운동 실력
       security:
         - bearerAuth: [ ]
       requestBody:
@@ -111,12 +126,31 @@ paths:
       responses:
         200:
           description: "사용자 기본 정보 수정 성공"
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+              - 변경 요청된 값 중에 ENUM에 정의되지 않은 값이 포함됨
+              - 나이(`age`)가 15세 미만 또는 70세 초과임
+        409:
+          description: |
+            리소스가 완전히 동일하거나, 요청을 처리할 수 없는 상태임
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+              - 어떤 필드도 변경 요청하지 않은 경우
+              - 변경 요청된 닉네임이 이미 사용 중인 경우
+              - 닉네임 변경 후 30일이 지나지 않은 경우
   /v1/users/me/profile:
     put:
-      summary: 내 프로필 수정 API
+      summary: 내 프로필 설정 API
       description: |
-        사용자의 프로필 정보를 수정할 수 있습니다.
-        기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
+        사용자의 프로필 정보를 설정할 수 있습니다.
+        
+        기존 데이터를 새로운 데이터로 대체합니다. 
+        요청 시 모든 필드를 전달해야 합니다.
+        삭제를 원하는 필드는 `null` 값을 전달해야 합니다.
+        
         - 수정 가능한 필드: 자기소개, 오픈 채팅 URL
       security:
         - bearerAuth: [ ]
@@ -125,6 +159,12 @@ paths:
       responses:
         200:
           description: "사용자 프로필 수정 성공"
+        400:
+          description: |
+            요청 본문이 올바른 형식이 아님
+            
+            아래와 같은 경우에 발생할 수 있습니다:
+            - 오픈 채팅 URL(`openChatUrl`) 형식이 올바르지 않음
   /v1/users/me/profile-image:
     put:
       summary: 내 프로필 이미지 수정 API
@@ -153,8 +193,12 @@ paths:
       summary: 내 운동 선호 정보 수정 API
       description: |
         사용자의 운동 선호 정보를 수정할 수 있습니다.
-        기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
-        - 수정 가능한 필드: 선호하는 운동 시간대, 선호하는 운동 종목, 선호하는 운동 시설(장소)
+        
+        기존 데이터를 새로운 데이터로 대체합니다. 
+        요청 시 모든 필드를 전달해야 합니다.
+        삭제를 원하는 필드는 `null` 값을 전달해야 합니다. (`preferredWorkoutTime`은 삭제 불가)
+        
+        - 수정 가능한 필드: 선호하는 운동 시간대(`preferredWorkoutTime`), 선호하는 운동 종목(`favoriteWorkouts`), 선호하는 운동 시설(장소)(`favoritePlaces`)
       security:
         - bearerAuth: [ ]
       requestBody:
@@ -173,17 +217,17 @@ paths:
           in: query
           required: true
           schema:
-                type: string
-                enum: [ "nickname" ]
-                example: "nickname"
-                description: "중복 여부를 확인 할 필드"
+            type: string
+            enum: [ "nickname" ]
+            example: "nickname"
+            description: "중복 여부를 확인 할 필드"
         - name: value
           in: query
           required: true
           schema:
-              type: string
-              example: "수영장영수"
-              description: "중복 여부를 확인 할 값"
+            type: string
+            example: "수영장영수"
+            description: "중복 여부를 확인 할 값"
       responses:
         204:
           description: "사용 가능한 값 (중복되지 않음)"
