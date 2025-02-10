@@ -1,9 +1,8 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
-import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
-import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.global.web.validation.Enumerable;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
@@ -16,13 +15,5 @@ import java.util.Set;
  */
 public record UserWorkoutPreferencesUpdateRequest(
     @Enumerable(type = TimePrefrenceType.class) String preferredWorkoutTime,
-    Set<String> favoriteWorkouts,
-    List<UserFavoritePlacesUpsertRequest> favoritePlaces) {
-
-  public UserWorkoutPreferencesUpdateDto toDto() {
-    return new UserWorkoutPreferencesUpdateDto(
-        TimePrefrenceType.valueOf(this.preferredWorkoutTime),
-        this.favoriteWorkouts,
-        StreamUtils.mapToList(this.favoritePlaces, UserFavoritePlacesUpsertRequest::toDto));
-  }
-}
+    @Size(min = 1, max = 3) Set<String> favoriteWorkouts,
+    List<UserFavoritePlacesUpsertRequest> favoritePlaces) {}

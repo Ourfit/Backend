@@ -1,11 +1,10 @@
 package io.ourfit.api.domain.user.data.dto.internal;
 
-import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkoutPlace;
+import io.ourfit.api.domain.user.data.dto.request.UserWorkoutPreferencesUpdateRequest;
 import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
+import io.ourfit.api.global.utils.StreamUtils;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 사용자 운동 선호 정보 수정 DTO
@@ -19,9 +18,11 @@ public record UserWorkoutPreferencesUpdateDto(
     Set<String> favoriteWorkouts,
     List<UserFavoritePlacesUpsertDto> favoritePlaces) {
 
-  public Set<UserFavoriteWorkoutPlace> toFavoriteWorkoutPlaces(User user) {
-    return favoritePlaces.stream()
-        .map(place -> UserFavoriteWorkoutPlace.of(user, place))
-        .collect(Collectors.toSet());
+  public static UserWorkoutPreferencesUpdateDto fromRequest(
+      UserWorkoutPreferencesUpdateRequest request) {
+    return new UserWorkoutPreferencesUpdateDto(
+        TimePrefrenceType.valueOf(request.preferredWorkoutTime()),
+        request.favoriteWorkouts(),
+        StreamUtils.mapToList(request.favoritePlaces(), UserFavoritePlacesUpsertDto::fromRequest));
   }
 }

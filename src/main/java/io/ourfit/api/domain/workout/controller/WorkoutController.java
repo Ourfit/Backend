@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.workout.controller;
 
-import io.ourfit.api.domain.workout.data.response.WorkoutResponse;
+import io.ourfit.api.domain.workout.data.dto.response.WorkoutResponse;
 import io.ourfit.api.domain.workout.service.WorkoutService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.utils.StreamUtils;

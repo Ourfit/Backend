@@ -11,10 +11,13 @@ import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.infra.persistence.ChallengeRepository;
 import java.time.DayOfWeek;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,28 +51,18 @@ public class ChallengeServiceImpl implements ChallengeService {
   }
 
   @Override
-  public void updateGoalDayOfWeeks(final long challengeId, Set<DayOfWeek> goalDayOfWeeks) {
-    this.repository
-        .findById(challengeId)
-        .ifPresentOrElse(
-            challenge -> {
-              challenge.setGoalWorkoutDayOfWeek(goalDayOfWeeks);
-              challenge.updatePlannedRecords(goalDayOfWeeks);
-            },
-            () -> {
-              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND);
-            });
+  public void setGoalDayOfWeeks(final long challengeId, Set<DayOfWeek> goalDayOfWeeks) {
+    this.ifFoundThen(
+        challengeId,
+        challenge -> {
+          challenge.setGoalWorkoutDayOfWeek(goalDayOfWeeks);
+          challenge.updatePlannedRecords(goalDayOfWeeks);
+        });
   }
 
   @Override
-  public void delete(long challengeId) {
-    this.repository
-        .findById(challengeId)
-        .ifPresentOrElse(
-            Challenge::delete,
-            () -> {
-              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND);
-            });
+  public void delete(final long challengeId) {
+    this.ifFoundThen(challengeId, Challenge::delete);
   }
 
   @Override
@@ -82,5 +75,12 @@ public class ChallengeServiceImpl implements ChallengeService {
   @Transactional(readOnly = true)
   public Optional<Challenge> findByUserIdWithRecords(long userId) {
     return this.repository.findByIdWithRecords(userId);
+  }
+
+  private void ifFoundThen(long id, Consumer<Challenge> action, Predicate<Challenge>... filters) {
+    this.repository
+        .findById(id)
+        .map(entity -> StreamUtils.applyFiltersOrThrow(entity, filters))
+        .ifPresentOrElse(action, NoSuchEntityException::new);
   }
 }

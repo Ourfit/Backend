@@ -50,12 +50,18 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
 
   @Override
   @CacheEvict(value = "S3OBJECTS", key = "#directoryPath", condition = "#result != null")
-  public String upload(final String directoryPath, final MultipartFile file) {
+  public String upload(String directoryPath, String fileName, MultipartFile file) {
     S3Utils.validatePath(directoryPath);
     final String extension = S3Utils.extractExtension(file);
-    final String newFileName = System.currentTimeMillis() + extension;
-    this.putObjectInternal(newFileName, file);
-    return this.buildObjectUrl(newFileName);
+    final String key = fileName.concat(extension);
+    this.putObjectInternal(key, file);
+    return this.buildObjectUrl(key);
+  }
+
+  @Override
+  @CacheEvict(value = "S3OBJECTS", key = "#directoryPath", condition = "#result != null")
+  public String upload(final String directoryPath, final MultipartFile file) {
+    return this.upload(directoryPath, String.valueOf(System.currentTimeMillis()), file);
   }
 
   @Override
@@ -80,10 +86,10 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
     }
   }
 
-  private void putObjectInternal(final String fileName, final MultipartFile file) {
+  private void putObjectInternal(final String key, final MultipartFile file) {
     try {
       PutObjectRequest request =
-          PutObjectRequest.builder().bucket(this.awsProperties.s3().bucket()).key(fileName).build();
+          PutObjectRequest.builder().bucket(this.awsProperties.s3().bucket()).key(key).build();
       this.s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
     } catch (SdkException | IOException e) {
       throw new FileOperationException(ApiExceptionType.S3_ERROR, e);

@@ -53,7 +53,7 @@ public class ChallengeController {
   @PatchMapping("/{challengeId}")
   public ResponseEntity<Void> updateGoalDayOfWeeks(
       @PathVariable long challengeId, @RequestBody @Valid ChallengeUpdateRequest request) {
-    this.service.updateGoalDayOfWeeks(
+    this.service.setGoalDayOfWeeks(
         challengeId, StreamUtils.mapToSet(request.goalWorkoutDayOfWeeks(), DayOfWeek::valueOf));
     return ResponseEntity.ok().build();
   }

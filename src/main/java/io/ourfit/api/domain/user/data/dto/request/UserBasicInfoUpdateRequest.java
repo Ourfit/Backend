@@ -1,6 +1,5 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
-import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.user.validation.Age;
 import io.ourfit.api.domain.user.validation.Nickname;
@@ -25,16 +24,6 @@ public record UserBasicInfoUpdateRequest(
     String region2,
     String region3,
     @Enumerable(type = SkillLevelType.class, required = false) String skillLevel) {
-
-  public UserBasicInfoUpdateDto toDto() {
-    return new UserBasicInfoUpdateDto(
-        this.nickname,
-        this.age,
-        this.region1,
-        this.region2,
-        this.region3,
-        SkillLevelType.findByName(this.skillLevel));
-  }
 
   public boolean isEmpty() {
     return Stream.of(

@@ -1,6 +1,9 @@
 package io.ourfit.api.domain.user.controller;
 
 import io.ourfit.api.domain.user.data.dto.internal.MateCandidateSearchDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
+import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.user.data.dto.request.*;
 import io.ourfit.api.domain.user.data.dto.response.UserInfoResponse;
 import io.ourfit.api.domain.user.data.entity.User;
@@ -49,6 +52,7 @@ public class UserController {
     return ResponseEntity.ok(BaseResponse.from(response));
   }
 
+  /** 사용자 상세 조회 */
   @GetMapping("/{id}")
   public ResponseEntity<BaseResponse<UserInfoResponse>> getUser(@PathVariable final long id) {
     UserInfoResponse userInfoResponse =
@@ -75,34 +79,36 @@ public class UserController {
     if (request == null || request.isEmpty()) {
       throw new InvalidParameterException(ApiExceptionType.RESOURCE_IDENTICAL);
     }
-    this.commandService.updateBasicInfo(userDetails.getId(), request.toDto());
+    this.commandService.updateBasicInfo(
+        userDetails.getId(), UserBasicInfoUpdateDto.fromRequest(request));
     return ResponseEntity.ok().build();
   }
 
-  /** 프로필(자기소개, 오픈 채팅 링크) 등록/수정 */
+  /** 프로필(자기소개, 오픈 채팅 링크) 설정 */
   @PutMapping("/me/profile")
   public ResponseEntity<BaseResponse<Void>> updateMyProfile(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserProfileUpdateRequest request) {
-    this.commandService.updateProfile(userDetails.getId(), request.toDto());
+    this.commandService.setProfile(userDetails.getId(), UserProfileUpdateDto.fromRequest(request));
     return ResponseEntity.ok().build();
   }
 
-  /** 프로필 이미지 등록/수정 */
+  /** 프로필 이미지 설정 */
   @PutMapping("/me/profile-image")
   public ResponseEntity<BaseResponse<Void>> updateMyProfileImage(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestPart("profileImage") MultipartFile profileImage) {
-    this.commandService.updateProfileImage(userDetails.getId(), profileImage);
+    this.commandService.setProfileImage(userDetails.getId(), profileImage);
     return ResponseEntity.ok().build();
   }
 
-  /** 내 운동 선호 정보 수정 */
+  /** 내 운동 선호 정보 설정 */
   @PutMapping("/me/workout-preferences")
   public ResponseEntity<BaseResponse<Void>> updateMyWorkoutPreferences(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserWorkoutPreferencesUpdateRequest request) {
-    this.commandService.updateWorkoutPreferences(userDetails.getId(), request.toDto());
+    this.commandService.setWorkoutPreferences(
+        userDetails.getId(), UserWorkoutPreferencesUpdateDto.fromRequest(request));
     return ResponseEntity.ok().build();
   }
 

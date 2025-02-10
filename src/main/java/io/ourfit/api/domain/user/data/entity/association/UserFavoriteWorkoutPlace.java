@@ -5,7 +5,10 @@ import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -40,6 +43,13 @@ public class UserFavoriteWorkoutPlace extends BaseEntity {
         .placeName(upsertDto.placeName())
         .address(upsertDto.address())
         .build();
+  }
+
+  public static Set<UserFavoriteWorkoutPlace> of(
+      User user, List<UserFavoritePlacesUpsertDto> favoritePlaces) {
+    return favoritePlaces.stream()
+        .map(place -> UserFavoriteWorkoutPlace.of(user, place))
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   @Override

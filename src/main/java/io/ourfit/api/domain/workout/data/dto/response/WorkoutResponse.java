@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.workout.data.response;
+package io.ourfit.api.domain.workout.data.dto.response;
 
 import io.ourfit.api.domain.workout.data.entity.Workout;
 

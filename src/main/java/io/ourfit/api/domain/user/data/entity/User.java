@@ -4,7 +4,6 @@ import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
-import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkoutPlace;
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
@@ -168,46 +167,47 @@ public class User extends SecuredBaseEntity {
         || this.nickNameUpdatedAt.plus(NICKNAME_UPDATE_INTERVAL).isBefore(LocalDateTime.now());
   }
 
-  public void updateBasicInfo(UserBasicInfoUpdateDto updateDto) {
-    if (updateDto.nickname() != null) {
+  public void updateBasicInfo(UserBasicInfoUpdateDto basicInfoDto) {
+    if (basicInfoDto.nickname() != null) {
       if (!this.isNicknameUpdatable()) {
         throw new IllegalEntityStateException();
       }
-      this.nickName = updateDto.nickname();
+      this.nickName = basicInfoDto.nickname();
       this.nickNameUpdatedAt = LocalDateTime.now();
     }
-    if (updateDto.age() != null) {
-      this.age = updateDto.age();
+    if (basicInfoDto.age() != null) {
+      this.age = basicInfoDto.age();
     }
-    if (Stream.of(updateDto.region1(), updateDto.region2(), updateDto.region3())
+    if (Stream.of(basicInfoDto.region1(), basicInfoDto.region2(), basicInfoDto.region3())
         .allMatch(Objects::nonNull)) {
-      this.region1 = updateDto.region1();
-      this.region2 = updateDto.region2();
-      this.region3 = updateDto.region3();
+      this.region1 = basicInfoDto.region1();
+      this.region2 = basicInfoDto.region2();
+      this.region3 = basicInfoDto.region3();
     }
-    if (updateDto.skillLevel() != null) {
-      this.skillLevelType = updateDto.skillLevel();
+    if (basicInfoDto.skillLevel() != null) {
+      this.skillLevelType = basicInfoDto.skillLevel();
     }
   }
 
-  public void updateWorkoutPreferences(UserWorkoutPreferencesUpdateDto updateDto) {
-    if (updateDto.preferredWorkoutTime() != null) {
-      this.preferredWorkoutTime = updateDto.preferredWorkoutTime();
+  public void setPreferredWorkoutTime(TimePrefrenceType newPreferredTime) {
+    if (newPreferredTime != null) {
+      this.preferredWorkoutTime = newPreferredTime;
     }
-
-    Set<UserFavoriteWorkoutPlace> newFavoritePlaces = updateDto.toFavoriteWorkoutPlaces(this);
-    this.favoriteWorkoutPlaces.removeIf(item -> !newFavoritePlaces.contains(item));
-    this.favoriteWorkoutPlaces.addAll(newFavoritePlaces);
   }
 
-  public void setProfile(UserProfileUpdateDto upsertDto) {
-    this.introduction = upsertDto.introduction();
-    this.openChatUrl = upsertDto.openChatUrl();
+  public void setProfile(UserProfileUpdateDto profileDto) {
+    this.introduction = profileDto.introduction();
+    this.openChatUrl = profileDto.openChatUrl();
   }
 
-  public void setFavoriteWorkouts(Set<UserFavoriteWorkout> favoriteWorkouts) {
-    this.favoriteWorkouts.removeIf(item -> !favoriteWorkouts.contains(item));
-    this.favoriteWorkouts.addAll(favoriteWorkouts);
+  public void setFavoriteWorkoutPlaces(Set<UserFavoriteWorkoutPlace> newFavoritesPlaces) {
+    this.favoriteWorkoutPlaces.removeIf(item -> !newFavoritesPlaces.contains(item));
+    this.favoriteWorkoutPlaces.addAll(newFavoritesPlaces);
+  }
+
+  public void setFavoriteWorkouts(Set<UserFavoriteWorkout> newFavoritesWorkouts) {
+    this.favoriteWorkouts.removeIf(item -> !newFavoritesWorkouts.contains(item));
+    this.favoriteWorkouts.addAll(newFavoritesWorkouts);
   }
 
   public void delete() {

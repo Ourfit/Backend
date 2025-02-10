@@ -6,7 +6,7 @@ import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.OurfitApiException;
 
 /**
- * Standard Error Response
+ * API 오류(예외) 응답 객체
  *
  * @param message HTTP Status Message(e.g., "Not Found", "Bad Request")
  * @param data 자세한 예외 정보

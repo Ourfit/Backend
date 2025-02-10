@@ -1,6 +1,5 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
-import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
 import io.ourfit.api.domain.user.validation.OpenChatUrl;
 
 /**
@@ -10,9 +9,4 @@ import io.ourfit.api.domain.user.validation.OpenChatUrl;
  * @param openChatUrl 오픈채팅 URL
  */
 public record UserProfileUpdateRequest(
-    String introduction, @OpenChatUrl(required = false) String openChatUrl) {
-
-  public UserProfileUpdateDto toDto() {
-    return new UserProfileUpdateDto(this.introduction, this.openChatUrl);
-  }
-}
+    String introduction, @OpenChatUrl(required = false) String openChatUrl) {}

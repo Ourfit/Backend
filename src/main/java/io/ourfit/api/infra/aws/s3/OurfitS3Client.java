@@ -20,8 +20,20 @@ public interface OurfitS3Client {
    *
    * @param directoryPath 업로드할 디렉토리 경로
    * @param file 업로드할 파일
+   * @parma fileName 업로드할 파일의 이름 (확장자 제외 / 확장자는 파일에서 추출)
    * @return 저장된 파일의 URL
    * @throws IllegalArgumentException 디렉토리 경로가 유효하지 않은 경우
+   */
+  String upload(String directoryPath, String fileName, MultipartFile file);
+
+  /**
+   * {@code MultipartFile}을 업로드한다.
+   *
+   * @param directoryPath 업로드할 디렉토리 경로
+   * @param file 업로드할 파일
+   * @return 저장된 파일의 URL
+   * @throws IllegalArgumentException 디렉토리 경로가 유효하지 않은 경우
+   * @apiNote 이 메서드는 {@link System#currentTimeMillis()} + 확장자로 파일명을 생성한다.
    */
   String upload(String directoryPath, MultipartFile file);
 
