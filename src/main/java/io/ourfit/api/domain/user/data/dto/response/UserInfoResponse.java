@@ -71,7 +71,7 @@ public record UserInfoResponse(
     return UserInfoResponse.builder()
         .id(user.getId())
         .profileUrl(user.getProfileImageUrl())
-        .nickname(user.getNickName())
+        .nickname(user.getNickname())
         .gender(user.getGenderType().name())
         .age(user.getAge())
         .skillLevel(user.getSkillLevelType().name())

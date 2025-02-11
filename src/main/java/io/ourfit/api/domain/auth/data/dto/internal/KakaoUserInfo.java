@@ -25,11 +25,6 @@ public record KakaoUserInfo(String id, @JsonProperty("kakao_account") KakaoAccou
   }
 
   @Override
-  public String getName() {
-    return this.kakaoAccount.name;
-  }
-
-  @Override
   public OAuth2ProviderType getProvider() {
     return OAuth2ProviderType.KAKAO;
   }

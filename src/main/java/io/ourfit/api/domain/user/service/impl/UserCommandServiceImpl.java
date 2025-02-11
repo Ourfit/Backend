@@ -15,7 +15,7 @@ import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.infra.aws.s3.OurfitS3Client;
-import io.ourfit.api.infra.persistence.UserRepository;
+import io.ourfit.api.infra.persistence.user.UserRepository;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -37,8 +37,8 @@ public class UserCommandServiceImpl implements UserCommandService {
 
   @Override
   public User save(UserSignUpDto signUpDto) {
-    if (this.repository.existsByoAuthId(signUpDto.oAuthId())
-        || this.repository.existsByNickName(signUpDto.nickname())) {
+    if (this.repository.existsByoAuthIdAndDeletedAtIsNull(signUpDto.oAuthId())
+        || this.repository.existsByNicknameAndDeletedAtIsNull(signUpDto.nickname())) {
       throw new DuplicatedException();
     }
 
@@ -53,7 +53,7 @@ public class UserCommandServiceImpl implements UserCommandService {
   @Override
   public void updateBasicInfo(final long id, UserBasicInfoUpdateDto basicInfoUpdateDto) {
     if (basicInfoUpdateDto.nickname() != null
-        && this.repository.existsByNickName(basicInfoUpdateDto.nickname())) {
+        && this.repository.existsByNicknameAndDeletedAtIsNull(basicInfoUpdateDto.nickname())) {
       throw new DuplicatedException();
     }
 
@@ -107,6 +107,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         .collect(Collectors.toUnmodifiableSet());
   }
 
+  @SafeVarargs
   private void ifFoundThen(long id, Consumer<User> action, Predicate<User>... filters) {
     this.repository
         .findById(id)

@@ -8,7 +8,7 @@ import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.IllegalEntityStateException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
-import io.ourfit.api.infra.persistence.ChallengeRecordRepository;
+import io.ourfit.api.infra.persistence.challenge.ChallengeRecordRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;

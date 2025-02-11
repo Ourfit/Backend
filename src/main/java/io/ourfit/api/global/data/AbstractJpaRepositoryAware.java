@@ -1,5 +1,6 @@
 package io.ourfit.api.global.data;
 
+import io.ourfit.api.global.data.entity.BaseEntity;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -10,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @param <T> 사용할 {@link JpaRepository} 타입
  */
-public abstract class AbstractJpaRepositoryAware<T extends JpaRepository>
+public abstract class AbstractJpaRepositoryAware<T extends JpaRepository<? extends BaseEntity, ?>>
     implements ApplicationContextAware {
 
   protected T repository;

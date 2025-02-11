@@ -2,6 +2,7 @@ package io.ourfit.api.domain.user.service;
 
 import io.ourfit.api.domain.user.data.dto.internal.*;
 import io.ourfit.api.domain.user.data.entity.User;
+import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +22,22 @@ public interface UserQueryService {
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable);
 
   /**
-   * 사용자 ID로 사용자 정보를 조회한다.
+   * 사용자 ID로 활성 사용자 정보를 조회한다.
    *
    * @param id 사용자 ID
    * @return 조회된 사용자 정보 (없을 경우 {@link Optional#empty()})
+   * @apiNote 탈퇴한 사용자는 검색 대상에서 제외됩니다.
    */
-  Optional<User> findById(final long id);
+  Optional<User> findById(long id);
+
+  /**
+   * 사용자 ID로 사용자 정보를 조회한다.
+   *
+   * @param id 사용자 ID
+   * @param includeDeleted 탈퇴한 사용자도 조회할지 여부
+   * @return 조회된 사용자 정보 (없을 경우 {@link Optional#empty()})
+   */
+  Optional<User> findById(long id, boolean includeDeleted);
 
   /**
    * 사용자 ID로 사용자 정보, 선호하는 운동 정보를 함께 조회한다.
@@ -34,29 +45,31 @@ public interface UserQueryService {
    * @param id 사용자 ID
    * @return 조회된 사용자 정보 (없을 경우 {@link Optional#empty()})
    */
-  Optional<User> findByIdWithFavorites(final long id);
+  Optional<User> findByIdWithFavorites(long id);
 
   /**
    * OAuth ID로 사용자 정보를 조회한다.
    *
-   * @param oAuthId OAuth ID
+   * @param oAuthId OAuth ID (never {@code null})
    * @return 조회된 사용자 정보 (없을 경우 {@link Optional#empty()})
    */
-  Optional<User> findByOAuthId(String oAuthId);
+  Optional<User> findByOAuthId(@NotNull String oAuthId);
 
   /**
-   * 특정 OAuth ID를 가진 사용자가 존재하는지 확인한다.
+   * 특정 OAuth ID를 가진 활성 사용자가 존재하는지 확인한다.
    *
-   * @param oAuthId 확인할 OAuth ID
+   * @param oAuthId 확인할 OAuth ID (never {@code null})
    * @return 존재 여부
+   * @apiNote 탈퇴한 사용자는 검색 대상에서 제외됩니다.
    */
-  boolean existsByOAuthId(String oAuthId);
+  boolean existsByOAuthId(@NotNull String oAuthId);
 
   /**
-   * 특정 닉네임을 가진 사용자가 존재하는지 확인한다.
+   * 특정 닉네임을 가진 활성 사용자가 존재하는지 확인한다.
    *
-   * @param nickname 확인할 닉네임
+   * @param nickname 확인할 닉네임 (never {@code null})
    * @return 존재 여부
+   * @apiNote 탈퇴한 사용자는 검색 대상에서 제외됩니다.
    */
-  boolean existsByNickname(String nickname);
+  boolean existsByNickname(@NotNull String nickname);
 }

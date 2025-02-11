@@ -11,8 +11,9 @@ import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.data.entity.enums.RoleType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
-import io.ourfit.api.global.data.entity.SecuredBaseEntity;
+import io.ourfit.api.global.data.entity.AuditableBaseEntity;
 import io.ourfit.api.global.exception.custom.IllegalEntityStateException;
+import io.ourfit.api.global.persistence.converter.EncryptedStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.io.Serial;
@@ -42,7 +43,7 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends SecuredBaseEntity {
+public class User extends AuditableBaseEntity {
 
   @Serial private static final long serialVersionUID = 2025020101L;
 
@@ -66,20 +67,18 @@ public class User extends SecuredBaseEntity {
   private RoleType roleType;
 
   @Email
+  @Convert(converter = EncryptedStringConverter.class)
   @Column(name = "email", nullable = false)
   private String email;
 
-  @Column(name = "name", nullable = false, length = 50)
-  private String name;
-
   @Column(name = "nick_name", nullable = false, length = 50)
-  private String nickName;
+  private String nickname;
 
   @Column(name = "age", nullable = false, columnDefinition = "tinyint unsigned")
   private Integer age;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "gender_type", nullable = false)
+  @Column(name = "gender_type", nullable = false, updatable = false)
   private GenderType genderType;
 
   @Lob
@@ -138,8 +137,7 @@ public class User extends SecuredBaseEntity {
         .oAuthProviderType(oAuth2UserInfo.getProvider())
         .roleType(RoleType.USER)
         .email(oAuth2UserInfo.getEmail())
-        .name(oAuth2UserInfo.getName())
-        .nickName(signUpDto.nickname())
+        .nickname(signUpDto.nickname())
         .age(signUpDto.age())
         .genderType(signUpDto.gender())
         .skillLevelType(signUpDto.skillLevel())
@@ -172,7 +170,7 @@ public class User extends SecuredBaseEntity {
       if (!this.isNicknameUpdatable()) {
         throw new IllegalEntityStateException();
       }
-      this.nickName = basicInfoDto.nickname();
+      this.nickname = basicInfoDto.nickname();
       this.nickNameUpdatedAt = LocalDateTime.now();
     }
     if (basicInfoDto.age() != null) {

@@ -11,9 +11,9 @@ import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.utils.StreamUtils;
-import io.ourfit.api.infra.persistence.MateHistoryRepository;
-import io.ourfit.api.infra.persistence.MateQRepository;
-import io.ourfit.api.infra.persistence.MateRepository;
+import io.ourfit.api.infra.persistence.mate.MateHistoryRepository;
+import io.ourfit.api.infra.persistence.mate.MateQRepository;
+import io.ourfit.api.infra.persistence.mate.MateRepository;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +73,7 @@ public class MateCommandServiceImpl implements MateCommandService {
         mate -> mate.canUnmate(meId));
   }
 
+  @SafeVarargs
   private void ifFoundThen(long id, Consumer<Mate> action, Predicate<Mate>... filters) {
     this.repository
         .findById(id)

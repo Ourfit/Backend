@@ -22,6 +22,7 @@ dependencyManagement {
 }
 
 val queryDSLVersion by extra("5.1.0")
+val jpaModelGenVersion by extra("6.6.4.Final")
 val jjwtVersion by extra("0.12.6")
 val j2htmlVersion by extra("1.6.0")
 val flywayDBVersion by extra("10.15.0")
@@ -57,6 +58,8 @@ dependencies {
     annotationProcessor("com.querydsl:querydsl-apt:$queryDSLVersion:jakarta")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    // JPA Model Gen
+    annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:$jpaModelGenVersion")
     // Mail HTML Template
     implementation("com.j2html:j2html:$j2htmlVersion")
     // DataBase Schema Migration

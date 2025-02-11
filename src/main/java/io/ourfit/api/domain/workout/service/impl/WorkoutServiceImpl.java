@@ -2,7 +2,7 @@ package io.ourfit.api.domain.workout.service.impl;
 
 import io.ourfit.api.domain.workout.data.entity.Workout;
 import io.ourfit.api.domain.workout.service.WorkoutService;
-import io.ourfit.api.infra.persistence.WorkoutRepository;
+import io.ourfit.api.infra.persistence.workout.WorkoutRepository;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;

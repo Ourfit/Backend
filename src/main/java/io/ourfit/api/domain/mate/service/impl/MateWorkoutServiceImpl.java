@@ -6,7 +6,7 @@ import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.entity.MateWorkout;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
-import io.ourfit.api.infra.persistence.MateWorkoutRepository;
+import io.ourfit.api.infra.persistence.mate.MateWorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

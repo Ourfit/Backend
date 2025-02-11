@@ -1,6 +1,7 @@
 package io.ourfit.api.global.security.authentication;
 
 import io.jsonwebtoken.Claims;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetailsImpl;
@@ -34,8 +35,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         .map(Claims::getSubject)
         .map(Long::parseLong)
         .flatMap(this.userQueryService::findById)
+        .filter(User::isEnabled)
         .map(OurfitUserDetailsImpl::from)
         .map(JwtAuthenticationToken::authenticated)
-        .orElseThrow(() -> new BadCredentialsException("Invalid token"));
+        .orElseThrow(() -> new BadCredentialsException("Failed to authenticate token"));
   }
 }

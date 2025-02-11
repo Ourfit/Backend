@@ -12,7 +12,7 @@ import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.utils.StreamUtils;
-import io.ourfit.api.infra.persistence.ChallengeRepository;
+import io.ourfit.api.infra.persistence.challenge.ChallengeRepository;
 import java.time.DayOfWeek;
 import java.util.Optional;
 import java.util.Set;
