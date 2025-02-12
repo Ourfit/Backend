@@ -20,8 +20,9 @@ public record AwsProperties(String accessKey, String secretKey, String region, S
    *
    * @param bucket S3 버킷 이름
    * @param url S3 서비스 URL
+   * @param cdn CDN URL
    */
-  public record S3(String bucket, String url) {
+  public record S3(String bucket, String url, String cdn) {
 
     /** 서비스에서 지원하는 파일 확장자 */
     public static final List<String> SUPPORTED_FILE_EXTENSION =

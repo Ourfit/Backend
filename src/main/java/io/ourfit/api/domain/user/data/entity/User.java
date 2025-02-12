@@ -27,17 +27,6 @@ import org.hibernate.validator.constraints.URL;
 @Entity
 @Table(
     name = "user",
-    uniqueConstraints = {
-      @UniqueConstraint(
-          name = "uq_oauth",
-          columnNames = {"oauth_id", "oauth_type"}),
-      @UniqueConstraint(
-          name = "uq_email",
-          columnNames = {"email"}),
-      @UniqueConstraint(
-          name = "uq_nickname",
-          columnNames = {"nick_name"})
-    },
     indexes = {@Index(name = "idx_region", columnList = "region1, region2, region3")})
 @Getter
 @Builder

@@ -28,9 +28,9 @@ create table user
     updated_by           int unsigned                                              default null comment '수정자',
     deleted_at           datetime                                                  default null comment '탈퇴일시',
     primary key (id),
-    constraint uq_oauth unique (oauth_id, oauth_type),
-    constraint uq_email unique (email),
-    constraint uq_nick_name unique (nick_name),
+    # constraint uq_oauth unique (oauth_id, oauth_type),
+    # constraint uq_email unique (email),
+    # constraint uq_nick_name unique (nick_name),
     index idx_region (region1, region2, region3)
 ) engine = InnoDB
   row_format = dynamic

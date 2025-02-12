@@ -73,10 +73,11 @@ public class ChallengeServiceImpl implements ChallengeService {
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<Challenge> findByUserIdWithRecords(long userId) {
+  public Optional<Challenge> findByUserIdWithRecords(final long userId) {
     return this.repository.findByIdWithRecords(userId);
   }
 
+  @SafeVarargs
   private void ifFoundThen(long id, Consumer<Challenge> action, Predicate<Challenge>... filters) {
     this.repository
         .findById(id)

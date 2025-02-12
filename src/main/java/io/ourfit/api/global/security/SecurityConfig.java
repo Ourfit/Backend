@@ -99,6 +99,11 @@ public class SecurityConfig {
         .addFilterBefore(
             this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
+        .exceptionHandling(
+            exception ->
+                exception
+                    .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                    .authenticationEntryPoint(new AuthEntryPointImpl()))
         .build();
   }
 

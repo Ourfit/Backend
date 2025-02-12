@@ -7,30 +7,31 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ApiExceptionType {
-  BAD_REQUEST(400, "Bad Request", 400000),
-  INVALID_PARAMETER(400, "Bad Request: Required parameters are invalid or missing.", 400001),
-  INVALID_DATE_FORMAT(400, "Bad Request: Invalid date format.", 400002),
-  INVALID_DATE_RANGE(400, "Bad Request: Invalid date range.", 400003),
+  BAD_REQUEST(400, 400000, "io.ourfit.api.exception.BAD_REQUEST.message"),
+  INVALID_PARAMETER(400, 400001, "io.ourfit.api.exception.INVALID_PARAMETER.message"),
+  INVALID_DATE_FORMAT(400, 400002, "io.ourfit.api.exception.INVALID_DATE_FORMAT.message"),
+  INVALID_DATE_RANGE(400, 400003, "io.ourfit.api.exception.INVALID_DATE_RANGE.message"),
 
-  UNAUTHORIZED(401, "Unauthorized", 401000),
-  INVALID_TOKEN(401, "Unauthorized: Invalid JWT (expired or not matched)", 401001),
+  UNAUTHORIZED(401, 401000, "io.ourfit.api.exception.UNAUTHORIZED.message"),
+  INVALID_TOKEN(401, 401001, "io.ourfit.api.exception.INVALID_TOKEN.message"),
 
-  FORBIDDEN(403, "Forbidden", 403000),
+  FORBIDDEN(403, 403000, "io.ourfit.api.exception.FORBIDDEN.message"),
 
-  NOT_FOUND(404, "Not Found", 404000),
-  NOT_FOUND_USER(404, "Not Found: User not found", 404001),
+  NOT_FOUND(404, 404000, "io.ourfit.api.exception.NOT_FOUND.message"),
+  NOT_FOUND_API_ENDPOINT(404, 404001, "io.ourfit.api.exception.NOT_FOUND_API_ENDPOINT.message"),
+  NOT_FOUND_USER(404, 404002, "io.ourfit.api.exception.NOT_FOUND_USER.message"),
 
-  NOT_ALLOWED_METHOD(405, "Method Not Allowed", 405000),
+  NOT_ALLOWED_METHOD(405, 405000, "io.ourfit.api.exception.NOT_ALLOWED_METHOD.message"),
 
-  CONFLICT(409, "Conflict", 409000),
-  RESOURCE_ALREADY_EXISTS(409, "Conflict: The requested resource already exists", 409001),
-  RESOURCE_IDENTICAL(409, "Conflict: The requested resource is identical", 409002),
-  ENTITY_ILLEGAL_STATE(409, "Conflict: Entity is in illegal state", 409003),
+  CONFLICT(409, 409000, "io.ourfit.api.exception.CONFLICT.message"),
+  RESOURCE_ALREADY_EXISTS(409, 409001, "io.ourfit.api.exception.RESOURCE_ALREADY_EXISTS.message"),
+  RESOURCE_IDENTICAL(409, 409002, "io.ourfit.api.exception.RESOURCE_IDENTICAL.message"),
+  ENTITY_ILLEGAL_STATE(409, 409003, "io.ourfit.api.exception.ENTITY_ILLEGAL_STATE.message"),
 
-  TOO_MANY_REQUESTS(429, "Too Many Requests", 429000),
+  TOO_MANY_REQUESTS(429, 429000, "io.ourfit.api.exception.TOO_MANY_REQUESTS.message"),
 
-  INTERNAL_SERVER_ERROR(500, "Internal Server Error", 500000),
-  S3_ERROR(500, "Internal Server Error: AWS S3", 500001),
+  INTERNAL_SERVER_ERROR(500, 500000, "io.ourfit.api.exception.INTERNAL_SERVER_ERROR.message"),
+  S3_ERROR(500, 500001, "io.ourfit.api.exception.S3_ERROR.message"),
   ;
 
   /**
@@ -40,9 +41,9 @@ public enum ApiExceptionType {
    */
   private final int statusCode;
 
-  /** 클라이언트에게 전달할 예외 상황에 대한 정보 또는 메세지 */
-  private final String message;
-
   /** 디버그, 내부 관리를 위한 에러 코드 */
   private final int code;
+
+  /** 클라이언트에게 전달할 예외 상황에 대한 정보 또는 메세지의 키 */
+  private final String messageKey;
 }

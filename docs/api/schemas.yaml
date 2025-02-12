@@ -8,31 +8,28 @@ info:
     | HTTP Status | Code | Message | Description |
     |------------|--------|--------------------------------------------|-----------------------------|
     | **400**    | 400000 | Bad Request | 잘못된 요청입니다. |
-    | **400**    | 400001 | Bad Request: Required parameters are invalid or missing. | 필수 파라미터가 누락되었거나, 잘못된 형식입니다. |
-    | **400**    | 400002 | Bad Request: Invalid date format. | 날짜 형식이 잘못되었습니다. |
-    | **400**    | 400003 | Bad Request: Invalid date range. | 날짜 범위 설정이 잘못되었습니다. (시작일이 종료일보다 늦음 등) |
+    | **400**    | 400001 | Required parameters are invalid or missing. | 필수 파라미터가 누락되었거나, 잘못된 형식입니다. |
+    | **400**    | 400002 | Invalid date format | 날짜 형식이 잘못되었습니다. |
+    | **400**    | 400003 | Date range is invalid | 날짜 범위 설정이 잘못되었습니다. (시작일이 종료일보다 늦음 등) |
     | **401**    | 401000 | Unauthorized | 인증 수단을 제공하지 않았거나, 인증에 실패했습니다. |
-    | **401**    | 401001 | Unauthorized: Invalid JWT (expired or not matched) | 인증 토큰이 만료되었거나, 일치하지 않습니다. |
+    | **401**    | 401001 | Invalid or expired token | 인증 토큰이 만료되었거나, 일치하지 않습니다. |
     | **403**    | 403000 | Forbidden | 해당 리소스에 대한 권한이 없습니다. |
     | **404**    | 404000 | Not Found | 요청한 리소스를 찾을 수 없습니다. |
-    | **404**    | 404001 | Not Found: User not found | 사용자 정보를 찾을 수 없습니다. |
+    | **404**    | 404001 | User not found | 사용자 정보를 찾을 수 없습니다. |
     | **405**    | 405000 | Method Not Allowed | 허용되지 않는 HTTP 메서드 요청입니다. |
-    | **409**    | 409000 | Conflict | 요청이 서버의 현재 상태와 충돌합니다. |
-    | **409**    | 409001 | Conflict: The requested resource already exists | 요청한 리소스가 이미 존재합니다. |
-    | **409**    | 409002 | Conflict: The requested resource is identical | 요청한 리소스가 기존과 동일하여 처리할 변경 사항이 없습니다. |
-    | **409**    | 409003 | Conflict: Entity is in illegal state | 엔티티 상태가 비정상적이거나 처리할 수 없는 상태여서, 요청이 거부되었습니다. |
+    | **409**    | 409000 | Conflict | 요청이 현재 리소스 상태와 충돌합니다. |
+    | **409**    | 409001 | Resource already exists | 리소스가 이미 존재합니다. |
+    | **409**    | 409002 | Resource is identical | 요청한 리소스가 기존과 동일하여 처리할 변경 사항이 없습니다. |
+    | **409**    | 409003 | Entity is in illegal state | 엔티티 상태가 비정상적이거나 처리할 수 없는 상태여서, 요청이 거부되었습니다. |
     | **429**    | 429000 | Too Many Requests | 너무 많은 요청을 보냈습니다. |
     | **500**    | 500000 | Internal Server Error | 서버 내부 오류가 발생했습니다. |
-    | **500**    | 500001 | Internal Server Error: AWS S3 | AWS S3 서비스 관련 오류가 발생했습니다. |
+    | **500**    | 500001 | AWS S3 Error | AWS S3 서비스 관련 오류가 발생했습니다. |
   version: 0.0.1
   contact:
     name: Team Ourfit
     email: teamourfit@gmail.com
 servers:
-  - url: https://dev.not-available-yet.com
-    description: Development
-  - url: https://not-available-yet.com
-    description: Production
+  - url: https://api.ourfit.life
 components:
   securitySchemes:
     bearerAuth:
@@ -131,7 +128,7 @@ components:
           type: string
           example: "Http Status Message"
           description: "HTTP 상태 메세지"
-        data:
+        error:
           $ref: "#/components/schemas/ErrorData"
 
     ErrorData:

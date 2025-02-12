@@ -105,6 +105,6 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
   }
 
   private String buildObjectUrl(final String key) {
-    return this.awsProperties.s3().url().concat(key);
+    return this.awsProperties.s3().cdn().concat(key);
   }
 }

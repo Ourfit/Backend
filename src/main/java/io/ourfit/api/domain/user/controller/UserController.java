@@ -16,6 +16,8 @@ import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
+import io.ourfit.api.global.security.data.enums.AccessLevel;
+import io.ourfit.api.global.security.data.enums.KeyValidation;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -113,7 +115,7 @@ public class UserController {
   }
 
   /** 회원 가입 */
-  @PublicApi
+  @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping
   public ResponseEntity<BaseResponse<OurfitToken>> create(
       @RequestBody @Valid UserSignUpRequest request) {

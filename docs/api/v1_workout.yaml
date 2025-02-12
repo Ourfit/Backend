@@ -4,10 +4,7 @@ info:
   description: 운동 종류 관리 API
   version: 0.0.1
 servers:
-  - url: https://dev.not-available-yet.com
-    description: Development
-  - url: https://not-available-yet.com
-    description: Production
+  - url: https://api.ourfit.life
 paths:
   /v1/workout-types:
     get:
