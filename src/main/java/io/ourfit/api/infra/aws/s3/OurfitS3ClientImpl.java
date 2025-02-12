@@ -18,11 +18,9 @@ import software.amazon.awssdk.services.s3.model.*;
 
 @Service
 public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Client {
+
   /** S3 경로 구분자 */
   static final String DIRECTORY_DELIMETER = "/";
-
-  /** S3 루트 경로 */
-  static final String ROOT_PATH = "";
 
   /** 디렉토리 경로 정규식 */
   static final Pattern DIRECTORY_PATH_PATTERN =
@@ -53,7 +51,7 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
   public String upload(String directoryPath, String fileName, MultipartFile file) {
     S3Utils.validatePath(directoryPath);
     final String extension = S3Utils.extractExtension(file);
-    final String key = fileName.concat(extension);
+    final String key = directoryPath.concat(DIRECTORY_DELIMETER).concat(fileName).concat(extension);
     this.putObjectInternal(key, file);
     return this.buildObjectUrl(key);
   }
