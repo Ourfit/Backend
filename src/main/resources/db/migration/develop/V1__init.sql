@@ -1,5 +1,3 @@
-use ourfit;
-
 create table user
 (
     id                   int unsigned auto_increment comment '서비스 내 고유 ID',
