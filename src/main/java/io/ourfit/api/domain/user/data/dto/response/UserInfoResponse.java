@@ -83,7 +83,7 @@ public record UserInfoResponse(
             StreamUtils.mapToList(
                 user.getFavoriteWorkoutPlaces(), UserFavoriteWorkoutPlaceResponse::from))
         .createdAt(user.getCreatedAt().toString())
-        .nicknameUpdatedAt(Objects.toString(user.getNickNameUpdatedAt(), "-"))
+        .nicknameUpdatedAt(Objects.toString(user.getNickNameUpdatedAt(), null))
         .build();
   }
 }
