@@ -2,6 +2,11 @@
 REPOSITORY=/home/ubuntu
 PROJECT_NAME=ourfit-backend
 
+if [ "$(id -u)" -ne 0 ]; then
+  echo "> This script must be run as root or with sudo previleges"
+  exit 1
+fi
+
 echo "> Check if application is already running..."
 CURRENT_PID=$(pgrep -rf ${PROJECT_NAME}.*.jar)
 if [ -z "$CURRENT_PID" ]; then
@@ -22,7 +27,7 @@ if [ -d "$REPOSITORY/$PROJECT_NAME" ]; then
 fi
 
 echo "> Building artifact with Gradle"
-./gradlew clean build -x test
+./gradlew build -x test
 echo ">> Done"
 
 echo "> Copying artifact to the repository root directory"
@@ -32,9 +37,10 @@ if [ -z "$ARTIFACT" ]; then
   exit 1
 fi
 cp "$ARTIFACT" $REPOSITORY/
+cd $REPOSITORY || { echo "> Failed CD to repository root directory"; exit 1; }
 echo ">> Done"
 
 echo "> Deploy new application"
 JAR_NAME=$(basename "$ARTIFACT")
-nohup java -jar $REPOSITORY/"$JAR_NAME" --spring.profiles.active=prod 2>&1 &
+sudo nohup java -jar $REPOSITORY/"$JAR_NAME" --spring.profiles.active=develop 2>&1 &
 echo ">> Deploy process has been completed!"
