@@ -22,11 +22,11 @@ if [ -d "$REPOSITORY/$PROJECT_NAME" ]; then
 fi
 
 echo "> Building artifact with Gradle"
-./gradlew clean build -x test
+./gradlew build -x test
 echo ">> Done"
 
 echo "> Copying artifact to the repository root directory"
-ARTIFACT=$(find $REPOSITORY/$PROJECT_NAME/build/libs -type f -name "*.jar" ! -name "*-plain.jar")
+ARTIFACT=$(find $REPOSITORY/$PROJECT_NAME/build/libs -type f -name "*.jar")
 if [ -z "$ARTIFACT" ]; then
   echo ">> No valid artifact found in build paths"
   exit 1
