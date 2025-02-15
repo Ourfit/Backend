@@ -1,6 +1,7 @@
 package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.dto.internal.MateHistoryDto;
+import io.ourfit.api.domain.mate.data.dto.internal.MateHistorySearchDto;
 import io.ourfit.api.domain.mate.service.MateHistoryService;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.infra.persistence.mate.MateHistoryQRepository;
@@ -21,8 +22,9 @@ public class MateHistoryServiceImpl implements MateHistoryService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<MateHistoryDto> findAllByUserId(long userId, Pageable pageable) {
-    return this.qRepository.findAllByUserId(userId, pageable);
+  public Page<MateHistoryDto> findAllByUserId(
+      long userId, MateHistorySearchDto searchDto, Pageable pageable) {
+    return this.qRepository.findAllByUserId(userId, searchDto, pageable);
   }
 
   @Override

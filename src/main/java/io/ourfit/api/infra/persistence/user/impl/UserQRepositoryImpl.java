@@ -55,11 +55,11 @@ public class UserQRepositoryImpl implements UserQRepository {
                 .on(qFavoriteWorkout.workout.eq(qWorkout))
                 .where(
                     qUser.ne(requestedUser),
-                    this.isNotMatchedWithMate(),
-                    this.region3Eqauls(searchDto),
-                    this.genderEquals(searchDto),
-                    this.preferredTimesIn(searchDto),
-                    this.workoutsIn(searchDto))
+                    isNotMatchedWithMate(),
+                    region3Eqauls(searchDto),
+                    genderEquals(searchDto),
+                    preferredTimesIn(searchDto),
+                    workoutsIn(searchDto))
                 .transform(
                     groupBy(qUser.id)
                         .as(
@@ -92,18 +92,18 @@ public class UserQRepositoryImpl implements UserQRepository {
                         .on(qFavoriteWorkout.workout.eq(qWorkout))
                         .where(
                             qUser.ne(requestedUser),
-                            this.isNotMatchedWithMate(),
-                            this.region3Eqauls(searchDto),
-                            this.genderEquals(searchDto),
-                            this.preferredTimesIn(searchDto),
-                            this.workoutsIn(searchDto))
+                            isNotMatchedWithMate(),
+                            region3Eqauls(searchDto),
+                            genderEquals(searchDto),
+                            preferredTimesIn(searchDto),
+                            workoutsIn(searchDto))
                         .fetchOne())
             .orElse(0L);
 
     return new PageImpl<>(contents, pageable, totalCount);
   }
 
-  private BooleanExpression isNotMatchedWithMate() {
+  private static BooleanExpression isNotMatchedWithMate() {
     return JPAExpressions.selectOne()
         .from(qMate)
         .where(
@@ -112,26 +112,26 @@ public class UserQRepositoryImpl implements UserQRepository {
         .notExists();
   }
 
-  private BooleanExpression region3Eqauls(MateCandidateSearchDto searchDto) {
+  private static BooleanExpression region3Eqauls(MateCandidateSearchDto searchDto) {
     return qUser.region3.eq(searchDto.region3());
   }
 
-  private BooleanExpression genderEquals(MateCandidateSearchDto searchDto) {
+  private static BooleanExpression genderEquals(MateCandidateSearchDto searchDto) {
     if (searchDto.gender() == null) {
       return null;
     }
     return qUser.genderType.eq(searchDto.gender());
   }
 
-  private BooleanExpression preferredTimesIn(MateCandidateSearchDto searchDto) {
+  private static BooleanExpression preferredTimesIn(MateCandidateSearchDto searchDto) {
     List<TimePrefrenceType> preferredTimes = searchDto.preferredTimes();
-    if (Collections.isEmpty(preferredTimes)) {
+    if (preferredTimes == null || preferredTimes.isEmpty()) {
       return null;
     }
     return qUser.preferredWorkoutTime.in(preferredTimes);
   }
 
-  private BooleanExpression workoutsIn(MateCandidateSearchDto searchDto) {
+  private static BooleanExpression workoutsIn(MateCandidateSearchDto searchDto) {
     Set<String> workoutCodes = searchDto.workoutTypes();
     if (Collections.isEmpty(workoutCodes)) {
       return null;

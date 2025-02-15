@@ -27,6 +27,29 @@ paths:
         최신 순으로 정렬되어 반환됩니다.
       security:
         - bearerAuth: [ ]
+      parameters:
+        - name: actionTypes
+          in: query
+          description: "조회할 이력 타입(신청, 수락, 해제) / 기본값: 전체"
+          required: false
+          schema:
+            type: string
+            enum: [ "APPLY", "ACCEPT", "UNMATE" ]
+            example: "APPLY"
+        - name: page
+          in: query
+          description: "페이지 번호(1부터 시작) / 기본값: 1"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: size
+          in: query
+          description: "페이지 크기 / 기본값: 10"
+          required: false
+          schema:
+            type: integer
+            example: 10
       responses:
         200:
           $ref: "#/components/responses/MateHistoryPageResponse"
@@ -117,6 +140,14 @@ paths:
         기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
       security:
         - bearerAuth: [ ]
+      parameters:
+        - name: mateId
+          in: path
+          required: true
+          description: 시설(장소) 정보를 설정할 메이트 ID
+          schema:
+            type: number
+            example: 5
       requestBody:
         content:
           application/json:
@@ -150,6 +181,14 @@ paths:
         기존 데이터를 새로운 데이터로 대체합니다. 요청 시 모든 필드를 전달해야 합니다.
       security:
         - bearerAuth: [ ]
+      parameters:
+        - name: mateId
+          in: path
+          required: true
+          description: 시간을 설정할 메이트 ID
+          schema:
+            type: number
+            example: 5
       requestBody:
         content:
           application/json:

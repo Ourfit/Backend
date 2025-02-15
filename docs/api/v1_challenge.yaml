@@ -40,8 +40,10 @@ paths:
         - name: challengeId
           in: path
           required: true
-          example: 52
           description: 수정할 챌린지 ID
+          schema:
+            type: number
+            example: 52
       requestBody:
         $ref: '#/components/requestBodies/ChallengeUpdateRequest'
       responses:
@@ -63,8 +65,10 @@ paths:
         - name: challengeId
           in: path
           required: true
-          example: 52
           description: 삭제할 챌린지 ID
+          schema:
+            type: number
+            example: 52
       responses:
         200:
           description: 챌린지 삭제 성공

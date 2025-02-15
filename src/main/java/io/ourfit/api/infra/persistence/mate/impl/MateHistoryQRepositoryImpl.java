@@ -4,16 +4,20 @@ import static com.querydsl.core.types.ExpressionUtils.count;
 
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.ourfit.api.domain.mate.data.dto.internal.MateHistoryDto;
+import io.ourfit.api.domain.mate.data.dto.internal.MateHistorySearchDto;
 import io.ourfit.api.domain.mate.data.entity.QMate;
 import io.ourfit.api.domain.mate.data.entity.QMateHistory;
 import io.ourfit.api.domain.user.data.entity.QUser;
+import io.ourfit.api.domain.workout.data.enums.MateActionType;
 import io.ourfit.api.infra.persistence.mate.MateHistoryQRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,7 +38,8 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<MateHistoryDto> findAllByUserId(final long userId, Pageable pageable) {
+  public Page<MateHistoryDto> findAllByUserId(
+      final long userId, MateHistorySearchDto searchDto, Pageable pageable) {
     List<MateHistoryDto> contents =
         this.queryFactory
             .select(
@@ -53,7 +58,7 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
             .innerJoin(qMateHistory.mate, qMate)
             .innerJoin(qMateHistory.actor, qActor)
             .innerJoin(qMateHistory.target, qTarget)
-            .where(qActor.id.eq(userId).or(qTarget.id.eq(userId)))
+            .where(qActor.id.eq(userId).or(qTarget.id.eq(userId)), actionTypeIn(searchDto))
             .orderBy(qMateHistory.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -66,7 +71,8 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
                     query
                         .select(count(qMateHistory))
                         .from(qMateHistory)
-                        .where(qActor.id.eq(userId).or(qTarget.id.eq(userId)))
+                        .where(
+                            qActor.id.eq(userId).or(qTarget.id.eq(userId)), actionTypeIn(searchDto))
                         .fetchOne())
             .orElse(0L);
 
@@ -80,5 +86,13 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
         .when(qMateHistory.target.id.eq(userId))
         .then(qMateHistory.targetRead)
         .otherwise(false);
+  }
+
+  private static BooleanExpression actionTypeIn(MateHistorySearchDto searchDto) {
+    Set<MateActionType> actionTypes = searchDto.actionTypes();
+    if (actionTypes == null || actionTypes.isEmpty()) {
+      return null;
+    }
+    return qMateHistory.actionType.in(actionTypes);
   }
 }
