@@ -298,10 +298,8 @@ components:
                 enum: [ 'BEGINNER', 'INTERMEDIATE', 'ADVANCED' ]
                 description: "운동 실력"
               preferredWorkoutTime:
-                type: array
-                items:
-                  type: string
-                  enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
+                type: string
+                enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
                 description: "선호하는 시간대"
               favoriteWorkouts:
                 type: array
@@ -465,10 +463,8 @@ components:
           description: "소개"
           nullable: true
         preferredWorkoutTime:
-          type: array
-          items:
-            type: string
-            enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
+          type: string
+          enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
           description: "선호하는 시간대"
           nullable: false
         favoriteWorkouts:
@@ -525,10 +521,8 @@ components:
           description: "소개"
           nullable: true
         preferredWorkoutTime:
-          type: array
-          items:
-            type: string
-            enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
+          type: string
+          enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
           description: "선호하는 시간대"
           nullable: false
         favoriteWorkouts:

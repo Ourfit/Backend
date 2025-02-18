@@ -2,9 +2,9 @@ package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.dto.internal.MateInfoDto;
 import io.ourfit.api.domain.mate.data.entity.Mate;
+import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 import io.ourfit.api.domain.mate.service.MateQueryService;
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.infra.persistence.mate.MateQRepository;
 import io.ourfit.api.infra.persistence.mate.MateRepository;
 import java.util.Optional;

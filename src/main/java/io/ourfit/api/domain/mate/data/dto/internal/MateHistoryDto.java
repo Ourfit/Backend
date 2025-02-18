@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.mate.data.dto.internal;
 
-import io.ourfit.api.domain.workout.data.enums.MateActionType;
+import io.ourfit.api.domain.mate.data.enums.MateActionType;
 import java.time.LocalDateTime;
 
 /**

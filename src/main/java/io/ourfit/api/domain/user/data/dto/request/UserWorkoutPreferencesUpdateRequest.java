@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
-import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
+import io.ourfit.api.domain.mate.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.web.validation.Enumerable;
 import jakarta.validation.constraints.Size;
 import java.util.List;

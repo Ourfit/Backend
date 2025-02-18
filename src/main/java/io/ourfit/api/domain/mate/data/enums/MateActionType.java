@@ -1,4 +1,4 @@
-package io.ourfit.api.domain.workout.data.enums;
+package io.ourfit.api.domain.mate.data.enums;
 
 import jakarta.annotation.Nullable;
 import java.util.Arrays;

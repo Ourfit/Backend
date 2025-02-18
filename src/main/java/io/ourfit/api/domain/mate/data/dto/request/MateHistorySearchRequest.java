@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.mate.data.dto.request;
 
-import io.ourfit.api.domain.workout.data.enums.MateActionType;
+import io.ourfit.api.domain.mate.data.enums.MateActionType;
 import io.ourfit.api.global.web.validation.Enumerable;
 import java.util.Set;
 

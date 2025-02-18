@@ -2,11 +2,11 @@ package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.entity.MateHistory;
+import io.ourfit.api.domain.mate.data.enums.MateActionType;
 import io.ourfit.api.domain.mate.service.MateCommandService;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserQueryService;
-import io.ourfit.api.domain.workout.data.enums.MateActionType;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;

@@ -1,12 +1,12 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
+import io.ourfit.api.domain.mate.data.enums.TimePrefrenceType;
 import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 import io.ourfit.api.domain.user.validation.Age;
 import io.ourfit.api.domain.user.validation.Nickname;
-import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.web.validation.Enumerable;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

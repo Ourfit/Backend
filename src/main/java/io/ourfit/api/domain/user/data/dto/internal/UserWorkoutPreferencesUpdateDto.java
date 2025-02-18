@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.user.data.dto.internal;
 
+import io.ourfit.api.domain.mate.data.enums.TimePrefrenceType;
 import io.ourfit.api.domain.user.data.dto.request.UserWorkoutPreferencesUpdateRequest;
-import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.utils.StreamUtils;
 import java.util.List;
 import java.util.Set;

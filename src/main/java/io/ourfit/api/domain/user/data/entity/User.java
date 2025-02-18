@@ -1,6 +1,7 @@
 package io.ourfit.api.domain.user.data.entity;
 
 import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
+import io.ourfit.api.domain.mate.data.enums.TimePrefrenceType;
 import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
@@ -10,7 +11,6 @@ import io.ourfit.api.domain.user.data.entity.enums.GenderType;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.data.entity.enums.RoleType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
-import io.ourfit.api.domain.workout.data.enums.TimePrefrenceType;
 import io.ourfit.api.global.data.entity.AuditableBaseEntity;
 import io.ourfit.api.global.exception.custom.IllegalEntityStateException;
 import io.ourfit.api.global.persistence.converter.EncryptedStringConverter;
