@@ -1,5 +1,7 @@
 package io.ourfit.api.domain.terms.controller;
 
+import io.ourfit.api.domain.terms.data.dto.internal.TermsUpsertDto;
+import io.ourfit.api.domain.terms.data.dto.request.TermsUpsertRequest;
 import io.ourfit.api.domain.terms.data.dto.response.TermsResponse;
 import io.ourfit.api.domain.terms.data.dto.response.TermsRevisionCompactHistoryResponse;
 import io.ourfit.api.domain.terms.data.entity.TermsType;
@@ -7,9 +9,12 @@ import io.ourfit.api.domain.terms.service.TermsRevisionHistoryService;
 import io.ourfit.api.domain.terms.service.TermsService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
+import io.ourfit.api.global.security.data.annotation.AdminApi;
 import io.ourfit.api.global.utils.StreamUtils;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +26,13 @@ public class TermsController {
   private final TermsService termsService;
   private final TermsRevisionHistoryService revisionHistoryService;
 
-  //  @AdminApi(superAdminOnly = true, audit = true)
-  //  @PostMapping
-  //  public ResponseEntity<BaseResponse<Void>> upsert(
-  //      @RequestBody @Valid final TermsUpsertRequest request) {
-  //    this.termsService.upsert(TermsUpsertDto.fromRequest(request));
-  //    return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.empty());
-  //  }
+  @AdminApi(superAdminOnly = true, audit = true)
+  @PostMapping
+  public ResponseEntity<BaseResponse<Void>> upsert(
+      @RequestBody @Valid final TermsUpsertRequest request) {
+    this.termsService.upsert(TermsUpsertDto.fromRequest(request));
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
 
   @GetMapping
   public ResponseEntity<BaseResponse<List<TermsResponse>>> findAll() {
