@@ -40,7 +40,7 @@ public class OAuthRedirectDispatcher {
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(
             REDIRECT_URI.expand(
-                "https://client.ourfit.io", oAuthId, this.getRegistrationStatus(oAuthId)))
+                "http://localhost:3000", oAuthId, this.getRegistrationStatus(oAuthId)))
         .build();
   }
 

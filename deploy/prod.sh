@@ -8,15 +8,14 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 echo "> Check if application is already running..."
-CURRENT_PID=$(pgrep -rf ${PROJECT_NAME}.*.jar)
-if [ -z "$CURRENT_PID" ]; then
-  echo ">> No running application found"
-else
-  echo ">> Found a running application (PID: $CURRENT_PID)"
-  kill -15 "$CURRENT_PID"
-  echo ">> Sent termination signal to the application and wait 5 seconds..."
+if pgrep -f ${PROJECT_NAME}.*.jar > /dev/null; then
+  echo ">> Found running applications, stopping..."
+  pkill -15 -f "${PROJECT_NAME}.*.jar"
+  echo ">> Sent termination signal to all instances, waiting 5 seconds..."
   sleep 5
   echo ">>> Done"
+else
+  echo ">> No running application found"
 fi
 
 echo "> Pulling changes from remote repository..."
