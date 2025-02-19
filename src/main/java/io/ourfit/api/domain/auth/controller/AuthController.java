@@ -34,7 +34,7 @@ public class AuthController {
 
   @PostMapping("/tokens/refresh")
   public ResponseEntity<BaseResponse<OurfitToken>> renewToken(
-      @RequestBody final TokenRenewRequest request) {
+      @RequestBody @Valid final TokenRenewRequest request) {
     OurfitToken locatTokenDto =
         this.authService.renew(request.accessToken(), request.refreshToken());
     return ResponseEntity.ok((BaseResponse.from(locatTokenDto)));

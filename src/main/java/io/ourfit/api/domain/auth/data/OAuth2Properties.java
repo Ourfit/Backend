@@ -22,7 +22,9 @@ public record OAuth2Properties(Kakao kakao) {
 
     public static final String ADMIN_KEY_PREFIX = "KakaoAK ";
 
-    public static final String GRANT_TYPE = "authorization_code";
+    public static final String GRANT_TYPE_ISSUE = "authorization_code";
+
+    public static final String GRANT_TYPE_RENEW = "refresh_token";
 
     public static final String TARGET_ID_TYPE = "user_id";
   }

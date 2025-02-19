@@ -24,6 +24,14 @@ public interface OAuth2Template {
   OAuth2ProviderToken issueToken(@NotNull final String code);
 
   /**
+   * 토큰을 갱신한다.
+   *
+   * @param oAuthId 갱신할 사용자의 OAuth ID
+   * @return 갱신된 {@link OAuth2ProviderToken}
+   */
+  OAuth2ProviderToken renewToken(@NotNull final String oAuthId);
+
+  /**
    * 사용자가 인증되었는지 확인한다.
    *
    * @param oAuthId 확인할 사용자의 OAuth ID

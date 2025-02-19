@@ -6,10 +6,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.ourfit.api.domain.auth.data.entity.OurfitRefreshToken;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.jwt.TokenException;
+import io.ourfit.api.infra.redis.OurfitRefreshTokenRepository;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -26,33 +28,29 @@ public class JwtProviderImpl implements JwtProvider {
 
   private final Clock clock;
   private final JwtProperties jwtProperties;
+  private final OurfitRefreshTokenRepository refreshTokenRepository;
 
   @Override
   public OurfitToken create(User user) {
+    final var now = this.getCurrentTime();
+    final var ourfitToken =
+        OurfitToken.issue(
+            this.createAccessToken(user, now), this.createRefreshToken(user.getId(), now));
 
-    final Date now = this.getCurrentTime();
-    final String accessToken = this.createAccessToken(user, now);
-    final String refreshToken = this.createRefreshToken(user.getId(), now);
-
-    return OurfitToken.builder()
-        .grantType(BEARER_PREFIX)
-        .accessToken(accessToken)
-        .refreshToken(refreshToken)
-        .accessTokenExpiresIn(ACCESS_TOKEN_EXPIRATION.toSeconds())
-        .refreshTokenExpiresIn(REFRESH_TOKEN_EXPIRATION.toSeconds())
-        .build();
+    this.refreshTokenRepository.save(OurfitRefreshToken.from(user.getId(), ourfitToken));
+    return ourfitToken;
   }
 
   @Override
   public OurfitToken renew(String oldAccessToken, String refreshToken) {
-    Claims claims = this.parse(refreshToken).orElseThrow(TokenException::new);
+    final var claims = this.parse(oldAccessToken).orElseThrow(TokenException::new);
+    final var userId = Long.parseLong(claims.getSubject());
 
-    // Validations here...
-
-    return OurfitToken.builder()
-        .accessToken(this.createAccessToken(claims, this.getCurrentTime()))
-        .accessTokenExpiresIn(ACCESS_TOKEN_EXPIRATION.toSeconds())
-        .build();
+    return this.refreshTokenRepository
+        .findById(userId)
+        .filter(token -> token.matches(refreshToken))
+        .map(token -> this.doRenew(userId, claims, token))
+        .orElseThrow(TokenException::new);
   }
 
   @Override
@@ -104,6 +102,16 @@ public class JwtProviderImpl implements JwtProvider {
         .expiration(this.toDate(REFRESH_TOKEN_EXPIRATION))
         .signWith(this.jwtProperties.key())
         .compact();
+  }
+
+  private OurfitToken doRenew(final long userId, Claims claims, OurfitRefreshToken refreshToken) {
+    final var accessToken = this.createAccessToken(claims, this.getCurrentTime());
+    final var refreshTokenExpiresIn =
+        refreshToken.isExpiringSoon()
+            ? this.createRefreshToken(userId, this.getCurrentTime())
+            : null;
+
+    return OurfitToken.renew(accessToken, refreshTokenExpiresIn);
   }
 
   private Date toDate(Duration duration) {
