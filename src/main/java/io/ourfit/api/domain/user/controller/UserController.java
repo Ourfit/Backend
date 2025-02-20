@@ -16,10 +16,12 @@ import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
+import io.ourfit.api.global.security.data.annotation.RateLimit;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
+import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -96,6 +98,11 @@ public class UserController {
   }
 
   /** 프로필 이미지 설정 */
+  @RateLimit(
+      maxRequests = 1,
+      duration = 1,
+      durationUnit = ChronoUnit.MINUTES,
+      limitType = RateLimit.LimitType.USER)
   @PutMapping("/me/profile-image")
   public ResponseEntity<BaseResponse<Void>> updateMyProfileImage(
       @AuthenticationPrincipal OurfitUserDetails userDetails,

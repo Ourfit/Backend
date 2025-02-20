@@ -36,12 +36,19 @@ public class RedisTokenBucketRateLimiter implements RateLimiter {
         local current_tokens = tonumber(bucket[1]) or capacity
         local last_refill = tonumber(bucket[2]) or now
 
-        -- 시간 경과에 따라 토큰을 충전
+        -- 토큰이 충분하면 사용
+        if current_tokens >= requested then
+            current_tokens = current_tokens - requested
+            redis.call('HMSET', key, 'tokens', current_tokens, 'last_refill', last_refill)
+            redis.call('EXPIRE', key, duration / 1000)
+            return 1
+        end
+
+        -- 토큰이 부족하면 토큰을 채워넣고, 다시 확인
         local elapsed_time = now - last_refill
         local refill_rate = capacity / duration
         local new_tokens = math.min(capacity, math.floor(current_tokens + (elapsed_time * refill_rate)))
 
-        -- 토큰 사용
         if new_tokens >= requested then
             new_tokens = new_tokens - requested
             redis.call('HMSET', key, 'tokens', new_tokens, 'last_refill', now)

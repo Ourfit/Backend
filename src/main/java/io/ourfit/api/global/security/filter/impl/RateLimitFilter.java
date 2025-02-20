@@ -22,7 +22,8 @@ import org.springframework.util.Assert;
 @RequiredArgsConstructor
 public class RateLimitFilter extends AbstractSecurityFilter {
 
-  private static final String RATE_LIMIT_PREFIX = "RATE::LIMIT::";
+  private static final String RATE_LIMIT_PREFIX = "RATE::LIMIT";
+  private static final String KEY_DELIMITER = "::";
 
   private final HandlerMethodAnnotationResolver annotationResolver;
   private final OurfitAuditorAware auditorAware;
@@ -48,8 +49,8 @@ public class RateLimitFilter extends AbstractSecurityFilter {
           "RateLimit annotation cannot be used with PublicApi annotation");
     }
 
-    var key = this.generateRateLimitKey(request, rateLimit);
-    var isAllowed = this.rateLimiter.tryConsume(key, rateLimit);
+    String key = this.generateRateLimitKey(request, rateLimit);
+    boolean isAllowed = this.rateLimiter.tryConsume(key, rateLimit);
 
     if (needsRateLimitHandling(!isAllowed, rateLimit)) {
       this.doHandle(response, rateLimit);
@@ -60,11 +61,16 @@ public class RateLimitFilter extends AbstractSecurityFilter {
   }
 
   private String generateRateLimitKey(HttpServletRequest request, RateLimit rateLimit) {
+    var uri = request.getRequestURI();
+    var method = request.getMethod();
     return switch (rateLimit.limitType()) {
-      case IP -> RATE_LIMIT_PREFIX + request.getRemoteAddr();
-      case USER ->
-          RATE_LIMIT_PREFIX
-              + this.auditorAware.getCurrentAuditor().orElseThrow(AuthenticationException::new);
+      case IP ->
+          String.join(KEY_DELIMITER, RATE_LIMIT_PREFIX, request.getRemoteAddr(), method, uri);
+      case USER -> {
+        long userId =
+            this.auditorAware.getCurrentAuditor().orElseThrow(AuthenticationException::new);
+        yield String.join(KEY_DELIMITER, RATE_LIMIT_PREFIX, String.valueOf(userId), method, uri);
+      }
     };
   }
 
