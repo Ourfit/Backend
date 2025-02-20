@@ -4,8 +4,10 @@ import io.ourfit.api.domain.reference.data.dto.response.RegionResponse;
 import io.ourfit.api.domain.reference.service.RegionService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
+import io.ourfit.api.global.security.data.annotation.RateLimit;
 import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.global.utils.StringUtils;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,11 @@ public class RegionController {
   private final RegionService service;
 
   @PublicApi
+  @RateLimit(
+      maxRequests = 40,
+      duration = 1,
+      durationUnit = ChronoUnit.MINUTES,
+      limitType = RateLimit.LimitType.IP)
   @GetMapping
   public ResponseEntity<BaseResponse<List<RegionResponse>>> findAllByKeyword(
       @RequestParam("q") String keyword) {
