@@ -31,7 +31,12 @@ public final class StringUtils {
     }
 
     String result = sb.toString().trim();
-    return (result.length() >= minLength && result.length() <= maxLength) ? result : EMPTY_STRING;
+    int length = result.length();
+
+    if (length < minLength) {
+      return EMPTY_STRING;
+    }
+    return length > maxLength ? result.substring(0, maxLength) : result;
   }
 
   private static boolean isKoreanOrDigitOrSpace(char ch) {
