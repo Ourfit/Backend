@@ -26,7 +26,7 @@ public record JwtProperties(String issuer, String secret, SecretKey key) {
   public static final String AUTHENTICATION_KEY = "auth";
 
   /** 접근 토큰의 기본 만료 시간 */
-  public static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofDays(9999);
+  public static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofHours(2);
 
   /** 갱신 토큰의 기본 만료 시간 */
   public static final Duration REFRESH_TOKEN_EXPIRATION = Duration.ofDays(14);
