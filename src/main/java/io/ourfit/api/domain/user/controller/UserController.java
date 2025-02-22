@@ -5,7 +5,8 @@ import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateDto;
 import io.ourfit.api.domain.user.data.dto.request.*;
-import io.ourfit.api.domain.user.data.dto.response.UserInfoResponse;
+import io.ourfit.api.domain.user.data.dto.response.BasicUserInfoResponse;
+import io.ourfit.api.domain.user.data.dto.response.DetailedUserInfoResponse;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.user.service.UserQueryService;
@@ -42,7 +43,7 @@ public class UserController {
 
   /** 메이트 관련 사용자 목록 조회 */
   @GetMapping("/mates")
-  public ResponseEntity<BaseResponse<Page<UserInfoResponse>>> getUsers(
+  public ResponseEntity<BaseResponse<Page<BasicUserInfoResponse>>> getUsers(
       MateCandidateSearchRequest request,
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
@@ -51,18 +52,19 @@ public class UserController {
         this.queryService
             .findMateCandidates(
                 currentUser, MateCandidateSearchDto.fromRequest(request, currentUser), pageable)
-            .map(UserInfoResponse::fromBasic);
+            .map(BasicUserInfoResponse::from);
 
     return ResponseEntity.ok(BaseResponse.from(response));
   }
 
   /** 사용자 상세 조회 */
   @GetMapping("/{id}")
-  public ResponseEntity<BaseResponse<UserInfoResponse>> getUser(@PathVariable final long id) {
-    UserInfoResponse userInfoResponse =
+  public ResponseEntity<BaseResponse<DetailedUserInfoResponse>> getUser(
+      @PathVariable final long id) {
+    DetailedUserInfoResponse userInfoResponse =
         this.queryService
             .findByIdWithFavorites(id)
-            .map(UserInfoResponse::fromDetailed)
+            .map(DetailedUserInfoResponse::from)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 
     return ResponseEntity.ok(BaseResponse.from(userInfoResponse));
@@ -70,7 +72,7 @@ public class UserController {
 
   /** 내 정보 조회 */
   @GetMapping("/me")
-  public ResponseEntity<BaseResponse<UserInfoResponse>> getMe(
+  public ResponseEntity<BaseResponse<DetailedUserInfoResponse>> getMe(
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     return this.getUser(userDetails.getId());
   }

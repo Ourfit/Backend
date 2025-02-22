@@ -452,6 +452,11 @@ components:
           enum: [ 'F', 'M' ]
           description: "성별"
           nullable: false
+        age:
+          type: number
+          example: 20
+          description: "나이"
+          nullable: false
         skillLevel:
           type: string
           enum: [ 'BEGINNER', 'INTERMEDIATE', 'ADVANCED' ]
@@ -494,12 +499,23 @@ components:
           example: 1
           description: "사용자 ID"
           nullable: false
+        oAuthProvider:
+          type: string
+          enum: [ "KAKAO" ]
+          description: "OAuth2 제공자"
+          nullable: false
         profileUrl:
           type: string
           format: uri
           example: "https://example.com/profile.jpg"
           description: "프로필 이미지 URL"
           nullable: true
+        email:
+          type: string
+          format: email
+          example: "admin@ourfit.life"
+          description: "이메일"
+          nullable: false
         nickname:
           type: string
           example: "닉네임입니다"
@@ -509,6 +525,21 @@ components:
           type: string
           enum: [ 'F', 'M' ]
           description: "성별"
+          nullable: false
+        region1:
+          type: string
+          example: "서울특별시"
+          description: "지역(시/도)"
+          nullable: false
+        region2:
+          type: string
+          example: "송파구"
+          description: "지역(시/군/구)"
+          nullable: false
+        region3:
+          type: string
+          example: "잠실동"
+          description: "지역(읍/면/동)"
           nullable: false
         skillLevel:
           type: string
