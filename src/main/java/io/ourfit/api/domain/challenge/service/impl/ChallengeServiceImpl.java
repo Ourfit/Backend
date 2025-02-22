@@ -40,10 +40,10 @@ public class ChallengeServiceImpl implements ChallengeService {
     Mate mate =
         this.mateQueryService
             .findByIdAndStatus(challengeCreateDto.mateId(), MateStatusType.MATCHED)
-            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND));
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE));
 
     if (this.repository.existsByMateAndUser(mate, challenger)) {
-      throw new DuplicatedException(ApiExceptionType.RESOURCE_ALREADY_EXISTS);
+      throw new DuplicatedException();
     }
 
     var challenge = this.repository.save(Challenge.of(mate, challenger, challengeCreateDto));
@@ -82,6 +82,10 @@ public class ChallengeServiceImpl implements ChallengeService {
     this.repository
         .findById(id)
         .map(entity -> StreamUtils.applyFiltersOrThrow(entity, filters))
-        .ifPresentOrElse(action, NoSuchEntityException::new);
+        .ifPresentOrElse(
+            action,
+            () -> {
+              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND_CHALLENGE);
+            });
   }
 }

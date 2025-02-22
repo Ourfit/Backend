@@ -11,6 +11,7 @@ public enum ApiExceptionType {
   INVALID_PARAMETER(400, 400001, "io.ourfit.api.exception.INVALID_PARAMETER.message"),
   INVALID_DATE_FORMAT(400, 400002, "io.ourfit.api.exception.INVALID_DATE_FORMAT.message"),
   INVALID_DATE_RANGE(400, 400003, "io.ourfit.api.exception.INVALID_DATE_RANGE.message"),
+  INVALID_REGION(400, 400004, "io.ourfit.api.exception.INVALID_REGION.message"),
 
   UNAUTHORIZED(401, 401000, "io.ourfit.api.exception.UNAUTHORIZED.message"),
   INVALID_TOKEN(401, 401001, "io.ourfit.api.exception.INVALID_TOKEN.message"),
@@ -20,6 +21,9 @@ public enum ApiExceptionType {
   NOT_FOUND(404, 404000, "io.ourfit.api.exception.NOT_FOUND.message"),
   NOT_FOUND_API_ENDPOINT(404, 404001, "io.ourfit.api.exception.NOT_FOUND_API_ENDPOINT.message"),
   NOT_FOUND_USER(404, 404002, "io.ourfit.api.exception.NOT_FOUND_USER.message"),
+  NOT_FOUND_MATE(404, 404003, "io.ourfit.api.exception.NOT_FOUND_MATE.message"),
+  NOT_FOUND_MATE_WORKOUT(404, 404004, "io.ourfit.api.exception.NOT_FOUND_MATE_WORKOUT.message"),
+  NOT_FOUND_CHALLENGE(404, 404005, "io.ourfit.api.exception.NOT_FOUND_CHALLENGE.message"),
 
   NOT_ALLOWED_METHOD(405, 405000, "io.ourfit.api.exception.NOT_ALLOWED_METHOD.message"),
 

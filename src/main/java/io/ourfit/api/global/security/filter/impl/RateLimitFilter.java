@@ -49,18 +49,18 @@ public class RateLimitFilter extends AbstractSecurityFilter {
           "RateLimit annotation cannot be used with PublicApi annotation");
     }
 
-    String key = this.generateRateLimitKey(request, rateLimit);
+    String key = this.createKey(request, rateLimit);
     boolean isAllowed = this.rateLimiter.tryConsume(key, rateLimit);
 
-    if (needsRateLimitHandling(!isAllowed, rateLimit)) {
-      this.doHandle(response, rateLimit);
+    if (shouldBlockRequest(!isAllowed, rateLimit)) {
+      this.handleRateLimitExceeded(response, rateLimit);
       return;
     }
 
     this.proceed(request, response, filterChain);
   }
 
-  private String generateRateLimitKey(HttpServletRequest request, RateLimit rateLimit) {
+  private String createKey(HttpServletRequest request, RateLimit rateLimit) {
     var uri = request.getRequestURI();
     var method = request.getMethod();
     return switch (rateLimit.limitType()) {
@@ -74,7 +74,8 @@ public class RateLimitFilter extends AbstractSecurityFilter {
     };
   }
 
-  private void doHandle(HttpServletResponse response, RateLimit rateLimit) throws IOException {
+  private void handleRateLimitExceeded(HttpServletResponse response, RateLimit rateLimit)
+      throws IOException {
     if (rateLimit.includeRetryAfterHeader()) {
       long retryAfterInSeconds =
           Duration.of(rateLimit.duration(), rateLimit.durationUnit()).toSeconds();
@@ -83,7 +84,7 @@ public class RateLimitFilter extends AbstractSecurityFilter {
     response.sendError(HttpStatus.TOO_MANY_REQUESTS.value());
   }
 
-  private static boolean needsRateLimitHandling(final boolean isExceeded, RateLimit rateLimit) {
+  private static boolean shouldBlockRequest(final boolean isExceeded, RateLimit rateLimit) {
     return switch (rateLimit.exceedAction()) {
       case BLOCK -> isExceeded;
       case THROTTLE -> false;

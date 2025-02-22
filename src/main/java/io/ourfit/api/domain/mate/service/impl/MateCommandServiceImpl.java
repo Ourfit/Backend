@@ -78,6 +78,10 @@ public class MateCommandServiceImpl implements MateCommandService {
     this.repository
         .findById(id)
         .map(entity -> StreamUtils.applyFiltersOrThrow(entity, filters))
-        .ifPresentOrElse(action, NoSuchEntityException::new);
+        .ifPresentOrElse(
+            action,
+            () -> {
+              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE);
+            });
   }
 }

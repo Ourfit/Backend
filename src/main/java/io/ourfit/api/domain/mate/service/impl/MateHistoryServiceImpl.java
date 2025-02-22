@@ -31,10 +31,6 @@ public class MateHistoryServiceImpl implements MateHistoryService {
   public void markAsRead(final long userId, final long historyId) {
     this.repository
         .findById(historyId)
-        .ifPresentOrElse(
-            history -> history.markAsRead(userId),
-            () -> {
-              throw new NoSuchEntityException();
-            });
+        .ifPresentOrElse(history -> history.markAsRead(userId), NoSuchEntityException::new);
   }
 }

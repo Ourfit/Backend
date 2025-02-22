@@ -2,6 +2,7 @@ package io.ourfit.api.domain.user.service.impl;
 
 import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.service.OAuth2Service;
+import io.ourfit.api.domain.reference.service.RegionService;
 import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
 import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
@@ -11,7 +12,9 @@ import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkout;
 import io.ourfit.api.domain.user.data.entity.association.UserFavoriteWorkoutPlace;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.workout.service.WorkoutService;
+import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
+import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.infra.aws.s3.OurfitS3Client;
@@ -33,10 +36,15 @@ public class UserCommandServiceImpl implements UserCommandService {
   private final UserRepository repository;
   private final OAuth2Service oAuth2Service;
   private final WorkoutService workoutService;
+  private final RegionService regionService;
   private final OurfitS3Client s3Client;
 
   @Override
   public User save(UserSignUpDto signUpDto) {
+    if (!this.regionService.isValidRegion(
+        signUpDto.region1(), signUpDto.region2(), signUpDto.region3())) {
+      throw new InvalidParameterException(ApiExceptionType.INVALID_REGION);
+    }
     if (this.repository.existsByoAuthIdAndDeletedAtIsNull(signUpDto.oAuthId())
         || this.repository.existsByNicknameAndDeletedAtIsNull(signUpDto.nickname())) {
       throw new DuplicatedException();
@@ -112,6 +120,10 @@ public class UserCommandServiceImpl implements UserCommandService {
     this.repository
         .findById(id)
         .map(entity -> StreamUtils.applyFiltersOrThrow(entity, filters))
-        .ifPresentOrElse(action, NoSuchEntityException::new);
+        .ifPresentOrElse(
+            action,
+            () -> {
+              throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER);
+            });
   }
 }
