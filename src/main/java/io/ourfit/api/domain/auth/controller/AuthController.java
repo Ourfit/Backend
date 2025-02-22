@@ -1,22 +1,20 @@
 package io.ourfit.api.domain.auth.controller;
 
 import io.ourfit.api.domain.auth.data.dto.request.TokenIssueRequest;
-import io.ourfit.api.domain.auth.data.dto.request.TokenRenewRequest;
+import io.ourfit.api.domain.auth.data.dto.request.TokenReissueRequest;
 import io.ourfit.api.domain.auth.service.AuthService;
 import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
+import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
-@PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/auth")
@@ -24,6 +22,7 @@ public class AuthController {
 
   private final AuthService authService;
 
+  @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping("/tokens")
   public ResponseEntity<BaseResponse<OurfitToken>> authenticate(
       @RequestBody @Valid final TokenIssueRequest request) {
@@ -32,11 +31,18 @@ public class AuthController {
     return ResponseEntity.ok((BaseResponse.from(ourfitToken)));
   }
 
+  @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping("/tokens/refresh")
-  public ResponseEntity<BaseResponse<OurfitToken>> renewToken(
-      @RequestBody @Valid final TokenRenewRequest request) {
+  public ResponseEntity<BaseResponse<OurfitToken>> reissue(
+      @RequestBody @Valid final TokenReissueRequest request) {
     OurfitToken locatTokenDto =
-        this.authService.renew(request.accessToken(), request.refreshToken());
+        this.authService.reissue(request.accessToken(), request.refreshToken());
     return ResponseEntity.ok((BaseResponse.from(locatTokenDto)));
+  }
+
+  @DeleteMapping("/tokens")
+  public ResponseEntity<Void> revoke(@AuthenticationPrincipal OurfitUserDetails userDetails) {
+    this.authService.revoke(userDetails.getUser());
+    return ResponseEntity.noContent().build();
   }
 }

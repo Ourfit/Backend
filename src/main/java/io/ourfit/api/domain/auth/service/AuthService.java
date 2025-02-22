@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.auth.service;
 
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.exception.custom.AuthenticationException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.jwt.JwtProvider;
@@ -18,13 +19,21 @@ public interface AuthService {
   OurfitToken issue(String oAuthId);
 
   /**
-   * 토큰을 갱신한다.
+   * 토큰을 재발급한다.
    *
    * @param accessToken 이전 접근 토큰
    * @param refreshToken 갱신 토큰
-   * @return 갱신된 토큰
+   * @return 재발급된 토큰
    * @throws AuthenticationException 이전 접근 토큰이 유효하지 않은 경우
-   * @apiNote {@link JwtProvider#renew}와 동일한 기능을 수행한다.
+   * @apiNote {@link JwtProvider#reissue}와 동일한 기능을 수행한다.
    */
-  OurfitToken renew(String accessToken, String refreshToken);
+  OurfitToken reissue(String accessToken, String refreshToken);
+
+  /**
+   * 사용자의 갱신 토큰을 폐기한다.
+   *
+   * @param user 토큰 폐기를 요청한 사용자 정보
+   * @apiNote {@link JwtProvider#revoke}와 동일한 기능을 수행한다.
+   */
+  void revoke(User user);
 }

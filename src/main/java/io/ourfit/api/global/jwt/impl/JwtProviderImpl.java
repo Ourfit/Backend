@@ -3,7 +3,6 @@ package io.ourfit.api.global.jwt.impl;
 import static io.ourfit.api.global.jwt.impl.JwtProperties.*;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.ourfit.api.domain.auth.data.entity.OurfitRefreshToken;
@@ -42,7 +41,7 @@ public class JwtProviderImpl implements JwtProvider {
   }
 
   @Override
-  public OurfitToken renew(String oldAccessToken, String refreshToken) {
+  public OurfitToken reissue(String oldAccessToken, String refreshToken) {
     final var claims = this.parse(oldAccessToken).orElseThrow(TokenException::new);
     final var userId = Long.parseLong(claims.getSubject());
 
@@ -64,12 +63,15 @@ public class JwtProviderImpl implements JwtProvider {
               .parseSignedClaims(token)
               .getPayload();
       return Optional.of(claims);
-    } catch (ExpiredJwtException ex) {
-      return Optional.of(ex.getClaims());
     } catch (JwtException ex) {
       log.debug("Could not parse JWT Claims. / Reason: {}", ex.getMessage());
       return Optional.empty();
     }
+  }
+
+  @Override
+  public void revoke(User user) {
+    this.refreshTokenRepository.deleteById(user.getId());
   }
 
   private String createAccessToken(User user, Date now) {
@@ -111,7 +113,7 @@ public class JwtProviderImpl implements JwtProvider {
             ? this.createRefreshToken(userId, this.getCurrentTime())
             : null;
 
-    return OurfitToken.renew(accessToken, refreshTokenExpiresIn);
+    return OurfitToken.reissue(accessToken, refreshTokenExpiresIn);
   }
 
   private Date toDate(Duration duration) {

@@ -3,6 +3,7 @@ package io.ourfit.api.domain.auth.service.impl;
 import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.service.AuthService;
 import io.ourfit.api.domain.auth.service.OAuth2Service;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
@@ -30,7 +31,12 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public OurfitToken renew(String accessToken, String refreshToken) {
-    return this.jwtProvider.renew(accessToken, refreshToken);
+  public OurfitToken reissue(String accessToken, String refreshToken) {
+    return this.jwtProvider.reissue(accessToken, refreshToken);
+  }
+
+  @Override
+  public void revoke(User user) {
+    this.jwtProvider.revoke(user);
   }
 }

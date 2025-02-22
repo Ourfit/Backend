@@ -29,7 +29,7 @@ public record OurfitToken(
         REFRESH_TOKEN_EXPIRATION.toSeconds());
   }
 
-  public static OurfitToken renew(String newAccessToken, @Nullable String newRefreshToken) {
+  public static OurfitToken reissue(String newAccessToken, @Nullable String newRefreshToken) {
     Long refreshTokenExpiry = newRefreshToken != null ? REFRESH_TOKEN_EXPIRATION.toSeconds() : null;
     return new OurfitToken(
         BEARER_PREFIX,
