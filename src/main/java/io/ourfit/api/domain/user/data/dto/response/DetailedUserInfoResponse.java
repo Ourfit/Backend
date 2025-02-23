@@ -21,6 +21,7 @@ import lombok.Builder;
  * @param region3 지역3 (읍/면/동)
  * @param skillLevel 운동 실력
  * @param introduction 자기소개
+ * @param openChatUrl 카카오 오픈 채팅 URL
  * @param preferredWorkoutTime 선호 운동 시간
  * @param favoriteWorkouts 선호하는 운동
  * @param favoritePlaces 선호하는 운동 시설(장소)
@@ -41,6 +42,7 @@ public record DetailedUserInfoResponse(
     String region3,
     String skillLevel,
     String introduction,
+    String openChatUrl,
     String preferredWorkoutTime,
     List<UserFavoriteWorkoutResponse> favoriteWorkouts,
     List<UserFavoriteWorkoutPlaceResponse> favoritePlaces,
@@ -61,6 +63,7 @@ public record DetailedUserInfoResponse(
         .region3(user.getRegion3())
         .skillLevel(user.getSkillLevelType().name())
         .introduction(user.getIntroduction())
+        .openChatUrl(user.getOpenChatUrl())
         .preferredWorkoutTime(user.getPreferredWorkoutTime().name())
         .favoriteWorkouts(
             StreamUtils.mapToList(user.getFavoriteWorkouts(), UserFavoriteWorkoutResponse::from))

@@ -83,7 +83,7 @@ paths:
       description: |
         서버에 저장된 토큰 정보를 폐기(revoke)하고, 사용자의 로그아웃을 처리합니다.
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         204:
           description: 토큰 폐기 성공
@@ -157,28 +157,36 @@ components:
           schema:
             type: object
             properties:
-              grantType:
+              message:
                 type: string
-                nullable: false
-                example: "Bearer"
-                description: "토큰 타입(Bearer로 고정)"
-              accessToken:
-                type: string
-                nullable: false
-                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
-                description: "접근 토큰"
-              refreshToken:
-                type: string
-                nullable: true
-                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
-                description: "갱신 토큰(토큰 갱신 시에는 nullable)"
-              accessTokenExpiresIn:
-                type: integer
-                nullable: false
-                example: 7200
-                description: "접근 토큰 만료 시간(초)"
-              refreshTokenExpiresIn:
-                type: integer
-                nullable: true
-                example: 604800
-                description: "갱신 토큰 만료 시간(초)"
+                example: "OK"
+                description: "HTTP 상태 메세지"
+              data:
+                type: object
+                description: "JWT 토큰 정보"
+                properties:
+                  grantType:
+                    type: string
+                    nullable: false
+                    example: "Bearer"
+                    description: "토큰 타입(Bearer로 고정)"
+                  accessToken:
+                    type: string
+                    nullable: false
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
+                    description: "접근 토큰"
+                  refreshToken:
+                    type: string
+                    nullable: true
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
+                    description: "갱신 토큰(토큰 갱신 시에는 nullable)"
+                  accessTokenExpiresIn:
+                    type: integer
+                    nullable: false
+                    example: 7200
+                    description: "접근 토큰 만료 시간(초)"
+                  refreshTokenExpiresIn:
+                    type: integer
+                    nullable: true
+                    example: 604800
+                    description: "갱신 토큰 만료 시간(초)"

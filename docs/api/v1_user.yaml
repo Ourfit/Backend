@@ -552,6 +552,12 @@ components:
           example: "안녕하세요. 자기소개입니다."
           description: "소개"
           nullable: true
+        openChatUrl:
+          type: string
+          format: uri
+          example: "https://open.kakao.com/o/gjgjgjgj"
+          description: "카카오 오픈 채팅 URL"
+          nullable: true
         preferredWorkoutTime:
           type: string
           enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
