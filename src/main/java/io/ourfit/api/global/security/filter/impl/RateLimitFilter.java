@@ -79,6 +79,7 @@ public class RateLimitFilter extends AbstractSecurityFilter {
       long retryAfterInSeconds = this.rateLimiter.getRetryAfterSeconds(key, rateLimit);
       response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterInSeconds));
     }
+    logger.warn("Rate limit exceeded for key: " + key);
     response.sendError(HttpStatus.TOO_MANY_REQUESTS.value());
   }
 

@@ -56,6 +56,8 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers(CorsUtils::isPreFlightRequest)
                     .permitAll()
+                    .requestMatchers("/error")
+                    .permitAll()
                     .requestMatchers("/v*/**")
                     .permitAll()
                     .requestMatchers("/actuator/**")
