@@ -1,8 +1,20 @@
 openapi: 3.0.0
 info:
-  title: Auth API
-  description: 인증 API
-  version: 0.0.1
+  title: Auth API (v1)
+  description: |
+    인증 API
+    
+    #### Revision History
+
+    | Date | Description |
+    |--------|--------------------------------|
+    | 2025.02.04 | 최초 등록 |
+    | 2025.02.09 | `description` 보완 |
+    | 2025.02.13 | 개발 서버 URL 추가 |
+    | 2025.02.19 | `description` 보완 |
+    | 2025.02.22 | 토큰 폐기 API 추가 |
+    | 2025.02.22 | 응답 스키마 설명 보완 |
+  version: 0.0.6
 servers:
   - url: https://api.ourfit.life
 paths:

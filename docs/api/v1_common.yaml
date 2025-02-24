@@ -1,8 +1,16 @@
 openapi: 3.0.0
 info:
-  title: Common API
-  description: 공통(운동 종류, 지역 정보 등) API
-  version: 0.0.1
+  title: Common API (v1)
+  description: |
+    공통(운동 종류, 지역 정보 등) API  
+    
+    #### Revision History
+
+    | Date | Description |
+    |--------|--------------------------------|
+    | 2025.02.04 | 최초 등록 |
+    | 2025.02.18 | 지역 정보 API 추가, Common API로 이름 변경 |
+  version: 0.0.2
 servers:
   - url: https://api.ourfit.life
 paths:

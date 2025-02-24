@@ -1,8 +1,18 @@
 openapi: 3.0.0
 info:
-  title: Challenge API
-  description: 챌린지 관리 API
-  version: 0.0.1
+  title: Challenge API (v1)
+  description: |
+    챌린지 관리 API
+    
+    #### Revision History
+    
+    | Date | Description |
+    |--------|--------------------------------|
+    | 2025.02.09 | 최초 등록 |
+    | 2025.02.13 | 개발 서버 URL 추가 |
+    | 2025.02.15 | `description` 보완 |
+    | 2025.02.19 | `description` 보완 |
+  version: 0.0.3
 servers:
   - url: https://api.ourfit.life
 paths:

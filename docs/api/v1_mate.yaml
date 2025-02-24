@@ -1,8 +1,17 @@
 openapi: 3.0.0
 info:
-  title: Mates API
-  description: 메이트 관리 API
-  version: 0.0.1
+  title: Mates API (v1)
+  description: |
+    메이트 관리 API
+    
+    #### Revision History
+
+    | Date | Description |
+    |--------|--------------------------------|
+    | 2025.02.09 | 최초 등록 |
+    | 2025.02.13 | 개발 서버 URL 추가 |
+    | 2025.02.15 | 이력 조회 API에 `parameter` 추가 |
+  version: 0.0.4
 servers:
   - url: https://api.ourfit.life
 paths:
