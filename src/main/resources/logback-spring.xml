@@ -36,7 +36,7 @@
     </root>
 
     <springProfile name="!local">
-        <root level="DEBUG">
+        <root level="WARN">
             <appender-ref ref="LOCAT_LOG"/>
         </root>
     </springProfile>
