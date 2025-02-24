@@ -93,6 +93,26 @@ public class RedisTokenBucketRateLimiter implements RateLimiter {
   }
 
   @Override
+  public int getRetryAfterSeconds(String key, RateLimit rateLimit) {
+    var hashOperations = this.redisTemplate.opsForHash();
+    Object lastRefillObj = hashOperations.get(key, "last_refill");
+
+    if (lastRefillObj == null) {
+      return 0;
+    }
+
+    long lastRefill = Long.parseLong(lastRefillObj.toString());
+    long now = System.currentTimeMillis();
+    long durationInMillis = Duration.of(rateLimit.duration(), rateLimit.durationUnit()).toMillis();
+    double refillRate = (double) durationInMillis / rateLimit.maxRequests();
+
+    long nextAvailableTime = lastRefill + (long) refillRate;
+    long retryAfterMillis = Math.max(0, nextAvailableTime - now);
+
+    return (int) Math.ceil(retryAfterMillis / 1000.0);
+  }
+
+  @Override
   public void reset(String key, RateLimit rateLimit) {
     var hashOperations = this.redisTemplate.opsForHash();
     hashOperations.put(key, "tokens", rateLimit.maxRequests());

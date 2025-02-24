@@ -71,6 +71,11 @@ public class UserController {
   }
 
   /** 내 정보 조회 */
+  @RateLimit(
+      maxRequests = 1,
+      duration = 1,
+      durationUnit = ChronoUnit.MINUTES,
+      limitType = RateLimit.LimitType.USER)
   @GetMapping("/me")
   public ResponseEntity<BaseResponse<DetailedUserInfoResponse>> getMe(
       @AuthenticationPrincipal OurfitUserDetails userDetails) {

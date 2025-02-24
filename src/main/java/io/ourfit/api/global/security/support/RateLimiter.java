@@ -32,6 +32,15 @@ public interface RateLimiter {
   int getRemainingTokens(String key);
 
   /**
+   * 다음 요청까지 대기해야 하는 시간을 반환한다.
+   *
+   * @param key 요청 식별자
+   * @param rateLimit 요청 제한 정보
+   * @return 다음 요청까지 대기해야 하는 시간(초)
+   */
+  int getRetryAfterSeconds(String key, RateLimit rateLimit);
+
+  /**
    * 현재 허용량을 초기화한다.
    *
    * @param key 요청 식별자

@@ -12,7 +12,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -53,7 +52,7 @@ public class RateLimitFilter extends AbstractSecurityFilter {
     boolean isAllowed = this.rateLimiter.tryConsume(key, rateLimit);
 
     if (shouldBlockRequest(!isAllowed, rateLimit)) {
-      this.handleRateLimitExceeded(response, rateLimit);
+      this.handleRateLimitExceeded(response, key, rateLimit);
       return;
     }
 
@@ -74,11 +73,10 @@ public class RateLimitFilter extends AbstractSecurityFilter {
     };
   }
 
-  private void handleRateLimitExceeded(HttpServletResponse response, RateLimit rateLimit)
-      throws IOException {
+  private void handleRateLimitExceeded(
+      HttpServletResponse response, String key, RateLimit rateLimit) throws IOException {
     if (rateLimit.includeRetryAfterHeader()) {
-      long retryAfterInSeconds =
-          Duration.of(rateLimit.duration(), rateLimit.durationUnit()).toSeconds();
+      long retryAfterInSeconds = this.rateLimiter.getRetryAfterSeconds(key, rateLimit);
       response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterInSeconds));
     }
     response.sendError(HttpStatus.TOO_MANY_REQUESTS.value());
