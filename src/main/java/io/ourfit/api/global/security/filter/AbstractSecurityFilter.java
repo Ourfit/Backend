@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
@@ -26,5 +27,12 @@ public abstract class AbstractSecurityFilter extends OncePerRequestFilter {
    */
   protected boolean isPublicApiAuthorized(HttpServletRequest request) {
     return Boolean.TRUE.equals(request.getAttribute(PUBLIC_API_AUTHORIZED));
+  }
+
+  protected static void sendErrorResponse(HttpServletResponse response, HttpStatus status)
+      throws IOException {
+    response.resetBuffer();
+    response.setStatus(status.value());
+    response.flushBuffer();
   }
 }
