@@ -1,5 +1,6 @@
 package io.ourfit.api.infra.aws.s3;
 
+import io.ourfit.api.infra.aws.exception.FileOperationException;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,9 +21,10 @@ public interface OurfitS3Client {
    *
    * @param directoryPath 업로드할 디렉토리 경로
    * @param file 업로드할 파일
-   * @parma fileName 업로드할 파일의 이름 (확장자 제외 / 확장자는 파일에서 추출)
+   * @param fileName 업로드할 파일의 이름 (확장자 제외 / 확장자는 파일에서 추출)
    * @return 저장된 파일의 URL
    * @throws IllegalArgumentException 디렉토리 경로가 유효하지 않은 경우
+   * @throws FileOperationException 파일이 비어있거나, 지원하지 않는 확장자이거나 크기 제한을 초과한 경우
    */
   String upload(String directoryPath, String fileName, MultipartFile file);
 
@@ -33,6 +35,7 @@ public interface OurfitS3Client {
    * @param file 업로드할 파일
    * @return 저장된 파일의 URL
    * @throws IllegalArgumentException 디렉토리 경로가 유효하지 않은 경우
+   * @throws FileOperationException 파일이 비어있거나, 지원하지 않는 확장자이거나 크기 제한을 초과한 경우
    * @apiNote 이 메서드는 {@link System#currentTimeMillis()} + 확장자로 파일명을 생성한다.
    */
   String upload(String directoryPath, MultipartFile file);
@@ -43,5 +46,13 @@ public interface OurfitS3Client {
    * @param key 삭제할 파일의 키(파일명을 포함한 <strong>**버킷 내 전체 경로**</strong>)
    * @throws IllegalArgumentException 키가 유효하지 않은 경우
    */
-  void delete(String key);
+  void deleteByKey(String key);
+
+  /**
+   * 저장된 파일을 삭제한다.
+   *
+   * @param url 삭제할 파일의 URL
+   * @throws FileOperationException URL이 유효하지 않은 경우
+   */
+  void deleteByUrl(String url);
 }

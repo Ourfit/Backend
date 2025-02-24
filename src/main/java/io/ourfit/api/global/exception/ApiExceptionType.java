@@ -12,6 +12,10 @@ public enum ApiExceptionType {
   INVALID_DATE_FORMAT(400, 400002, "io.ourfit.api.exception.INVALID_DATE_FORMAT.message"),
   INVALID_DATE_RANGE(400, 400003, "io.ourfit.api.exception.INVALID_DATE_RANGE.message"),
   INVALID_REGION(400, 400004, "io.ourfit.api.exception.INVALID_REGION.message"),
+  INVALID_FILE_KEY(400, 400005, "io.ourfit.api.exception.INVALID_FILE_KEY.message"),
+  EMPTY_FILE(400, 400006, "io.ourfit.api.exception.EMPTY_FILE.message"),
+  UNSUPPORTED_FILE_EXTENSION(
+      400, 400007, "io.ourfit.api.exception.UNSUPPORTED_FILE_EXTENSION.message"),
 
   UNAUTHORIZED(401, 401000, "io.ourfit.api.exception.UNAUTHORIZED.message"),
   INVALID_TOKEN(401, 401001, "io.ourfit.api.exception.INVALID_TOKEN.message"),
@@ -31,6 +35,11 @@ public enum ApiExceptionType {
   RESOURCE_ALREADY_EXISTS(409, 409001, "io.ourfit.api.exception.RESOURCE_ALREADY_EXISTS.message"),
   RESOURCE_IDENTICAL(409, 409002, "io.ourfit.api.exception.RESOURCE_IDENTICAL.message"),
   ENTITY_ILLEGAL_STATE(409, 409003, "io.ourfit.api.exception.ENTITY_ILLEGAL_STATE.message"),
+
+  PAYLOAD_TOO_LARGE(413, 413000, "io.ourfit.api.exception.PAYLOAD_TOO_LARGE.message"),
+  FILE_SIZE_EXCEEDED(413, 413001, "io.ourfit.api.exception.FILE_SIZE_EXCEEDED.message"),
+
+  UNSUPPORTED_MEDIA_TYPE(415, 415000, "io.ourfit.api.exception.UNSUPPORTED_MEDIA_TYPE.message"),
 
   TOO_MANY_REQUESTS(429, 429000, "io.ourfit.api.exception.TOO_MANY_REQUESTS.message"),
 

@@ -27,16 +27,26 @@ public abstract class OurfitApiException extends RuntimeException {
   /** 예외 원인 */
   @Nullable private final Throwable cause;
 
-  protected OurfitApiException(ApiExceptionType apiExceptionType) {
-    this(apiExceptionType, null);
+  protected OurfitApiException(ApiExceptionType exceptionType, @Nullable Throwable cause) {
+    super(exceptionType.name(), cause);
+    this.apiExceptionType = exceptionType;
+    this.httpStatus = HttpStatus.resolve(exceptionType.getStatusCode());
+    this.messageKey = exceptionType.getMessageKey();
+    this.code = exceptionType.getCode();
+    this.cause = cause;
   }
 
-  protected OurfitApiException(ApiExceptionType apiExceptionType, @Nullable Throwable cause) {
-    super(apiExceptionType.name(), cause);
-    this.apiExceptionType = apiExceptionType;
-    this.httpStatus = HttpStatus.resolve(apiExceptionType.getStatusCode());
-    this.messageKey = apiExceptionType.getMessageKey();
-    this.code = apiExceptionType.getCode();
+  protected OurfitApiException(
+      ApiExceptionType exceptionType, @Nullable String message, @Nullable Throwable cause) {
+    super(message, cause);
+    this.apiExceptionType = exceptionType;
+    this.httpStatus = HttpStatus.resolve(exceptionType.getStatusCode());
+    this.messageKey = exceptionType.getMessageKey();
+    this.code = exceptionType.getCode();
     this.cause = cause;
+  }
+
+  protected OurfitApiException(ApiExceptionType exceptionType) {
+    this(exceptionType, null);
   }
 }

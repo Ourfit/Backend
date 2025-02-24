@@ -9,12 +9,15 @@ info:
     |------------|--------|--------------------------------------------|-----------------------------|
     | **400**    | 400000 | Bad Request | 잘못된 요청입니다. |
     | **400**    | 400001 | Required parameters are invalid or missing. | 필수 파라미터가 누락되었거나, 잘못된 형식입니다. |
-    | **400**    | 400002 | Invalid date format | 날짜 형식이 잘못되었습니다. |
-    | **400**    | 400003 | Date range is invalid | 날짜 범위 설정이 잘못되었습니다. (시작일이 종료일보다 늦음 등) |
+    | **400**    | 400002 | Invalid date format | 날짜 형식이 올바르지 않습니다. |
+    | **400**    | 400003 | Date range is invalid | 날짜 범위가 유효하지 않습니다. (시작일이 종료일보다 늦음 등) |
     | **400**    | 400004 | Region is invalid | 지역 정보가 잘못되었습니다. |
-    | **401**    | 401000 | Unauthorized | 인증 수단을 제공하지 않았거나, 인증에 실패했습니다. |
-    | **401**    | 401001 | Invalid or expired token | 인증 토큰이 만료되었거나, 일치하지 않습니다. |
-    | **403**    | 403000 | Forbidden | 해당 리소스에 대한 권한이 없습니다. |
+    | **400**    | 400005 | The file key(name or path) is invalid | 잘못된 파일 키(이름 또는 경로)입니다. |
+    | **400**    | 400006 | The file is empty | 파일이 비어 있습니다. |
+    | **400**    | 400007 | This file extension is not supported | 이 파일 확장자는 지원되지 않습니다. |
+    | **401**    | 401000 | Unauthorized | 인증 정보가 없거나 올바르지 않습니다. |
+    | **401**    | 401001 | Invalid or expired token | 토큰이 유효하지 않거나 만료되었습니다. |
+    | **403**    | 403000 | Forbidden | 접근이 거부되었습니다. |
     | **404**    | 404000 | Not Found | 요청한 리소스를 찾을 수 없습니다. |
     | **404**    | 404001 | API Endpoint not found | API 엔드포인트를 찾을 수 없습니다. |
     | **404**    | 404002 | User not found | 사용자 정보를 찾을 수 없습니다. |
@@ -26,10 +29,13 @@ info:
     | **409**    | 409001 | Resource already exists | 리소스가 이미 존재합니다. |
     | **409**    | 409002 | Resource is identical | 요청한 리소스가 기존과 동일하여 처리할 변경 사항이 없습니다. |
     | **409**    | 409003 | Entity is in illegal state | 엔티티 상태가 비정상적이거나 처리할 수 없는 상태여서, 요청이 거부되었습니다. |
+    | **413**    | 413000 | The request payload is too large | 요청 데이터의 크기가 너무 큽니다. |
+    | **413**    | 413001 | The file size exceeds the allowed limit | 파일 크기가 허용 범위를 초과했습니다. |
+    | **415**    | 415000 | Unsupported media type | 이 미디어 유형은 지원되지 않습니다. |
     | **429**    | 429000 | Too Many Requests | 너무 많은 요청을 보냈습니다. |
     | **500**    | 500000 | Internal Server Error | 서버 내부 오류가 발생했습니다. |
     | **500**    | 500001 | AWS S3 Error | AWS S3 서비스 관련 오류가 발생했습니다. |
-  version: 0.0.1
+  version: 0.0.5
   contact:
     name: Team Ourfit
     email: teamourfit@gmail.com

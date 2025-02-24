@@ -93,9 +93,13 @@ public class UserCommandServiceImpl implements UserCommandService {
         id,
         user -> {
           String imageKey = Long.toString(user.getId());
-          final String profileImageUrl =
+          var oldProfileUrl = user.getProfileImageUrl();
+          if (oldProfileUrl != null) {
+            this.s3Client.deleteByUrl(oldProfileUrl);
+          }
+          final String newProfileUrl =
               this.s3Client.upload("images/users/profiles", imageKey, profileImage);
-          user.setProfileImageUrl(profileImageUrl);
+          user.setProfileImageUrl(newProfileUrl);
         });
   }
 
@@ -104,6 +108,10 @@ public class UserCommandServiceImpl implements UserCommandService {
     this.ifFoundThen(
         id,
         user -> {
+          var oldProfileUrl = user.getProfileImageUrl();
+          if (oldProfileUrl != null) {
+            this.s3Client.deleteByUrl(oldProfileUrl);
+          }
           this.oAuth2Service.withdrawal(user.getOAuthId());
           user.delete();
         });

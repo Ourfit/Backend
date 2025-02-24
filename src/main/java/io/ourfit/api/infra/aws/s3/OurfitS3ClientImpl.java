@@ -50,6 +50,7 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
   @CacheEvict(value = "S3OBJECTS", key = "#directoryPath", condition = "#result != null")
   public String upload(String directoryPath, String fileName, MultipartFile file) {
     S3Utils.validatePath(directoryPath);
+    S3Utils.validateFile(file);
     final String extension = S3Utils.extractExtension(file);
     final String key = directoryPath.concat(DIRECTORY_DELIMETER).concat(fileName).concat(extension);
     this.putObjectInternal(key, file);
@@ -63,11 +64,16 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
   }
 
   @Override
-  public void delete(final String key) {
+  public void deleteByKey(final String key) {
     S3Utils.validatePath(key);
     DeleteObjectRequest request =
         DeleteObjectRequest.builder().bucket(this.awsProperties.s3().bucket()).key(key).build();
     this.deleteObjectInternal(request);
+  }
+
+  @Override
+  public void deleteByUrl(String url) {
+    this.deleteByKey(S3Utils.extractObjectKey(url));
   }
 
   private ListObjectsV2Response getListObjectsInternal(final String path) {
