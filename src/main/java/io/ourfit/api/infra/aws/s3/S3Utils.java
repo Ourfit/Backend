@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Optional;
+import org.apache.tika.Tika;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,7 +62,8 @@ public final class S3Utils {
    */
   static String getMimeTypeFromStream(MultipartFile file) {
     try (InputStream input = file.getInputStream()) {
-      var mimeType = URLConnection.guessContentTypeFromStream(input);
+      Tika tika = new Tika();
+      final var mimeType = tika.detect(input);
       return mimeType != null ? mimeType : MediaType.APPLICATION_OCTET_STREAM_VALUE;
     } catch (IOException e) {
       throw new InternalProcessingException(e);

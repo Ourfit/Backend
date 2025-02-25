@@ -25,6 +25,7 @@ val queryDSLVersion by extra("5.1.0")
 val jpaModelGenVersion by extra("6.6.4.Final")
 val jjwtVersion by extra("0.12.6")
 val j2htmlVersion by extra("1.6.0")
+val tikaVersion by extra("3.0.0")
 val flywayDBVersion by extra("10.15.0")
 
 repositories {
@@ -62,6 +63,8 @@ dependencies {
     annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:$jpaModelGenVersion")
     // Mail HTML Template
     implementation("com.j2html:j2html:$j2htmlVersion")
+    // Apache Tika
+    implementation("org.apache.tika:tika-core:$tikaVersion")
     // DataBase Schema Migration
     implementation("org.flywaydb:flyway-mysql:$flywayDBVersion")
     implementation("org.flywaydb:flyway-core:$flywayDBVersion")
