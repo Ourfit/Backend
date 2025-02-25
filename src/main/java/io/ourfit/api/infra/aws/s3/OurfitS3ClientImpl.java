@@ -65,7 +65,6 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
 
   @Override
   public void deleteByKey(final String key) {
-    S3Utils.validatePath(key);
     DeleteObjectRequest request =
         DeleteObjectRequest.builder().bucket(this.awsProperties.s3().bucket()).key(key).build();
     this.deleteObjectInternal(request);
