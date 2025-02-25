@@ -33,7 +33,7 @@ public interface JwtProvider {
    * 토큰을 파싱하여 사용자 정보를 반환한다.
    *
    * @param token 접근 토큰
-   * @return 사용자 정보, 변조/만료되었거나 유효하지 않은 토큰인 경우 {@link Optional#empty()}
+   * @return 사용자 정보, 변조되었거나 유효하지 않은 토큰인 경우 {@link Optional#empty()}
    */
   Optional<Claims> parse(String token);
 

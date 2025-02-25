@@ -3,6 +3,7 @@ package io.ourfit.api.global.jwt.impl;
 import static io.ourfit.api.global.jwt.impl.JwtProperties.*;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.ourfit.api.domain.auth.data.entity.OurfitRefreshToken;
@@ -63,6 +64,8 @@ public class JwtProviderImpl implements JwtProvider {
               .parseSignedClaims(token)
               .getPayload();
       return Optional.of(claims);
+    } catch (ExpiredJwtException ex) {
+      return Optional.of(ex.getClaims());
     } catch (JwtException ex) {
       log.debug("Could not parse JWT Claims. / Reason: {}", ex.getMessage());
       return Optional.empty();
