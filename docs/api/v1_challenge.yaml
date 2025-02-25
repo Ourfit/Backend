@@ -5,14 +5,15 @@ info:
     챌린지 관리 API
     
     #### Revision History
-    
+
     | Date | Description |
     |--------|--------------------------------|
     | 2025.02.09 | 최초 등록 |
     | 2025.02.13 | 개발 서버 URL 추가 |
     | 2025.02.15 | `description` 보완 |
     | 2025.02.19 | `description` 보완 |
-  version: 0.0.3
+    | 2025.02.24 | `intensityLevel` 예시 수정 |
+  version: 0.0.4
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -216,7 +217,7 @@ components:
             properties:
               intensityLevel:
                 type: number
-                example: "2025-03-13"
+                example: "2"
                 description: |
                   오늘의 운동 강도
                   

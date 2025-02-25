@@ -84,7 +84,7 @@ public class UserQRepositoryImpl implements UserQRepository {
             .map(
                 query ->
                     query
-                        .select(qUser.count())
+                        .select(qUser.countDistinct())
                         .from(qUser)
                         .leftJoin(qFavoriteWorkout)
                         .on(qFavoriteWorkout.user.eq(qUser))
