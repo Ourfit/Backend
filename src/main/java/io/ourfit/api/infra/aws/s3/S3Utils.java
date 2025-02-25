@@ -97,7 +97,7 @@ public final class S3Utils {
       throw new FileOperationException(ApiExceptionType.UNSUPPORTED_FILE_EXTENSION);
     }
     final var mimeType = getMimeTypeFromStream(file);
-    log.info("=======[S3Utils] {} MimeType: {}", file.getOriginalFilename(), mimeType);
+    log.error("=======[S3Utils] {} MimeType: {}", file.getOriginalFilename(), mimeType);
     if (!AwsProperties.S3.SUPPORTED_IMAGE_MEDIA_TYPE.contains(mimeType)) {
       throw new FileOperationException(ApiExceptionType.UNSUPPORTED_MEDIA_TYPE);
     }
