@@ -18,14 +18,13 @@ import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
 import io.ourfit.api.domain.workout.data.entity.QWorkout;
+import io.ourfit.api.global.utils.QueryUtils;
 import io.ourfit.api.infra.persistence.user.UserQRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,18 +42,24 @@ public class UserQRepositoryImpl implements UserQRepository {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<UserInfoDto> findMateCandidates(
+  public Slice<UserInfoDto> findMateCandidates(
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
-    List<Long> userIds = this.findMateCandidatesIds(requestedUser, searchDto, pageable);
+    var hasNext = false;
+    var userIds = this.findMateCandidatesIds(requestedUser, searchDto, pageable);
 
     if (userIds.isEmpty()) {
       return Page.empty(pageable);
     }
 
-    List<UserInfoDto> contents = this.fetchUserInfos(userIds);
-    final long totalCount = this.countMateCandidates(requestedUser, searchDto);
+    if (QueryUtils.hasNext(userIds, pageable.getPageSize())) {
+      userIds.remove(userIds.size() - 1);
+      hasNext = true;
+    }
 
-    return new PageImpl<>(contents, pageable, totalCount);
+    var contents = this.fetchUserInfos(userIds);
+    //    final long totalCount = this.countMateCandidates(requestedUser, searchDto);
+
+    return new SliceImpl<>(contents, pageable, hasNext);
   }
 
   private List<Long> findMateCandidatesIds(
@@ -72,7 +77,7 @@ public class UserQRepositoryImpl implements UserQRepository {
             workoutsIn(searchDto))
         .orderBy(qUser.createdAt.asc())
         .offset(pageable.getOffset())
-        .limit(pageable.getPageSize())
+        .limit(pageable.getPageSize() + 1)
         .fetch();
   }
 

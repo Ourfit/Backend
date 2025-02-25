@@ -19,4 +19,8 @@ public final class QueryUtils {
   public static <T> List<T> toList(Map<?, T> values) {
     return values == null ? Collections.emptyList() : new ArrayList<>(values.values());
   }
+
+  public static boolean hasNext(List<?> contents, int pageSize) {
+    return contents.size() > pageSize;
+  }
 }

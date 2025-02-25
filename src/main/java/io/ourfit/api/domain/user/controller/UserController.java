@@ -11,6 +11,7 @@ import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.dto.SliceResponse;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
@@ -24,7 +25,6 @@ import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import jakarta.validation.Valid;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,18 +43,18 @@ public class UserController {
 
   /** 메이트 관련 사용자 목록 조회 */
   @GetMapping("/mates")
-  public ResponseEntity<BaseResponse<Page<BasicUserInfoResponse>>> getUsers(
+  public ResponseEntity<SliceResponse<BasicUserInfoResponse>> getUsers(
       MateCandidateSearchRequest request,
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     var currentUser = userDetails.getUser();
-    var response =
+    var contents =
         this.queryService
             .findMateCandidates(
                 currentUser, MateCandidateSearchDto.fromRequest(request, currentUser), pageable)
             .map(BasicUserInfoResponse::from);
 
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(SliceResponse.from(contents));
   }
 
   /** 사용자 상세 조회 */
