@@ -1,6 +1,7 @@
 package io.ourfit.api.infra.persistence.user.impl;
 
-import static com.querydsl.core.group.GroupBy.*;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -17,7 +18,6 @@ import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
 import io.ourfit.api.domain.workout.data.entity.QWorkout;
-import io.ourfit.api.global.utils.QueryUtils;
 import io.ourfit.api.infra.persistence.user.UserQRepository;
 import java.util.List;
 import java.util.Optional;
@@ -45,65 +45,86 @@ public class UserQRepositoryImpl implements UserQRepository {
   @Transactional(readOnly = true)
   public Page<UserInfoDto> findMateCandidates(
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
-    List<UserInfoDto> contents =
-        QueryUtils.toList(
-            this.queryFactory
-                .from(qUser)
-                .leftJoin(qFavoriteWorkout)
-                .on(qFavoriteWorkout.user.eq(qUser))
-                .leftJoin(qWorkout)
-                .on(qFavoriteWorkout.workout.eq(qWorkout))
-                .where(
-                    qUser.ne(requestedUser),
-                    isNotMatchedWithMate(),
-                    region3Eqauls(searchDto),
-                    genderEquals(searchDto),
-                    preferredTimesIn(searchDto),
-                    workoutsIn(searchDto))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(qUser.createdAt.asc())
-                .transform(
-                    groupBy(qUser.id)
-                        .as(
-                            Projections.constructor(
-                                UserInfoDto.class,
-                                qUser.id,
-                                qUser.profileImageUrl,
-                                qUser.nickname,
-                                qUser.genderType,
-                                qUser.age,
-                                qUser.skillLevelType,
-                                qUser.introduction,
-                                qUser.preferredWorkoutTime,
-                                list(
-                                    Projections.constructor(
-                                        UserFavoriteWorkoutDto.class,
-                                        qFavoriteWorkout.workout.code,
-                                        qFavoriteWorkout.workout.name))))));
+    List<Long> userIds = this.findMateCandidatesIds(requestedUser, searchDto, pageable);
 
-    final long totalCount =
-        Optional.of(this.queryFactory)
-            .map(
-                query ->
-                    query
-                        .select(qUser.countDistinct())
-                        .from(qUser)
-                        .leftJoin(qFavoriteWorkout)
-                        .on(qFavoriteWorkout.user.eq(qUser))
-                        .leftJoin(qWorkout)
-                        .on(qFavoriteWorkout.workout.eq(qWorkout))
-                        .where(
-                            qUser.ne(requestedUser),
-                            isNotMatchedWithMate(),
-                            region3Eqauls(searchDto),
-                            genderEquals(searchDto),
-                            preferredTimesIn(searchDto),
-                            workoutsIn(searchDto))
-                        .fetchOne())
-            .orElse(0L);
+    if (userIds.isEmpty()) {
+      return Page.empty(pageable);
+    }
+
+    List<UserInfoDto> contents = this.fetchUserInfos(userIds);
+    final long totalCount = this.countMateCandidates(requestedUser, searchDto);
 
     return new PageImpl<>(contents, pageable, totalCount);
+  }
+
+  private List<Long> findMateCandidatesIds(
+      User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
+    return this.queryFactory
+        .select(qUser.id)
+        .from(qUser)
+        .where(
+            qUser.ne(requestedUser),
+            qUser.deletedAt.isNull(),
+            isNotMatchedWithMate(),
+            region3Eqauls(searchDto),
+            genderEquals(searchDto),
+            preferredTimesIn(searchDto),
+            workoutsIn(searchDto))
+        .orderBy(qUser.createdAt.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+  }
+
+  private List<UserInfoDto> fetchUserInfos(List<Long> userIds) {
+    return this.queryFactory
+        .from(qUser)
+        .leftJoin(qFavoriteWorkout)
+        .on(qFavoriteWorkout.user.eq(qUser))
+        .leftJoin(qWorkout)
+        .on(qFavoriteWorkout.workout.eq(qWorkout))
+        .where(qUser.id.in(userIds))
+        .transform(
+            groupBy(qUser.id)
+                .list(
+                    Projections.constructor(
+                        UserInfoDto.class,
+                        qUser.id,
+                        qUser.profileImageUrl,
+                        qUser.nickname,
+                        qUser.genderType,
+                        qUser.age,
+                        qUser.skillLevelType,
+                        qUser.introduction,
+                        qUser.preferredWorkoutTime,
+                        list(
+                            Projections.constructor(
+                                UserFavoriteWorkoutDto.class,
+                                qFavoriteWorkout.workout.code,
+                                qFavoriteWorkout.workout.name)))));
+  }
+
+  private long countMateCandidates(User requestedUser, MateCandidateSearchDto searchDto) {
+    return Optional.of(this.queryFactory)
+        .map(
+            query ->
+                query
+                    .select(qUser.countDistinct())
+                    .from(qUser)
+                    .leftJoin(qFavoriteWorkout)
+                    .on(qFavoriteWorkout.user.eq(qUser))
+                    .leftJoin(qWorkout)
+                    .on(qFavoriteWorkout.workout.eq(qWorkout))
+                    .where(
+                        qUser.ne(requestedUser),
+                        qUser.deletedAt.isNull(),
+                        isNotMatchedWithMate(),
+                        region3Eqauls(searchDto),
+                        genderEquals(searchDto),
+                        preferredTimesIn(searchDto),
+                        workoutsIn(searchDto))
+                    .fetchOne())
+        .orElse(0L);
   }
 
   private static BooleanExpression isNotMatchedWithMate() {

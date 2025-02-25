@@ -60,7 +60,7 @@ public class RequestLoggingAdvice {
 
   /** 요청 정보 로깅 */
   private static void logRequest(HttpServletRequest request) {
-    log.warn(
+    log.debug(
         """
         [Incoming Request Received] - {} {}
         From: {}
