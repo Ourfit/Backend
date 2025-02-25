@@ -94,6 +94,10 @@ public final class S3Utils {
     if (!AwsProperties.S3.SUPPORTED_IMAGE_EXTENSION.contains(extension)) {
       throw new FileOperationException(ApiExceptionType.UNSUPPORTED_FILE_EXTENSION);
     }
+    final var mimeType = getMimeTypeFromStream(file);
+    if (!AwsProperties.S3.SUPPORTED_IMAGE_MEDIA_TYPE.contains(mimeType)) {
+      throw new FileOperationException(ApiExceptionType.UNSUPPORTED_MEDIA_TYPE);
+    }
     if (file.getSize() > AwsProperties.S3.MAX_FILE_SIZE.toBytes()) {
       throw new FileOperationException(ApiExceptionType.FILE_SIZE_EXCEEDED);
     }

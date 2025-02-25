@@ -60,6 +60,9 @@ public class UserQRepositoryImpl implements UserQRepository {
                     genderEquals(searchDto),
                     preferredTimesIn(searchDto),
                     workoutsIn(searchDto))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(qUser.createdAt.asc())
                 .transform(
                     groupBy(qUser.id)
                         .as(
