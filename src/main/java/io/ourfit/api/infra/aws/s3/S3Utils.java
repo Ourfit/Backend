@@ -13,11 +13,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 public final class S3Utils {
 
   private S3Utils() {}
@@ -95,11 +93,6 @@ public final class S3Utils {
     final var extension = extractExtension(file);
     if (!AwsProperties.S3.SUPPORTED_IMAGE_EXTENSION.contains(extension)) {
       throw new FileOperationException(ApiExceptionType.UNSUPPORTED_FILE_EXTENSION);
-    }
-    final var mimeType = getMimeTypeFromStream(file);
-    log.error("=======[S3Utils] {} MimeType: {}", file.getOriginalFilename(), mimeType);
-    if (!AwsProperties.S3.SUPPORTED_IMAGE_MEDIA_TYPE.contains(mimeType)) {
-      throw new FileOperationException(ApiExceptionType.UNSUPPORTED_MEDIA_TYPE);
     }
     if (file.getSize() > AwsProperties.S3.MAX_FILE_SIZE.toBytes()) {
       throw new FileOperationException(ApiExceptionType.FILE_SIZE_EXCEEDED);
