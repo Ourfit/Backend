@@ -26,10 +26,9 @@ if [ -d "$REPOSITORY/$PROJECT_NAME" ]; then
 fi
 
 echo "> Remove old artifact"
-if [ -f "$REPOSITORY/$PROJECT_NAME/build/libs/*.jar" ]; then
-  rm -f $REPOSITORY/$PROJECT_NAME/build/libs/*.jar
-  echo ">> Done"
-fi
+find "$REPOSITORY" -type f -name "*.jar" -delete
+find "$REPOSITORY/$PROJECT_NAME/build/libs" -type f -name "*.jar" -delete
+echo ">> Done"
 
 echo "> Building artifact with Gradle"
 ./gradlew build -x test
