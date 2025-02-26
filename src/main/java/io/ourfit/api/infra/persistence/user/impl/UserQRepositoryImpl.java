@@ -18,7 +18,6 @@ import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
 import io.ourfit.api.domain.workout.data.entity.QWorkout;
-import io.ourfit.api.global.utils.QueryUtils;
 import io.ourfit.api.infra.persistence.user.UserQRepository;
 import java.util.List;
 import java.util.Optional;
@@ -42,24 +41,17 @@ public class UserQRepositoryImpl implements UserQRepository {
 
   @Override
   @Transactional(readOnly = true)
-  public Slice<UserInfoDto> findMateCandidates(
+  public Page<UserInfoDto> findMateCandidates(
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
-    var hasNext = false;
     var userIds = this.findMateCandidatesIds(requestedUser, searchDto, pageable);
 
     if (userIds.isEmpty()) {
       return Page.empty(pageable);
     }
 
-    if (QueryUtils.hasNext(userIds, pageable.getPageSize())) {
-      userIds.remove(userIds.size() - 1);
-      hasNext = true;
-    }
-
     var contents = this.fetchUserInfos(userIds);
-    //    final long totalCount = this.countMateCandidates(requestedUser, searchDto);
-
-    return new SliceImpl<>(contents, pageable, hasNext);
+    final long totalCount = this.countMateCandidates(requestedUser, searchDto);
+    return new PageImpl<>(contents, pageable, totalCount);
   }
 
   private List<Long> findMateCandidatesIds(
@@ -77,7 +69,7 @@ public class UserQRepositoryImpl implements UserQRepository {
             workoutsIn(searchDto))
         .orderBy(qUser.createdAt.asc())
         .offset(pageable.getOffset())
-        .limit(pageable.getPageSize() + 1)
+        .limit(pageable.getPageSize())
         .fetch();
   }
 

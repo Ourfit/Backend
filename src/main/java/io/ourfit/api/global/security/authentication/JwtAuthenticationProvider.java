@@ -33,7 +33,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         .map(JwtAuthenticationToken::getCredentials)
         .map(Object::toString)
         .flatMap(this.jwtProvider::parse)
-        .filter(this::isExpired)
+        .filter(this::isNotExpired)
         .map(Claims::getSubject)
         .map(Long::parseLong)
         .flatMap(this.userQueryService::findById)
@@ -43,8 +43,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         .orElseThrow(() -> new BadCredentialsException("Failed to authenticate token"));
   }
 
-  private boolean isExpired(Claims claims) {
+  private boolean isNotExpired(Claims claims) {
     Instant expirationTime = claims.getExpiration().toInstant();
-    return Instant.now().isAfter(expirationTime);
+    return Instant.now().isBefore(expirationTime);
   }
 }

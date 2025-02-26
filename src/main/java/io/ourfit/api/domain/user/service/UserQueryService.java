@@ -4,8 +4,8 @@ import io.ourfit.api.domain.user.data.dto.internal.*;
 import io.ourfit.api.domain.user.data.entity.User;
 import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 /** 사용자 정보 조회를 처리하는 서비스 인터페이스 */
 public interface UserQueryService {
@@ -18,7 +18,7 @@ public interface UserQueryService {
    * @param pageable 페이지 정보
    * @return 조회된 사용자 정보
    */
-  Slice<UserInfoDto> findMateCandidates(
+  Page<UserInfoDto> findMateCandidates(
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable);
 
   /**

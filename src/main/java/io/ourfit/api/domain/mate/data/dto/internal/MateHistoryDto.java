@@ -2,7 +2,6 @@ package io.ourfit.api.domain.mate.data.dto.internal;
 
 import io.ourfit.api.domain.mate.data.enums.MateActionType;
 import io.ourfit.api.domain.mate.data.enums.MateRoleType;
-
 import java.time.LocalDateTime;
 
 /**
