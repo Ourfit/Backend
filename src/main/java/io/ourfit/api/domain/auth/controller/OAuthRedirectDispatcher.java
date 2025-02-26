@@ -4,7 +4,6 @@ import io.jsonwebtoken.lang.Assert;
 import io.ourfit.api.domain.auth.template.OAuth2TemplateFactory;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.service.UserQueryService;
-import io.ourfit.api.global.data.dto.BaseResponse;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
@@ -30,7 +29,7 @@ public class OAuthRedirectDispatcher {
   private final UserQueryService userQueryService;
 
   @GetMapping
-  public ResponseEntity<BaseResponse<Void>> handleOAuth2Callback(
+  public ResponseEntity<Void> handleOAuth2Callback(
       @PathVariable String provider, @RequestParam String code) {
     Assert.notNull(code, "Authorization code must not be null");
     final OAuth2ProviderType providerType = OAuth2ProviderType.from(provider);

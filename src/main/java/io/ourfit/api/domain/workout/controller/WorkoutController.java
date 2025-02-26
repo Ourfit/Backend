@@ -2,7 +2,8 @@ package io.ourfit.api.domain.workout.controller;
 
 import io.ourfit.api.domain.workout.data.dto.response.WorkoutResponse;
 import io.ourfit.api.domain.workout.service.WorkoutService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.ListResponse;
 import io.ourfit.api.global.utils.StreamUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class WorkoutController {
   private final WorkoutService workoutService;
 
   @GetMapping
-  public ResponseEntity<BaseResponse<List<WorkoutResponse>>> getAllWorkoutTypes() {
+  public ResponseEntity<ListResponse<WorkoutResponse>> getAllWorkoutTypes() {
     List<WorkoutResponse> response =
         StreamUtils.mapToList(this.workoutService.findAll(), WorkoutResponse::from);
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 }

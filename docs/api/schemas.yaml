@@ -1,10 +1,18 @@
 openapi: 3.0.0
 info:
-  title: Common Schema
+  title: Specification
   description: |
-    공통 스키마를 정의하는 문서
+    Ourfit 서비스에서 사용되는 API 명세 문서입니다.
+    
+    ### 버전 관리 (Versioning)
+    
+    모든 버전 관리는 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
+    
+      - 이 문서의 버전: API 서버의 전체적인 버전을 의미합니다.
+      - 상세 API 문서(e.g., User API v1)의 버전: 특정 API 명세에 대한 버전을 의미합니다.
     
     ### 오류 코드 (Error Codes)
+    
     | HTTP Status | Code | Message | Description |
     |------------|--------|--------------------------------------------|-----------------------------|
     | **400**    | 400000 | Bad Request | 잘못된 요청입니다. |
@@ -35,7 +43,7 @@ info:
     | **429**    | 429000 | Too Many Requests | 너무 많은 요청을 보냈습니다. |
     | **500**    | 500000 | Internal Server Error | 서버 내부 오류가 발생했습니다. |
     | **500**    | 500001 | AWS S3 Error | AWS S3 서비스 관련 오류가 발생했습니다. |
-  version: 0.0.5
+  version: 0.1.0
   contact:
     name: Team Ourfit
     email: teamourfit@gmail.com
@@ -80,7 +88,7 @@ components:
                     pageNumber:
                       type: integer
                       example: 1
-                      description: "현재 페이지 번호 (1부터 시작)"
+                      description: "현재 페이지 번호 (0부터 시작)"
                     pageSize:
                       type: integer
                       example: 10
@@ -106,11 +114,11 @@ components:
                   type: integer
                   example: 50
                   description: "전체 데이터 개수"
-                last:
+                isLast:
                   type: boolean
                   example: false
                   description: "현재 페이지가 마지막 페이지인지 여부"
-                first:
+                isFirst:
                   type: boolean
                   example: true
                   description: "현재 페이지가 첫 페이지인지 여부"
@@ -126,7 +134,7 @@ components:
                   type: integer
                   example: 10
                   description: "현재 페이지에서 반환된 요소 개수"
-                empty:
+                isEmpty:
                   type: boolean
                   example: false
                   description: "현재 페이지가 비어 있는지 여부"

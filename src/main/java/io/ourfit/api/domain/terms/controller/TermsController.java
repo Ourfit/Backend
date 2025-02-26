@@ -7,7 +7,9 @@ import io.ourfit.api.domain.terms.data.dto.response.TermsRevisionCompactHistoryR
 import io.ourfit.api.domain.terms.data.entity.TermsType;
 import io.ourfit.api.domain.terms.service.TermsRevisionHistoryService;
 import io.ourfit.api.domain.terms.service.TermsService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.ListResponse;
+import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.security.data.annotation.AdminApi;
 import io.ourfit.api.global.utils.StreamUtils;
@@ -28,41 +30,40 @@ public class TermsController {
 
   @AdminApi(superAdminOnly = true, audit = true)
   @PostMapping
-  public ResponseEntity<BaseResponse<Void>> upsert(
-      @RequestBody @Valid final TermsUpsertRequest request) {
+  public ResponseEntity<Void> upsert(@RequestBody @Valid final TermsUpsertRequest request) {
     this.termsService.upsert(TermsUpsertDto.fromRequest(request));
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   @GetMapping
-  public ResponseEntity<BaseResponse<List<TermsResponse>>> findAll() {
+  public ResponseEntity<ListResponse<TermsResponse>> findAll() {
     List<TermsResponse> response =
         StreamUtils.mapToList(this.termsService.findAll(), TermsResponse::toCompact);
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 
   @GetMapping("/{type}")
-  public ResponseEntity<BaseResponse<TermsResponse>> findByType(@PathVariable final String type) {
+  public ResponseEntity<SingleResponse<TermsResponse>> findByType(@PathVariable final String type) {
     TermsResponse response =
         this.termsService
             .findByType(TermsType.findByName(type))
             .map(TermsResponse::toDetailed)
             .orElseThrow(NoSuchEntityException::new);
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 
   @GetMapping("/{type}/revisions")
-  public ResponseEntity<BaseResponse<List<TermsRevisionCompactHistoryResponse>>>
+  public ResponseEntity<ListResponse<TermsRevisionCompactHistoryResponse>>
       findRevisionHistoriesByType(@PathVariable final String type) {
     List<TermsRevisionCompactHistoryResponse> response =
         StreamUtils.mapToList(
             this.revisionHistoryService.findCompactHistoriesByType(TermsType.findByName(type)),
             TermsRevisionCompactHistoryResponse::from);
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 
   @GetMapping("/{type}/revisions/{version}")
-  public ResponseEntity<BaseResponse<TermsResponse>> findRevisionByTypeAndVersion(
+  public ResponseEntity<SingleResponse<TermsResponse>> findRevisionByTypeAndVersion(
       @PathVariable final String type, @PathVariable final Double version) {
     TermsResponse response =
         this.revisionHistoryService
@@ -70,6 +71,6 @@ public class TermsController {
             .map(TermsResponse::toDetailed)
             .orElseThrow(NoSuchEntityException::new);
 
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 }

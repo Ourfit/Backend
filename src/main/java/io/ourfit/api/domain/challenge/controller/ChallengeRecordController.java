@@ -5,7 +5,8 @@ import io.ourfit.api.domain.challenge.data.dto.request.ChallengeRecordAsDoneRequ
 import io.ourfit.api.domain.challenge.data.dto.response.ChallengeRecordResponse;
 import io.ourfit.api.domain.challenge.data.entity.ChallengeRecord;
 import io.ourfit.api.domain.challenge.service.ChallengeRecordService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.ListResponse;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import io.ourfit.api.global.utils.StreamUtils;
 import jakarta.validation.Valid;
@@ -25,12 +26,12 @@ public class ChallengeRecordController {
   private final ChallengeRecordService service;
 
   @GetMapping("/{yearMonth}")
-  public ResponseEntity<BaseResponse<List<ChallengeRecordResponse>>> getChallengeRecord(
+  public ResponseEntity<ListResponse<ChallengeRecordResponse>> getChallengeRecord(
       @PathVariable final long challengeId, @PathVariable final String yearMonth) {
     List<ChallengeRecord> response =
         this.service.findMonthlyRecords(challengeId, YearMonth.parse(yearMonth));
     return ResponseEntity.ok(
-        BaseResponse.from(StreamUtils.mapToList(response, ChallengeRecordResponse::from)));
+        ApiResponse.of(StreamUtils.mapToList(response, ChallengeRecordResponse::from)));
   }
 
   @PostMapping

@@ -1,5 +1,6 @@
 package io.ourfit.api.global.data.dto;
 
+import io.ourfit.api.global.data.ApiResponse;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,27 +12,17 @@ import org.springframework.data.domain.Pageable;
  * @param data 응답 데이터
  * @param <T> 응답 데이터의 타입
  */
-public record PageResponse<T>(String message, PageData<T> data) {
+public record PageResponse<T>(String message, PageData<T> data)
+    implements ApiResponse<PageResponse.PageData<T>> {
 
-  /**
-   * 응답 데이터가 없는 경우, 표준 응답 객체를 생성한다.
-   *
-   * @param <T> 응답 데이터의 타입
-   * @return 데이터 없이 {@code OK} 메시지만 포함한 응답 객체
-   */
-  public static <T> PageResponse<T> empty() {
-    return new PageResponse<>("OK", PageData.empty());
+  @Override
+  public String getMessage() {
+    return this.message;
   }
 
-  /**
-   * 요청 성공 시, 응답 데이터를 포함해 표준 응답 객체를 생성한다.
-   *
-   * @param page 응답 데이터
-   * @param <T> 응답 데이터의 타입
-   * @return {@code OK} 메시지와 응답 데이터를 포함한 응답 객체
-   */
-  public static <T> PageResponse<T> from(Page<T> page) {
-    return new PageResponse<>("OK", PageData.from(page));
+  @Override
+  public PageData<T> getData() {
+    return this.data;
   }
 
   /**
@@ -49,12 +40,14 @@ public record PageResponse<T>(String message, PageData<T> data) {
    * @param isEmpty 비어있는 페이지인지 여부
    * @param <T> 응답 데이터의 타입
    */
-  private record PageData<T>(
+  public record PageData<T>(
       int totalPages,
       long totalElements,
       int size,
       List<T> content,
       Pageable pageable,
+      int number,
+      int numberOfElements,
       boolean hasNext,
       boolean hasPrevious,
       boolean isFirst,
@@ -62,7 +55,7 @@ public record PageResponse<T>(String message, PageData<T> data) {
       boolean isEmpty) {
 
     public static <T> PageData<T> empty() {
-      return new PageData<>(0, 0, 0, null, null, false, false, false, false, true);
+      return new PageData<>(0, 0, 0, null, null, 0, 0, false, false, false, false, true);
     }
 
     public static <T> PageData<T> from(Page<T> page) {
@@ -72,6 +65,8 @@ public record PageResponse<T>(String message, PageData<T> data) {
           page.getSize(),
           page.getContent(),
           page.getPageable(),
+          page.getNumber(),
+          page.getNumberOfElements(),
           page.hasNext(),
           page.hasPrevious(),
           page.isFirst(),

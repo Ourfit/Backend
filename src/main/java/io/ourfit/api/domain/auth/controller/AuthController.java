@@ -3,7 +3,8 @@ package io.ourfit.api.domain.auth.controller;
 import io.ourfit.api.domain.auth.data.dto.request.TokenIssueRequest;
 import io.ourfit.api.domain.auth.data.dto.request.TokenReissueRequest;
 import io.ourfit.api.domain.auth.service.AuthService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
@@ -24,20 +25,20 @@ public class AuthController {
 
   @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping("/tokens")
-  public ResponseEntity<BaseResponse<OurfitToken>> authenticate(
+  public ResponseEntity<SingleResponse<OurfitToken>> authenticate(
       @RequestBody @Valid final TokenIssueRequest request) {
     OurfitToken ourfitToken = this.authService.issue(request.oAuthId());
 
-    return ResponseEntity.ok((BaseResponse.from(ourfitToken)));
+    return ResponseEntity.ok((ApiResponse.of(ourfitToken)));
   }
 
   @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping("/tokens/refresh")
-  public ResponseEntity<BaseResponse<OurfitToken>> reissue(
+  public ResponseEntity<SingleResponse<OurfitToken>> reissue(
       @RequestBody @Valid final TokenReissueRequest request) {
     OurfitToken locatTokenDto =
         this.authService.reissue(request.accessToken(), request.refreshToken());
-    return ResponseEntity.ok((BaseResponse.from(locatTokenDto)));
+    return ResponseEntity.ok((ApiResponse.of(locatTokenDto)));
   }
 
   @DeleteMapping("/tokens")
