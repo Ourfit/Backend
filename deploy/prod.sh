@@ -25,11 +25,17 @@ if [ -d "$REPOSITORY/$PROJECT_NAME" ]; then
   echo ">> Done"
 fi
 
+echo "> Remove old artifact"
+if [ -f "$REPOSITORY/$PROJECT_NAME/build/libs/*.jar" ]; then
+  rm -f $REPOSITORY/$PROJECT_NAME/build/libs/*.jar
+  echo ">> Done"
+fi
+
 echo "> Building artifact with Gradle"
-./gradlew clean build -x test
+./gradlew build -x test
 echo ">> Done"
 
-echo "> Copying artifact to the repository root directory"
+echo "> Copying new artifact to the repository root directory"
 ARTIFACT=$(find $REPOSITORY/$PROJECT_NAME/build/libs -type f -name "*.jar")
 if [ -z "$ARTIFACT" ]; then
   echo ">> No valid artifact found in build paths"
