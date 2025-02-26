@@ -18,17 +18,17 @@ else
   echo ">> No running application found"
 fi
 
+echo "> Remove old artifact"
+find "$REPOSITORY" -type f -name "*.jar" -delete
+find "$REPOSITORY/$PROJECT_NAME/build/libs" -type f -name "*.jar" -delete
+echo ">> Done"
+
 echo "> Pulling changes from remote repository..."
 if [ -d "$REPOSITORY/$PROJECT_NAME" ]; then
   cd $REPOSITORY/$PROJECT_NAME || { echo "> Failed CD to project root directory"; exit 1; }
   git pull
   echo ">> Done"
 fi
-
-echo "> Remove old artifact"
-find "$REPOSITORY" -type f -name "*.jar" -delete
-find "$REPOSITORY/$PROJECT_NAME/build/libs" -type f -name "*.jar" -delete
-echo ">> Done"
 
 echo "> Building artifact with Gradle"
 ./gradlew build -x test
@@ -40,6 +40,7 @@ if [ -z "$ARTIFACT" ]; then
   echo ">> No valid artifact found in build paths"
   exit 1
 fi
+
 cp "$ARTIFACT" $REPOSITORY/
 cd $REPOSITORY || { echo "> Failed CD to repository root directory"; exit 1; }
 echo ">> Done"
