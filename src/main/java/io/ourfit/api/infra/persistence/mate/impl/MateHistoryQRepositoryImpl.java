@@ -98,7 +98,7 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
         .then(MateRoleType.ACTOR)
         .when(qMateHistory.target.id.eq(userId))
         .then(MateRoleType.TARGET)
-        .otherwise((MateRoleType) null);
+        .otherwise(MateRoleType.ACTOR);
   }
 
   private static BooleanExpression actionTypeIn(MateHistorySearchDto searchDto) {
