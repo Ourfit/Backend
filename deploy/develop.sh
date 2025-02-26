@@ -19,8 +19,8 @@ else
 fi
 
 echo "> Remove old artifact"
-find "$REPOSITORY" -type f -name "*.jar" -delete
-find "$REPOSITORY/$PROJECT_NAME/build/libs" -type f -name "*.jar" -delete
+find "$REPOSITORY" -type f -name "${PROJECT_NAME}*.jar" -delete
+find "$REPOSITORY/$PROJECT_NAME/build/libs" -type f -name "${PROJECT_NAME}*.jar" -delete
 echo ">> Done"
 
 echo "> Pulling changes from remote repository..."
@@ -35,7 +35,7 @@ echo "> Building artifact with Gradle"
 echo ">> Done"
 
 echo "> Copying new artifact to the repository root directory"
-ARTIFACT=$(find $REPOSITORY/$PROJECT_NAME/build/libs -type f -name "*.jar")
+ARTIFACT=$(find $REPOSITORY/$PROJECT_NAME/build/libs -type f -name "${PROJECT_NAME}*.jar")
 if [ -z "$ARTIFACT" ]; then
   echo ">> No valid artifact found in build paths"
   exit 1
