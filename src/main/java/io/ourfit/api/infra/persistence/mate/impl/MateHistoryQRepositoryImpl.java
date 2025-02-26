@@ -13,6 +13,7 @@ import io.ourfit.api.domain.mate.data.dto.internal.MateHistorySearchDto;
 import io.ourfit.api.domain.mate.data.entity.QMate;
 import io.ourfit.api.domain.mate.data.entity.QMateHistory;
 import io.ourfit.api.domain.mate.data.enums.MateActionType;
+import io.ourfit.api.domain.mate.data.enums.MateRoleType;
 import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.infra.persistence.mate.MateHistoryQRepository;
 import java.util.List;
@@ -48,11 +49,14 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
                     qMateHistory.id,
                     qMate.id,
                     qMateHistory.actionType,
+                    mateRoleType(userId),
                     isRead(userId),
                     qActor.id,
                     qActor.nickname,
+                    qActor.profileImageUrl,
                     qTarget.id,
                     qTarget.nickname,
+                    qTarget.profileImageUrl,
                     qMateHistory.createdAt))
             .from(qMateHistory)
             .innerJoin(qMateHistory.mate, qMate)
@@ -86,6 +90,15 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
         .when(qMateHistory.target.id.eq(userId))
         .then(qMateHistory.targetRead)
         .otherwise(false);
+  }
+
+  private static Expression<MateRoleType> mateRoleType(long userId) {
+    return Expressions.cases()
+        .when(qMateHistory.actor.id.eq(userId))
+        .then(MateRoleType.ACTOR)
+        .when(qMateHistory.target.id.eq(userId))
+        .then(MateRoleType.TARGET)
+        .otherwise((MateRoleType) null);
   }
 
   private static BooleanExpression actionTypeIn(MateHistorySearchDto searchDto) {

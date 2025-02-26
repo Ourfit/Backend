@@ -11,7 +11,8 @@ info:
     | 2025.02.09 | 최초 등록 |
     | 2025.02.13 | 개발 서버 URL 추가 |
     | 2025.02.15 | 이력 조회 API에 `parameter` 추가 |
-  version: 0.0.4
+    | 2025.02.26 | 메이트 이력에 `profileImageUrl`, `roleType` 추가 |
+  version: 0.0.5
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -368,6 +369,15 @@ components:
           example: "REQUEST"
           description: 메이트 신청/수락/해제 타입
           nullable: false
+        roleType:
+          type: string
+          enum: [ "ACTOR", "TARGET"]
+          example: "ACTOR"
+          description: |
+            요청 사용자의 역할
+             - ACTOR: 요청 사용자가 행동을 수행한 주체입니다.
+             - TARGET: 요청 사용자가 행동의 대상입니다.
+          nullable: false
         isRead:
           type: boolean
           example: false
@@ -383,6 +393,12 @@ components:
           example: "운초"
           description: 행동을 수행한 사용자 닉네임
           nullable: false
+        actorProfileImageUrl:
+          type: string
+          format: uri
+          example: "https://aws.s3.com/images/users/profiles/1.jpg"
+          description: 행동을 수행한 사용자 프로필 이미지 URL
+          nullable: true
         targetId:
           type: number
           example: 4
@@ -393,11 +409,15 @@ components:
           example: "운동왕"
           description: 행동의 대상이 된 사용자 닉네임
           nullable: false
+        targetProfileImageUrl:
+          type: string
+          format: uri
+          example: "https://aws.s3.com/images/users/profiles/2.jpg"
+          description: 행동의 대상이 된 사용자 프로필 이미지 URL
+          nullable: true
         createdAt:
           type: string
           format: date-time
           example: "2021-08-01T12:00:00"
           description: 이력 생성 시간
           nullable: false
-
-        
