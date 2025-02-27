@@ -46,7 +46,7 @@ public class UserController {
   /** 메이트 관련 사용자 목록 조회 */
   @GetMapping("/mates")
   public ResponseEntity<PageResponse<BasicUserInfoResponse>> getUsers(
-      MateCandidateSearchRequest request,
+      @Valid MateCandidateSearchRequest request,
       Pageable pageable,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     var currentUser = userDetails.getUser();
@@ -94,7 +94,7 @@ public class UserController {
 
   /** 프로필(자기소개, 오픈 채팅 링크) 설정 */
   @PutMapping("/me/profile")
-  public ResponseEntity<Void> updateMyProfile(
+  public ResponseEntity<Void> seteMyProfile(
       @AuthenticationPrincipal OurfitUserDetails userDetails,
       @RequestBody @Valid UserProfileUpdateRequest request) {
     this.commandService.setProfile(userDetails.getId(), UserProfileUpdateDto.fromRequest(request));
