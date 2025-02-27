@@ -47,6 +47,9 @@ public class AuthController {
   @PostMapping("/tokens/refresh")
   public ResponseEntity<SingleResponse<OurfitToken>> reissue(HttpServletRequest request) {
     var accessToken = JwtUtils.extractToken(request);
+    if (accessToken == null) {
+      throw new AuthenticationException();
+    }
     var refreshTokenCookie =
         Arrays.stream(request.getCookies())
             .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE_KEY))
