@@ -19,7 +19,9 @@ info:
     | 2025.02.24 | 사용자 상세 조회 응답에 `age` 필드 추가 |
     | 2025.02.24 | 프로필 이미지 설정 API에 요청 제한 빈도(`Rate Limit`) 관련 설명 보완 |
     | 2025.02.25 | 메이트 탐색 API 설명 추가 |
-  version: 0.1.1
+    | 2025.02.27 | 메이트 탐색 API 파라미터 오타 수정 |
+    | 2025.02.27 | 메이트 탐색 API `gender` 파라미터 설명 추가  |
+  version: 0.1.3
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -68,7 +70,7 @@ paths:
             type: string
             enum: [ 'F', 'M' ]
           description: "성별"
-        - name: peferredTimes
+        - name: preferredTimes
           in: query
           required: false
           schema:
