@@ -1,5 +1,3 @@
-use ourfit;
-
 create table user
 (
     id                   int unsigned auto_increment comment '서비스 내 고유 ID',
@@ -7,7 +5,6 @@ create table user
     oauth_type           enum ('KAKAO')                                   not null comment 'OAuth 제공자',
     role_type            enum ('SUPER_ADMIN', 'ADMIN', 'MANAGER', 'USER') not null default 'USER' comment '권한',
     email                varchar(255)                                     not null comment '이메일',
-    name                 varchar(50)                                      not null comment '이름',
     nick_name            varchar(50)                                      not null comment '닉네임',
     age                  tinyint unsigned                                 not null comment '나이',
     gender_type          enum ('F', 'M')                                  not null comment '성별',
@@ -29,9 +26,9 @@ create table user
     updated_by           int unsigned                                              default null comment '수정자',
     deleted_at           datetime                                                  default null comment '탈퇴일시',
     primary key (id),
-    constraint uq_oauth unique (oauth_id, oauth_type),
-    constraint uq_email unique (email),
-    constraint uq_nick_name unique (nick_name),
+    # constraint uq_oauth unique (oauth_id, oauth_type),
+    # constraint uq_email unique (email),
+    # constraint uq_nick_name unique (nick_name),
     index idx_region (region1, region2, region3)
 ) engine = InnoDB
   row_format = dynamic
@@ -198,3 +195,55 @@ create table challenge_record
 ) engine = InnoDB
   row_format = dynamic
     comment '챌린지 운동 기록';
+
+create table terms
+(
+    id          int unsigned auto_increment,
+    terms_type  enum ('OVER_14_POLICY', 'TERMS_OF_SERVICE', 'PRIVACY_POLICY', 'MARKETING_POLICY', 'MARKETING_KAKAO_POLICY') not null COMMENT '타입',
+    is_required boolean       default false                                                                                 not null comment '필수 여부',
+    title       varchar(150)                                                                                                not null comment '제목',
+    content     text                                                                                                        not null comment '내용',
+    version     decimal(3, 1) default 1.0                                                                                   not null comment '버전',
+    created_at  datetime      default current_timestamp comment '생성일시',
+    created_by  int unsigned comment '생성자',
+    updated_at  datetime      default current_timestamp on update current_timestamp comment '수정일시',
+    updated_by  int unsigned  default null comment '수정자',
+    primary key (id),
+    constraint uq_terms unique (terms_type, version)
+) engine = InnoDB
+  row_format = dynamic
+    comment '약관 정보';
+
+create table terms_revision_history
+(
+    id            int unsigned auto_increment,
+    terms_id      int unsigned comment '약관 ID',
+    terms_type    enum ('OVER_14_POLICY', 'TERMS_OF_SERVICE', 'PRIVACY_POLICY', 'MARKETING_POLICY', 'MARKETING_KAKAO_POLICY') not null COMMENT '타입',
+    title         varchar(150)                                                                                                not null comment '제목',
+    content       text                                                                                                        not null comment '내용',
+    version       decimal(3, 1) default 1.0                                                                                   not null comment '버전',
+    revision_note text                                                                                                        not null comment '개정 이유',
+    created_at    datetime      default current_timestamp comment '생성일시',
+    created_by    int unsigned comment '생성자',
+    updated_at    datetime      default current_timestamp on update current_timestamp comment '수정일시',
+    updated_by    int unsigned  default null comment '수정자',
+    primary key (id),
+    constraint fk_terms_revision_history_terms_id foreign key (terms_id) references terms (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '약관 개정 이력(SNAPSHOT) 정보';
+
+create table user_terms_agreement
+(
+    id         int unsigned auto_increment,
+    user_id    int unsigned not null comment '사용자 ID',
+    terms_id   int unsigned not null comment '약관 ID',
+    created_at datetime default current_timestamp comment '생성일시',
+    updated_at datetime default current_timestamp on update current_timestamp comment '수정일시',
+    primary key (id),
+    constraint uq_user_terms unique (user_id, terms_id),
+    constraint fk_user_terms_user_id foreign key (user_id) references user (id),
+    constraint fk_user_terms_terms_id foreign key (terms_id) references terms (id)
+) engine = InnoDB
+  row_format = dynamic
+    comment '사용자 약관 동의 정보';

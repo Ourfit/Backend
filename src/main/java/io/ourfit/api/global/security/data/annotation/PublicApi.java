@@ -18,5 +18,5 @@ public @interface PublicApi {
   KeyValidation keyValidation() default KeyValidation.REQUIRED;
 
   /** API Key를 검증할 때 사용할 헤더 이름을 설정한다. */
-  String keyHeader() default "Ourfit-Api-Key";
+  String keyHeader() default "X-Ourfit-Api-Key";
 }

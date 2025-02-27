@@ -22,7 +22,7 @@ public record OurfitUserDetailsImpl(User user) implements OurfitUserDetails, Ser
 
   @Override
   public String getUsername() {
-    return this.user.getName();
+    return this.user.getId().toString();
   }
 
   @Override
@@ -48,5 +48,10 @@ public record OurfitUserDetailsImpl(User user) implements OurfitUserDetails, Ser
   @Override
   public String getPassword() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return this.user.isEnabled();
   }
 }

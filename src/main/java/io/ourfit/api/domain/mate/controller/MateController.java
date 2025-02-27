@@ -3,7 +3,8 @@ package io.ourfit.api.domain.mate.controller;
 import io.ourfit.api.domain.mate.data.dto.response.MateInfoResponse;
 import io.ourfit.api.domain.mate.service.MateCommandService;
 import io.ourfit.api.domain.mate.service.MateQueryService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,7 @@ public class MateController {
 
   /** 내 메이트 정보 조회 */
   @GetMapping("/me")
-  public ResponseEntity<BaseResponse<MateInfoResponse>> getMyMate(
+  public ResponseEntity<SingleResponse<MateInfoResponse>> getMyMate(
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     MateInfoResponse response =
         this.queryService
@@ -53,6 +54,6 @@ public class MateController {
             .map(MateInfoResponse::from)
             .orElse(null);
 
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 }

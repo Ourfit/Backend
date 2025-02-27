@@ -2,6 +2,7 @@ package io.ourfit.api.infra.aws.config;
 
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -20,14 +21,19 @@ public record AwsProperties(String accessKey, String secretKey, String region, S
    *
    * @param bucket S3 버킷 이름
    * @param url S3 서비스 URL
+   * @param cdn CDN URL
    */
-  public record S3(String bucket, String url) {
+  public record S3(String bucket, String url, String cdn) {
 
     /** 서비스에서 지원하는 파일 확장자 */
-    public static final List<String> SUPPORTED_FILE_EXTENSION =
+    public static final List<String> SUPPORTED_IMAGE_EXTENSION =
         List.of(".jpg", ".jpeg", ".png", ".heic", ".webp");
 
+    /** 서비스에서 지원하는 이미지 관련 미디어 타입 */
+    public static final List<String> SUPPORTED_IMAGE_MEDIA_TYPE =
+        List.of(MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, "image/heic", "image/webp");
+
     /** 비즈니스적으로 설정한 업로드할 수 있는 최대 파일 크기 */
-    public static final DataSize MAX_FILE_SIZE = DataSize.ofMegabytes(50);
+    public static final DataSize MAX_FILE_SIZE = DataSize.ofMegabytes(2);
   }
 }

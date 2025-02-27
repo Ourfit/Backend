@@ -9,10 +9,16 @@ public interface OurfitAuditorAware extends AuditorAware<Long> {
 
   String ANONYMOUS_USER = "anonymousUser";
 
+  Long ANONYMOUS_USER_ID = -1L;
+
   /**
    * 현재 사용자 정보를 가져온다.
    *
    * @return 현재 사용자 정보, 인증되지 않은 경우 {@link Optional#empty()}
    */
   Optional<User> getCurrentAuditorUser();
+
+  default Long getCurrentAuditorOrAnonymous() {
+    return this.getCurrentAuditor().orElse(ANONYMOUS_USER_ID);
+  }
 }

@@ -1,9 +1,13 @@
 package io.ourfit.api.domain.mate.controller;
 
+import io.ourfit.api.domain.mate.data.dto.internal.MateHistorySearchDto;
+import io.ourfit.api.domain.mate.data.dto.request.MateHistorySearchRequest;
 import io.ourfit.api.domain.mate.data.dto.response.MateHistoryResponse;
 import io.ourfit.api.domain.mate.service.MateHistoryService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.PageResponse;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +24,16 @@ public class MateHistoryController {
 
   /** 나와 관련된 내역 조회 */
   @GetMapping("/me/history")
-  public ResponseEntity<BaseResponse<Page<MateHistoryResponse>>> getMyMateHistories(
-      Pageable pageable, @AuthenticationPrincipal OurfitUserDetails userDetails) {
+  public ResponseEntity<PageResponse<MateHistoryResponse>> getMyMateHistories(
+      @Valid MateHistorySearchRequest request,
+      Pageable pageable,
+      @AuthenticationPrincipal OurfitUserDetails userDetails) {
     Page<MateHistoryResponse> responses =
-        this.service.findAllByUserId(userDetails.getId(), pageable).map(MateHistoryResponse::from);
-    return ResponseEntity.ok(BaseResponse.from(responses));
+        this.service
+            .findAllByUserId(
+                userDetails.getId(), MateHistorySearchDto.fromRequest(request), pageable)
+            .map(MateHistoryResponse::from);
+    return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
   /** 특정 알림을 읽음 처리 */

@@ -11,12 +11,11 @@ import lombok.Getter;
 @Getter
 public class InternalProcessingException extends OurfitApiException {
 
-  public InternalProcessingException(String message) {
-    this(message, null);
+  public InternalProcessingException(String message, Throwable cause) {
+    super(ApiExceptionType.INTERNAL_SERVER_ERROR, message, cause);
   }
 
-  public InternalProcessingException(String message, Throwable cause) {
-    super(ApiExceptionType.INTERNAL_SERVER_ERROR, cause);
-    log.error(message, cause);
+  public InternalProcessingException(Throwable cause) {
+    this(null, cause);
   }
 }

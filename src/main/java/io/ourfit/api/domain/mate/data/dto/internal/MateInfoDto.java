@@ -1,6 +1,6 @@
 package io.ourfit.api.domain.mate.data.dto.internal;
 
-import io.ourfit.api.domain.workout.data.enums.MateStatusType;
+import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 
 /**
  * 메이트 정보 DTO

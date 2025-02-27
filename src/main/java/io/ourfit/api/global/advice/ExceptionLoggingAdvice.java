@@ -125,12 +125,7 @@ public class ExceptionLoggingAdvice {
           .getCurrentAuditorUser()
           .ifPresentOrElse(
               user ->
-                  logBuilder
-                      .append("Requested User: ")
-                      .append(user.getName())
-                      .append(" (")
-                      .append(user.getId())
-                      .append(LINE_SEPARATOR),
+                  logBuilder.append("Requested User: ").append(user.getId()).append(LINE_SEPARATOR),
               () ->
                   logBuilder
                       .append("Requested User: ")

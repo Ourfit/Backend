@@ -1,8 +1,8 @@
 package io.ourfit.api.domain.mate.data.entity;
 
 import io.ourfit.api.domain.challenge.data.entity.Challenge;
+import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.workout.data.enums.MateStatusType;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;

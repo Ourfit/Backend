@@ -1,10 +1,11 @@
 package io.ourfit.api.domain.mate.service.impl;
 
 import io.ourfit.api.domain.mate.data.dto.internal.MateHistoryDto;
+import io.ourfit.api.domain.mate.data.dto.internal.MateHistorySearchDto;
 import io.ourfit.api.domain.mate.service.MateHistoryService;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
-import io.ourfit.api.infra.persistence.MateHistoryQRepository;
-import io.ourfit.api.infra.persistence.MateHistoryRepository;
+import io.ourfit.api.infra.persistence.mate.MateHistoryQRepository;
+import io.ourfit.api.infra.persistence.mate.MateHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,18 +22,15 @@ public class MateHistoryServiceImpl implements MateHistoryService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<MateHistoryDto> findAllByUserId(long userId, Pageable pageable) {
-    return this.qRepository.findAllByUserId(userId, pageable);
+  public Page<MateHistoryDto> findAllByUserId(
+      long userId, MateHistorySearchDto searchDto, Pageable pageable) {
+    return this.qRepository.findAllByUserId(userId, searchDto, pageable);
   }
 
   @Override
   public void markAsRead(final long userId, final long historyId) {
     this.repository
         .findById(historyId)
-        .ifPresentOrElse(
-            history -> history.markAsRead(userId),
-            () -> {
-              throw new NoSuchEntityException();
-            });
+        .ifPresentOrElse(history -> history.markAsRead(userId), NoSuchEntityException::new);
   }
 }

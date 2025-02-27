@@ -12,11 +12,14 @@ public abstract class OurfitApiException extends RuntimeException {
 
   protected static final Logger log = LoggerFactory.getLogger(OurfitApiException.class);
 
+  /** 예외 타입 */
+  private final ApiExceptionType apiExceptionType;
+
   /** HTTP 응답 코드 */
   private final HttpStatus httpStatus;
 
-  /** 예외 메시지 */
-  private final String message;
+  /** 클라이언트에게 전달할 예외 상황에 대한 정보 또는 메세지의 키 */
+  private final String messageKey;
 
   /** 예외 관리 코드 */
   private final Integer code;
@@ -24,15 +27,26 @@ public abstract class OurfitApiException extends RuntimeException {
   /** 예외 원인 */
   @Nullable private final Throwable cause;
 
-  protected OurfitApiException(ApiExceptionType apiExceptionType) {
-    this(apiExceptionType, null);
+  protected OurfitApiException(ApiExceptionType exceptionType, @Nullable Throwable cause) {
+    super(exceptionType.name(), cause);
+    this.apiExceptionType = exceptionType;
+    this.httpStatus = HttpStatus.resolve(exceptionType.getStatusCode());
+    this.messageKey = exceptionType.getMessageKey();
+    this.code = exceptionType.getCode();
+    this.cause = cause;
   }
 
-  protected OurfitApiException(ApiExceptionType apiExceptionType, Throwable cause) {
-    super(apiExceptionType.getMessage(), cause);
-    this.httpStatus = HttpStatus.resolve(apiExceptionType.getStatusCode());
-    this.message = apiExceptionType.getMessage();
-    this.code = apiExceptionType.getCode();
+  protected OurfitApiException(
+      ApiExceptionType exceptionType, @Nullable String message, @Nullable Throwable cause) {
+    super(message, cause);
+    this.apiExceptionType = exceptionType;
+    this.httpStatus = HttpStatus.resolve(exceptionType.getStatusCode());
+    this.messageKey = exceptionType.getMessageKey();
+    this.code = exceptionType.getCode();
     this.cause = cause;
+  }
+
+  protected OurfitApiException(ApiExceptionType exceptionType) {
+    this(exceptionType, null);
   }
 }

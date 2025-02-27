@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface KakaoOAuth2Client {
 
   /**
-   * Kakao OAuth2 토큰 발급 또는 갱신
+   * Kakao OAuth2 토큰 발급
    *
    * @param grantType {@code authorization_code}로 고정
    * @param clientId Client ID
@@ -23,10 +23,26 @@ public interface KakaoOAuth2Client {
    * @return Kakao OAuth2 토큰
    */
   @PostMapping("/oauth/token")
-  KakaoOAuth2TokenDto issueOrRenewToken(
+  KakaoOAuth2TokenDto issueToken(
       @RequestParam("grant_type") String grantType,
       @RequestParam("client_id") String clientId,
       @RequestParam("client_secret") String clientSecret,
       @RequestParam("redirect_uri") String redirectUri,
       @RequestParam("code") String code);
+
+  /**
+   * Kakao OAuth2 토큰 갱신
+   *
+   * @param grantType {@code refresh_token}으로 고정
+   * @param clientId Client ID
+   * @param clientSecret Client Secret
+   * @param refreshToken 갱신 토큰
+   * @return 갱신된 Kakao OAuth2 토큰
+   */
+  @PostMapping("/oauth/token")
+  KakaoOAuth2TokenDto renewToken(
+      @RequestParam("grant_type") String grantType,
+      @RequestParam("client_id") String clientId,
+      @RequestParam("client_secret") String clientSecret,
+      @RequestParam("refresh_token") String refreshToken);
 }

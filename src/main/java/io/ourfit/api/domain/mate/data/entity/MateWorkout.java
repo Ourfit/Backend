@@ -2,7 +2,7 @@ package io.ourfit.api.domain.mate.data.entity;
 
 import io.ourfit.api.domain.mate.data.dto.internal.MateWorkoutPlacesUpsertDto;
 import io.ourfit.api.domain.mate.data.dto.internal.MateWorkoutTimeUpsertDto;
-import io.ourfit.api.global.data.entity.SecuredBaseEntity;
+import io.ourfit.api.global.data.entity.AuditableBaseEntity;
 import io.ourfit.api.global.persistence.converter.DayOfWeekSetConverter;
 import jakarta.persistence.*;
 import java.io.Serial;
@@ -17,7 +17,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MateWorkout extends SecuredBaseEntity {
+public class MateWorkout extends AuditableBaseEntity {
 
   @Serial private static final long serialVersionUID = 2025020101L;
 

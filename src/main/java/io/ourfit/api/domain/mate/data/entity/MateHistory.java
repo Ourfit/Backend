@@ -1,7 +1,7 @@
 package io.ourfit.api.domain.mate.data.entity;
 
+import io.ourfit.api.domain.mate.data.enums.MateActionType;
 import io.ourfit.api.domain.user.data.entity.User;
-import io.ourfit.api.domain.workout.data.enums.MateActionType;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;

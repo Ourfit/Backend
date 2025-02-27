@@ -3,6 +3,8 @@ package io.ourfit.api.global.security;
 import static org.springframework.http.HttpMethod.*;
 
 import io.ourfit.api.global.security.filter.SecurityFilterFactory;
+import io.ourfit.api.global.security.filter.impl.AdminApiAuthorizationFilter;
+import io.ourfit.api.global.security.filter.impl.JwtAuthenticationFilter;
 import io.ourfit.api.global.security.filter.impl.PublicApiAccessControlFilter;
 import io.ourfit.api.global.security.web.AccessDeniedHandlerImpl;
 import io.ourfit.api.global.security.web.AuthEntryPointImpl;
@@ -32,6 +34,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+  /** 갱신 토큰 쿠키 Key */
+  public static final String REFRESH_TOKEN_COOKIE_KEY = "ourfit_rt";
 
   private static final List<HttpMethod> DEFAULT_PERMIT_METHODS =
       List.of(GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS);
@@ -63,6 +68,8 @@ public class SecurityConfig {
         .addFilterBefore(
             this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
+        .addFilterAfter(this.filterFactory.adminAuth(), JwtAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.rateLimit(), AdminApiAuthorizationFilter.class)
         .exceptionHandling(
             exception ->
                 exception
@@ -84,7 +91,7 @@ public class SecurityConfig {
     return http.httpBasic(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
+        .cors(AbstractHttpConfigurer::disable)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
@@ -99,6 +106,13 @@ public class SecurityConfig {
         .addFilterBefore(
             this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
+        .addFilterAfter(this.filterFactory.adminAuth(), JwtAuthenticationFilter.class)
+        .addFilterAfter(this.filterFactory.rateLimit(), AdminApiAuthorizationFilter.class)
+        .exceptionHandling(
+            exception ->
+                exception
+                    .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                    .authenticationEntryPoint(new AuthEntryPointImpl()))
         .build();
   }
 
@@ -112,7 +126,9 @@ public class SecurityConfig {
   @Bean
   protected CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
-    corsConfiguration.addAllowedOriginPattern("*");
+    corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+    //    corsConfiguration.setAllowedOriginPatterns(
+    //        List.of("https://ourfit.life", "https://*.ourfit.life"));
     corsConfiguration.addAllowedHeader("*");
     corsConfiguration.setAllowedMethods(
         StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));

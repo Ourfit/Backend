@@ -35,10 +35,10 @@ public class KakaoOAuth2Template extends AbstractOAuth2Template {
 
   @Override
   public OAuth2ProviderToken issueToken(final String code) {
-    OAuth2Properties.Kakao kakaoProperties = this.oAuth2Properties.kakao();
+    var kakaoProperties = this.oAuth2Properties.kakao();
     OAuth2ProviderTokenDto tokenDto =
-        this.kakaoOAuth2Client.issueOrRenewToken(
-            OAuth2Properties.Kakao.GRANT_TYPE,
+        this.kakaoOAuth2Client.issueToken(
+            OAuth2Properties.Kakao.GRANT_TYPE_ISSUE,
             kakaoProperties.clientId(),
             kakaoProperties.clientSecret(),
             kakaoProperties.redirectUri(),
@@ -50,15 +50,28 @@ public class KakaoOAuth2Template extends AbstractOAuth2Template {
   }
 
   @Override
+  public OAuth2ProviderToken renewToken(String oAuthId) {
+    var kakaoProperties = this.oAuth2Properties.kakao();
+    OAuth2ProviderToken token = super.findToken(oAuthId);
+    OAuth2ProviderTokenDto tokenDto =
+        this.kakaoOAuth2Client.renewToken(
+            OAuth2Properties.Kakao.GRANT_TYPE_RENEW,
+            kakaoProperties.clientId(),
+            kakaoProperties.clientSecret(),
+            token.getRefreshToken());
+    return super.providerTokenRepository.save(token.renew(tokenDto));
+  }
+
+  @Override
   public OAuth2UserInfo getUserInfo(final String oAuthId) {
-    final String accessToken = super.findToken(oAuthId).getAccessToken();
+    final var accessToken = super.getValidToken(oAuthId).getAccessToken();
     return this.kakaoUserClient.getUserInfo(prependBearer(accessToken));
   }
 
   @Override
   @Transactional
   public void withdrawal(final String oAuthId) {
-    final String accessToken = super.findToken(oAuthId).getAccessToken();
+    final var accessToken = super.getValidToken(oAuthId).getAccessToken();
     this.kakaoUserClient.withdrawal(prependBearer(accessToken));
     this.providerTokenRepository.deleteById(oAuthId);
   }

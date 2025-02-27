@@ -20,8 +20,7 @@ public final class OurfitSpelParser {
    * @param args 파라미터 값
    * @return 동적으로 가져온 값
    */
-  public static synchronized Object getDynamicValue(
-      String expression, String[] parameterNames, Object[] args) {
+  public static Object getDynamicValue(String expression, String[] parameterNames, Object[] args) {
     EvaluationContext context = new StandardEvaluationContext();
 
     for (int i = 0; i < parameterNames.length; i++) {
@@ -39,7 +38,7 @@ public final class OurfitSpelParser {
    * @param args 파라미터 값
    * @return 평가 결과
    */
-  public static synchronized Boolean evaluateExpression(
+  public static Boolean evaluateExpression(
       String expression, String[] parameterNames, Object... args) {
     EvaluationContext context = new StandardEvaluationContext();
 

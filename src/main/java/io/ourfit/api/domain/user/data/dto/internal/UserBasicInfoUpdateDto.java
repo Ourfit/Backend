@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.user.data.dto.internal;
 
+import io.ourfit.api.domain.user.data.dto.request.UserBasicInfoUpdateRequest;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
 
 /**
@@ -18,4 +19,15 @@ public record UserBasicInfoUpdateDto(
     String region1,
     String region2,
     String region3,
-    SkillLevelType skillLevel) {}
+    SkillLevelType skillLevel) {
+
+  public static UserBasicInfoUpdateDto fromRequest(UserBasicInfoUpdateRequest request) {
+    return new UserBasicInfoUpdateDto(
+        request.nickname(),
+        request.age(),
+        request.region1(),
+        request.region2(),
+        request.region3(),
+        SkillLevelType.findByName(request.skillLevel()));
+  }
+}

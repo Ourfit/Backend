@@ -1,6 +1,8 @@
 package io.ourfit.api.global.jwt;
 
-import lombok.Builder;
+import static io.ourfit.api.global.jwt.impl.JwtProperties.*;
+
+import jakarta.annotation.Nullable;
 
 /**
  * JWT 정보
@@ -11,10 +13,29 @@ import lombok.Builder;
  * @param accessTokenExpiresIn 접근 토큰 만료 시간 (s)
  * @param refreshTokenExpiresIn 갱신 토큰 만료 시간 (s)
  */
-@Builder
 public record OurfitToken(
     String grantType,
     String accessToken,
     String refreshToken,
     Long accessTokenExpiresIn,
-    Long refreshTokenExpiresIn) {}
+    Long refreshTokenExpiresIn) {
+
+  public static OurfitToken issue(String accessToken, String refreshToken) {
+    return new OurfitToken(
+        BEARER_PREFIX,
+        accessToken,
+        refreshToken,
+        ACCESS_TOKEN_EXPIRATION.toSeconds(),
+        REFRESH_TOKEN_EXPIRATION.toSeconds());
+  }
+
+  public static OurfitToken reissue(String newAccessToken, @Nullable String newRefreshToken) {
+    Long refreshTokenExpiry = newRefreshToken != null ? REFRESH_TOKEN_EXPIRATION.toSeconds() : null;
+    return new OurfitToken(
+        BEARER_PREFIX,
+        newAccessToken,
+        newRefreshToken,
+        ACCESS_TOKEN_EXPIRATION.toSeconds(),
+        refreshTokenExpiry);
+  }
+}

@@ -5,7 +5,8 @@ import io.ourfit.api.domain.challenge.data.dto.request.ChallengeCreateRequest;
 import io.ourfit.api.domain.challenge.data.dto.request.ChallengeUpdateRequest;
 import io.ourfit.api.domain.challenge.data.dto.response.MyChallengeInfoResponse;
 import io.ourfit.api.domain.challenge.service.ChallengeService;
-import io.ourfit.api.global.data.dto.BaseResponse;
+import io.ourfit.api.global.data.ApiResponse;
+import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import io.ourfit.api.global.utils.StreamUtils;
@@ -26,7 +27,7 @@ public class ChallengeController {
 
   /** 현재 진행 중인 내 챌린지 조회 */
   @GetMapping("/me")
-  public ResponseEntity<BaseResponse<MyChallengeInfoResponse>> getCurrentChallengeRecord(
+  public ResponseEntity<SingleResponse<MyChallengeInfoResponse>> getCurrentChallengeRecord(
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
     MyChallengeInfoResponse response =
         this.service
@@ -34,7 +35,7 @@ public class ChallengeController {
             .map(MyChallengeInfoResponse::from)
             .orElse(null);
 
-    return ResponseEntity.ok(BaseResponse.from(response));
+    return ResponseEntity.ok(ApiResponse.of(response));
   }
 
   /** 챌린지 등록 */
@@ -53,7 +54,7 @@ public class ChallengeController {
   @PatchMapping("/{challengeId}")
   public ResponseEntity<Void> updateGoalDayOfWeeks(
       @PathVariable long challengeId, @RequestBody @Valid ChallengeUpdateRequest request) {
-    this.service.updateGoalDayOfWeeks(
+    this.service.setGoalDayOfWeeks(
         challengeId, StreamUtils.mapToSet(request.goalWorkoutDayOfWeeks(), DayOfWeek::valueOf));
     return ResponseEntity.ok().build();
   }

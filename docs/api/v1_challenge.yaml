@@ -1,13 +1,21 @@
 openapi: 3.0.0
 info:
-  title: Challenge API
-  description: 챌린지 관리 API
-  version: 0.0.1
+  title: Challenge API (v1)
+  description: |
+    챌린지 관리 API
+    
+    #### Revision History
+
+    | Date | Description |
+    |--------|--------------------------------|
+    | 2025.02.09 | 최초 등록 |
+    | 2025.02.13 | 개발 서버 URL 추가 |
+    | 2025.02.15 | `description` 보완 |
+    | 2025.02.19 | `description` 보완 |
+    | 2025.02.24 | `intensityLevel` 예시 수정 |
+  version: 0.0.4
 servers:
-  - url: https://dev.not-available-yet.com
-    description: Development
-  - url: https://not-available-yet.com
-    description: Production
+  - url: https://api.ourfit.life
 paths:
   /v1/challenges:
     post:
@@ -43,8 +51,10 @@ paths:
         - name: challengeId
           in: path
           required: true
-          example: 52
           description: 수정할 챌린지 ID
+          schema:
+            type: number
+            example: 52
       requestBody:
         $ref: '#/components/requestBodies/ChallengeUpdateRequest'
       responses:
@@ -66,8 +76,10 @@ paths:
         - name: challengeId
           in: path
           required: true
-          example: 52
           description: 삭제할 챌린지 ID
+          schema:
+            type: number
+            example: 52
       responses:
         200:
           description: 챌린지 삭제 성공
@@ -103,6 +115,7 @@ paths:
           description: |
             리소스가 이 요청을 처리할 수 없는 상태임
             
+            아래와 같은 경우에 발생할 수 있습니다:
             - 오늘 도전이 예정되어 있지 않음
             - 이미 오늘의 완료 처리가 되어 있음
   /v1/challenges/{challengeId}/records/{yearMonth}:
@@ -204,7 +217,7 @@ components:
             properties:
               intensityLevel:
                 type: number
-                example: "2025-03-13"
+                example: "2"
                 description: |
                   오늘의 운동 강도
                   

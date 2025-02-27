@@ -1,13 +1,27 @@
 openapi: 3.0.0
 info:
-  title: User API
-  description: 사용자 정보 관리 API
-  version: 0.0.1
+  title: User API (v1)
+  description: |
+    사용자 정보 관리 API
+    
+    #### Revision History
+    
+    | Date | Description |
+    |--------|--------------------------------|
+    | 2025.02.04 | 최초 등록 |
+    | 2025.02.05 | `description` 보완 |
+    | 2025.02.09 | `description` 보완 |
+    | 2025.02.13 | 개발 서버 URL 추가 |
+    | 2025.02.18 | 회원가입 요청 본문의 `preferredWorkoutTime` 타입 표기 오류 정정(`array` → `string`) |
+    | 2025.02.21 | 메이트 탐색 응답에 `age` 필드 추가 |
+    | 2025.02.22 | 회원가입 요청 400 오류 케이스 설명 추가 |
+    | 2025.02.23 | 사용자 상세 조회 응답에 `openChatUrl` 필드 추가 |
+    | 2025.02.24 | 사용자 상세 조회 응답에 `age` 필드 추가 |
+    | 2025.02.24 | 프로필 이미지 설정 API에 요청 제한 빈도(`Rate Limit`) 관련 설명 보완 |
+    | 2025.02.25 | 메이트 탐색 API 설명 추가 |
+  version: 0.1.1
 servers:
-  - url: https://dev.not-available-yet.com
-    description: Development
-  - url: https://not-available-yet.com
-    description: Production
+  - url: https://api.ourfit.life
 paths:
   /v1/users:
     post:
@@ -24,6 +38,7 @@ paths:
             아래와 같은 경우에 발생할 수 있습니다:
               - 필수 값이 누락되었거나, ENUM에 정의되지 않은 값이 포함됨
               - 나이(`age`)가 15세 미만 또는 70세 초과임
+              - 지역 정보(`region1`, `region2`, `region3`)가 올바르지 않음
               - 선호하는 운동 종목(`favoriteWorkouts`) 규칙 위반 (1개 이상, 3개 이하)
         409:
           description: |
@@ -38,12 +53,21 @@ paths:
       description: |
         메이트 매칭을 위한 필터링이 적용된 사용자 목록을 조회합니다.
         
-        ** 검색 조건 (항상 적용됨) **
+        가입 오래된 순으로 정렬됩니다.
+        
+        ** 항상 검색에 포함되는 조건 **
         - 나와 같은 동네(지역3, 동/읍/면)에 사는 사용자
         - 현재 메이트가 없는 사용자
       security:
         - bearerAuth: [ ]
       parameters:
+        - name: gender
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ 'F', 'M' ]
+          description: "성별"
         - name: peferredTimes
           in: query
           required: false
@@ -167,10 +191,13 @@ paths:
             - 오픈 채팅 URL(`openChatUrl`) 형식이 올바르지 않음
   /v1/users/me/profile-image:
     put:
-      summary: 내 프로필 이미지 수정 API
+      summary: 내 프로필 이미지 설정 API
       description: |
-        사용자의 프로필 이미지를 수정할 수 있습니다.
-        - 지원하는 확장자: .jpg, .jpeg, .png, .heic, .webp
+        사용자의 프로필 이미지를 설정할 수 있습니다.
+        
+        **1분에 한 번**만 업로드 가능하며, 기존 이미지는 새로운 이미지로 대체됩니다.
+          - 이미지는 **최대 5MB**까지 업로드 가능합니다.
+          - 지원하는 확장자: .jpg, .jpeg, .png, .heic, .webp
       security:
         - bearerAuth: [ ]
       requestBody:
@@ -188,6 +215,16 @@ paths:
       responses:
         200:
           description: "사용자 프로필 이미지 수정 성공"
+        429:
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                format: int32
+                minimum: 1
+              description: "요청을 다시 시도하기까지 남은 대기 시간(초)"
+          description: |
+            너무 많은 요청을 보냈음
   /v1/users/me/workout-preferences:
     put:
       summary: 내 운동 선호 정보 수정 API
@@ -301,10 +338,8 @@ components:
                 enum: [ 'BEGINNER', 'INTERMEDIATE', 'ADVANCED' ]
                 description: "운동 실력"
               preferredWorkoutTime:
-                type: array
-                items:
-                  type: string
-                  enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
+                type: string
+                enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
                 description: "선호하는 시간대"
               favoriteWorkouts:
                 type: array
@@ -457,6 +492,11 @@ components:
           enum: [ 'F', 'M' ]
           description: "성별"
           nullable: false
+        age:
+          type: number
+          example: 20
+          description: "나이"
+          nullable: false
         skillLevel:
           type: string
           enum: [ 'BEGINNER', 'INTERMEDIATE', 'ADVANCED' ]
@@ -468,10 +508,8 @@ components:
           description: "소개"
           nullable: true
         preferredWorkoutTime:
-          type: array
-          items:
-            type: string
-            enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
+          type: string
+          enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
           description: "선호하는 시간대"
           nullable: false
         favoriteWorkouts:
@@ -501,12 +539,23 @@ components:
           example: 1
           description: "사용자 ID"
           nullable: false
+        oAuthProvider:
+          type: string
+          enum: [ "KAKAO" ]
+          description: "OAuth2 제공자"
+          nullable: false
         profileUrl:
           type: string
           format: uri
           example: "https://example.com/profile.jpg"
           description: "프로필 이미지 URL"
           nullable: true
+        email:
+          type: string
+          format: email
+          example: "admin@ourfit.life"
+          description: "이메일"
+          nullable: false
         nickname:
           type: string
           example: "닉네임입니다"
@@ -516,6 +565,26 @@ components:
           type: string
           enum: [ 'F', 'M' ]
           description: "성별"
+          nullable: false
+        age:
+          type: number
+          example: 20
+          default: "나이"
+          nullable: false
+        region1:
+          type: string
+          example: "서울특별시"
+          description: "지역(시/도)"
+          nullable: false
+        region2:
+          type: string
+          example: "송파구"
+          description: "지역(시/군/구)"
+          nullable: false
+        region3:
+          type: string
+          example: "잠실동"
+          description: "지역(읍/면/동)"
           nullable: false
         skillLevel:
           type: string
@@ -527,11 +596,15 @@ components:
           example: "안녕하세요. 자기소개입니다."
           description: "소개"
           nullable: true
+        openChatUrl:
+          type: string
+          format: uri
+          example: "https://open.kakao.com/o/gjgjgjgj"
+          description: "카카오 오픈 채팅 URL"
+          nullable: true
         preferredWorkoutTime:
-          type: array
-          items:
-            type: string
-            enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
+          type: string
+          enum: [ "WEEKDAY_MORNING", "WEEKDAY_AFTERNOON", "WEEKDAY_EVENING", "WEEKEND_MORNING", "WEEKEND_AFTERNOON", "WEEKEND_EVENING" ]
           description: "선호하는 시간대"
           nullable: false
         favoriteWorkouts:
