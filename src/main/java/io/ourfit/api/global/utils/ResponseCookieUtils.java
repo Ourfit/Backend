@@ -15,6 +15,7 @@ public final class ResponseCookieUtils {
         .value(refreshToken)
         .httpOnly(true)
         .secure(true)
+        .domain("localhost.com")
         .sameSite(SameSiteCookies.NONE.getValue())
         .maxAge(REFRESH_TOKEN_EXPIRATION)
         .path("/v1/auth/tokens/refresh")
