@@ -53,8 +53,7 @@ public class AuthController {
             .findFirst()
             .orElseThrow(AuthenticationException::new);
 
-    var ourfitToken =
-        this.authService.reissue(accessToken, refreshTokenCookie.getValue());
+    var ourfitToken = this.authService.reissue(accessToken, refreshTokenCookie.getValue());
     return createReissueResponse(ourfitToken);
   }
 
