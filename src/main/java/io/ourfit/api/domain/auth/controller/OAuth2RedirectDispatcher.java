@@ -18,25 +18,36 @@ import org.springframework.web.bind.annotation.*;
 @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/oauth2/{provider}/redirect")
-public class OAuthRedirectDispatcher {
+// @RequestMapping("/v1/oauth2/{provider}/redirect")
+public class OAuth2RedirectDispatcher {
 
   private final OAuth2TemplateFactory templateFactory;
   private final UserQueryService userQueryService;
   private final OAuth2Properties oAuth2Properties;
 
-  @GetMapping
+  @GetMapping("/v1/oauth2/{provider}/redirect")
   public ResponseEntity<Void> handleOAuth2Callback(
       @PathVariable String provider, @RequestParam String code) {
     Assert.notNull(code, "Authorization code must not be null");
-    final OAuth2ProviderType providerType = OAuth2ProviderType.from(provider);
+    final var providerType = OAuth2ProviderType.from(provider);
+    return this.doHandleInternal(providerType, code, this.oAuth2Properties.url());
+  }
 
+  @GetMapping("/v1-dev/oauth2/{provider}/redirect")
+  public ResponseEntity<Void> handleDevelopOAuth2Callback(
+      @PathVariable String provider, @RequestParam String code) {
+    Assert.notNull(code, "Authorization code must not be null");
+    final var providerType = OAuth2ProviderType.from(provider);
+    return this.doHandleInternal(providerType, code, "http://localhost:3000");
+  }
+
+  private ResponseEntity<Void> doHandleInternal(
+      OAuth2ProviderType provider, String code, String redirectUri) {
     final String oAuthId =
-        this.templateFactory.getByProviderType(providerType).issueToken(code).getId();
+        this.templateFactory.getByProviderType(provider).issueToken(code).getId();
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(
-            OAUTH2_REDIRECT_URI.expand(
-                this.oAuth2Properties.url(), oAuthId, this.getRegistrationStatus(oAuthId)))
+            OAUTH2_REDIRECT_URI.expand(redirectUri, oAuthId, this.getRegistrationStatus(oAuthId)))
         .build();
   }
 

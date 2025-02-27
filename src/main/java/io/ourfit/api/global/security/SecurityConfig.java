@@ -126,8 +126,9 @@ public class SecurityConfig {
   @Bean
   protected CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
-    corsConfiguration.setAllowedOriginPatterns(
-        List.of("https://ourfit.life", "https://*.ourfit.life"));
+    corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+    //    corsConfiguration.setAllowedOriginPatterns(
+    //        List.of("https://ourfit.life", "https://*.ourfit.life"));
     corsConfiguration.addAllowedHeader("*");
     corsConfiguration.setAllowedMethods(
         StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));
