@@ -17,7 +17,7 @@ public final class JwtUtils {
    * @param request HTTP 요청
    * @return 추출한 토큰 또는 Bearer 형식이 아니거나 토큰이 없는 경우, {@code null}
    */
-  @Nullable public static String resolve(HttpServletRequest request) {
+  @Nullable public static String extractToken(HttpServletRequest request) {
     final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
     if (!StringUtils.hasText(authorization) || !authorization.startsWith(BEARER_PREFIX)) {

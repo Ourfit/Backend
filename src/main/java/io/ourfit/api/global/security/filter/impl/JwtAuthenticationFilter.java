@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends AbstractSecurityFilter {
       return;
     }
 
-    Optional<String> userToken = Optional.of(request).map(JwtUtils::resolve);
+    Optional<String> userToken = Optional.of(request).map(JwtUtils::extractToken);
 
     if (userToken.isEmpty()) {
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No Authorization Header");

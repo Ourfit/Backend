@@ -7,7 +7,6 @@ import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateD
 import io.ourfit.api.domain.user.data.dto.request.*;
 import io.ourfit.api.domain.user.data.dto.response.BasicUserInfoResponse;
 import io.ourfit.api.domain.user.data.dto.response.DetailedUserInfoResponse;
-import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserCommandService;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.data.ApiResponse;
@@ -23,10 +22,12 @@ import io.ourfit.api.global.security.data.annotation.RateLimit;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
+import io.ourfit.api.global.utils.ResponseCookieUtils;
 import jakarta.validation.Valid;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -129,9 +130,13 @@ public class UserController {
   @PostMapping
   public ResponseEntity<SingleResponse<OurfitToken>> create(
       @RequestBody @Valid UserSignUpRequest request) {
-    User user = this.commandService.save(request.toDto());
-    OurfitToken ourfitToken = this.jwtProvider.create(user);
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(ourfitToken));
+    var user = this.commandService.save(request.toDto());
+    var ourfitToken = this.jwtProvider.create(user);
+    var refreshTokenCookie = ResponseCookieUtils.refreshTokenCookie(ourfitToken.refreshToken());
+
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+        .body(ApiResponse.of(ourfitToken));
   }
 
   /** 회원 탈퇴 */

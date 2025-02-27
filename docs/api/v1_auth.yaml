@@ -14,7 +14,8 @@ info:
     | 2025.02.19 | `description` 보완 |
     | 2025.02.22 | 토큰 폐기 API 추가 |
     | 2025.02.22 | 응답 스키마 설명 보완 |
-  version: 0.0.6
+    | 2025.02.27 | 갱신 토큰 Cookie 관련 내용 추가 / 토큰 재발급 규격 변경 |
+  version: 0.0.7
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -106,8 +107,8 @@ paths:
         접근 토큰이 만료된 경우, 유효한 갱신 토큰을 이용해 접근 토큰을 갱신할 수 있습니다.
         
         갱신 토큰의 유효 시간이 1일 미만인 경우, 갱신 토큰도 함께 갱신됩니다.
-      requestBody:
-        $ref: "#/components/requestBodies/TokenRenewRequest"
+      security:
+        - bearerAuth: [ ]
       responses:
         200:
           $ref: "#/components/responses/OurfitToken"
@@ -145,25 +146,17 @@ components:
                 type: string
                 example: "51269223"
                 description: "OAuth2 인증 요청 성공 후에 반환된 OAuth2 ID"
-    TokenRenewRequest:
-      description: "토큰 갱신 요청"
-      content:
-        application/json:
-          schema:
-            description: "토큰 갱신 요청"
-            type: object
-            properties:
-              accessToken:
-                type: string
-                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
-                description: "만료된 접근 토큰"
-              refreshToken:
-                type: string
-                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
-                description: "유효한 갱신 토큰"
   responses:
     OurfitToken:
       description: "가입 또는 로그인 성공 후, 발급된 JWT 토큰 정보"
+      headers:
+        Set-Cookie:
+          description: |
+            갱신 토큰을 포함하는 쿠키를 설정합니다.
+            
+            재발급 요청 시에는, 갱신 토큰이 재발급 된 경우에만 포함됩니다.
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -191,7 +184,7 @@ components:
                     type: string
                     nullable: true
                     example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.(truncated)"
-                    description: "갱신 토큰(토큰 갱신 시에는 nullable)"
+                    description: "갱신 토큰(토큰 재발급 시에는 nullable)"
                   accessTokenExpiresIn:
                     type: integer
                     nullable: false

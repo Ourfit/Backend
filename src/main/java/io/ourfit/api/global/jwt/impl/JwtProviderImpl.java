@@ -43,6 +43,9 @@ public class JwtProviderImpl implements JwtProvider {
 
   @Override
   public OurfitToken reissue(String oldAccessToken, String refreshToken) {
+    if (this.parse(refreshToken).isEmpty()) {
+      throw new TokenException();
+    }
     final var claims = this.parse(oldAccessToken).orElseThrow(TokenException::new);
     final var userId = Long.parseLong(claims.getSubject());
 

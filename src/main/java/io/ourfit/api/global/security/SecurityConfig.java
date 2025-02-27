@@ -35,6 +35,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+  /** 갱신 토큰 쿠키 Key */
+  public static final String REFRESH_TOKEN_COOKIE_KEY = "ourfit_rt";
+
   private static final List<HttpMethod> DEFAULT_PERMIT_METHODS =
       List.of(GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS);
 
