@@ -110,6 +110,6 @@ public class RequestLoggingAdvice {
     if (queryString == null || queryString.isBlank()) {
       return EMPTY_BODY_PLACEHOLDER;
     }
-    return queryString.replace("&", "\t");
+    return queryString.replace("&", ",");
   }
 }
