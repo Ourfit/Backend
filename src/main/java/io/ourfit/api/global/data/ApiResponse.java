@@ -34,7 +34,7 @@ public interface ApiResponse<T> {
    */
   T getData();
 
-  static <T> SingleResponse<T> ok() {
+  static <T> ApiResponse<T> ok() {
     return new SingleResponse<>(MESSAGE_OK, null);
   }
 

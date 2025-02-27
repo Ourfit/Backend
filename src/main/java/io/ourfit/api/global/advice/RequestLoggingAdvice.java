@@ -60,7 +60,7 @@ public class RequestLoggingAdvice {
 
   /** 요청 정보 로깅 */
   private static void logRequest(HttpServletRequest request) {
-    log.debug(
+    log.info(
         """
         [Incoming Request Received] - {} {}
         From: {}
@@ -79,7 +79,7 @@ public class RequestLoggingAdvice {
       HttpServletRequest request,
       ContentCachingResponseWrapper responseWrapper,
       final long elapsedTime) {
-    log.debug(
+    log.info(
         """
         [Outgoing Response Sent] - {} {}
         Status: {}
