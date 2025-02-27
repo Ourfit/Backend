@@ -105,11 +105,10 @@ public class RequestLoggingAdvice {
         : body;
   }
 
-  /** Query String 포맷 변환 */
   private static String formatQueryString(String queryString) {
     if (queryString == null || queryString.isBlank()) {
       return EMPTY_BODY_PLACEHOLDER;
     }
-    return queryString.replace("&", ",");
+    return queryString;
   }
 }
