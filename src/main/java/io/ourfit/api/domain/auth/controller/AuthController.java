@@ -14,6 +14,7 @@ import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import io.ourfit.api.global.utils.ResponseCookieUtils;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Arrays;
@@ -50,11 +51,7 @@ public class AuthController {
     if (accessToken == null) {
       throw new AuthenticationException();
     }
-    var refreshTokenCookie =
-        Arrays.stream(request.getCookies())
-            .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE_KEY))
-            .findFirst()
-            .orElseThrow(AuthenticationException::new);
+    var refreshTokenCookie = findRefreshTokenCookie(request);
 
     var ourfitToken = this.authService.reissue(accessToken, refreshTokenCookie.getValue());
     return createReissueResponse(ourfitToken);
@@ -78,5 +75,16 @@ public class AuthController {
     }
 
     return responseBuilder.body(ApiResponse.of(ourfitToken));
+  }
+
+  private static Cookie findRefreshTokenCookie(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies == null || cookies.length == 0) {
+      throw new AuthenticationException();
+    }
+    return Arrays.stream(cookies)
+        .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE_KEY))
+        .findFirst()
+        .orElseThrow(AuthenticationException::new);
   }
 }
