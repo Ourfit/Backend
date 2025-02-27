@@ -18,6 +18,7 @@ import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.infra.aws.s3.OurfitS3Client;
+import io.ourfit.api.infra.aws.s3.S3Utils;
 import io.ourfit.api.infra.persistence.user.UserRepository;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -92,13 +93,18 @@ public class UserCommandServiceImpl implements UserCommandService {
     this.ifFoundThen(
         id,
         user -> {
-          var imageKey = Long.toString(user.getId());
           var oldProfileUrl = user.getProfileImageUrl();
+          if (profileImage == null) {
+            this.s3Client.deleteByUrl(oldProfileUrl);
+            return;
+          }
           if (oldProfileUrl != null) {
             this.s3Client.deleteByUrl(oldProfileUrl);
           }
+
+          var newKey = S3Utils.createTimeBasedKey(Long.toString(user.getId()));
           final var newProfileUrl =
-              this.s3Client.upload("images/users/profiles", imageKey, profileImage);
+              this.s3Client.upload("images/users/profiles", newKey, profileImage);
           user.setProfileImageUrl(newProfileUrl);
         });
   }

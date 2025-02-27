@@ -20,6 +20,10 @@ public final class S3Utils {
 
   private S3Utils() {}
 
+  public static String createTimeBasedKey(String key) {
+    return key + System.currentTimeMillis();
+  }
+
   /**
    * 원본 파일 이름에서 확장자를 추출한다.
    *

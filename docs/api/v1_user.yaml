@@ -61,6 +61,13 @@ paths:
       security:
         - bearerAuth: [ ]
       parameters:
+        - name: gender
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ 'F', 'M' ]
+          description: "성별"
         - name: peferredTimes
           in: query
           required: false
