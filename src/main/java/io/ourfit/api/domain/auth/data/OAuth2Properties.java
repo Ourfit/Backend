@@ -22,7 +22,12 @@ public record OAuth2Properties(String url, Kakao kakao) {
    * @param clientSecret Kakao Client Secret
    * @param redirectUri Kakao Redirect URI
    */
-  public record Kakao(String adminKey, String clientId, String clientSecret, String redirectUri) {
+  public record Kakao(
+      String adminKey,
+      String clientId,
+      String clientSecret,
+      String redirectUri,
+      String devRedirectUri) {
 
     public static final String ADMIN_KEY_PREFIX = "KakaoAK ";
 

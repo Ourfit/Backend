@@ -4,6 +4,7 @@ import static io.ourfit.api.domain.auth.data.OAuth2Properties.OAUTH2_REDIRECT_UR
 
 import io.jsonwebtoken.lang.Assert;
 import io.ourfit.api.domain.auth.data.OAuth2Properties;
+import io.ourfit.api.domain.auth.template.OAuth2ProfileContextHolder;
 import io.ourfit.api.domain.auth.template.OAuth2TemplateFactory;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.service.UserQueryService;
@@ -30,6 +31,7 @@ public class OAuth2RedirectDispatcher {
       @PathVariable String provider, @RequestParam String code) {
     Assert.notNull(code, "Authorization code must not be null");
     final var providerType = OAuth2ProviderType.from(provider);
+    OAuth2ProfileContextHolder.setAsProduction();
     return this.doHandleInternal(providerType, code, this.oAuth2Properties.url());
   }
 
@@ -38,6 +40,7 @@ public class OAuth2RedirectDispatcher {
       @PathVariable String provider, @RequestParam String code) {
     Assert.notNull(code, "Authorization code must not be null");
     final var providerType = OAuth2ProviderType.from(provider);
+    OAuth2ProfileContextHolder.setAsDevelop();
     return this.doHandleInternal(providerType, code, "http://localhost:3000");
   }
 
@@ -45,6 +48,7 @@ public class OAuth2RedirectDispatcher {
       OAuth2ProviderType provider, String code, String redirectUri) {
     final String oAuthId =
         this.templateFactory.getByProviderType(provider).issueToken(code).getId();
+    OAuth2ProfileContextHolder.clear();
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(
             OAUTH2_REDIRECT_URI.expand(redirectUri, oAuthId, this.getRegistrationStatus(oAuthId)))

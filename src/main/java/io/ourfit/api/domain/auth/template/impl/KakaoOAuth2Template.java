@@ -5,6 +5,7 @@ import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
 import io.ourfit.api.domain.auth.data.entity.OAuth2ProviderToken;
 import io.ourfit.api.domain.auth.data.entity.OAuth2ProviderTokenDto;
 import io.ourfit.api.domain.auth.template.AbstractOAuth2Template;
+import io.ourfit.api.domain.auth.template.OAuth2ProfileContextHolder;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.infra.client.http.KakaoOAuth2Client;
 import io.ourfit.api.infra.client.http.KakaoUserClient;
@@ -41,7 +42,7 @@ public class KakaoOAuth2Template extends AbstractOAuth2Template {
             OAuth2Properties.Kakao.GRANT_TYPE_ISSUE,
             kakaoProperties.clientId(),
             kakaoProperties.clientSecret(),
-            kakaoProperties.redirectUri(),
+            this.resolveRedirectUriByProfile(),
             code);
     final String oAuthId =
         this.kakaoUserClient.getUserInfo(prependBearer(tokenDto.getAccessToken())).getId();
@@ -74,5 +75,12 @@ public class KakaoOAuth2Template extends AbstractOAuth2Template {
     final var accessToken = super.getValidToken(oAuthId).getAccessToken();
     this.kakaoUserClient.withdrawal(prependBearer(accessToken));
     this.providerTokenRepository.deleteById(oAuthId);
+  }
+
+  private String resolveRedirectUriByProfile() {
+    var kakaoProperties = this.oAuth2Properties.kakao();
+    return OAuth2ProfileContextHolder.isProduction()
+        ? kakaoProperties.redirectUri()
+        : kakaoProperties.devRedirectUri();
   }
 }
