@@ -26,7 +26,7 @@ public class RequestLoggingAdvice {
 
   @Around("execution(* io.ourfit.api..*.controller.*.*(..))")
   public Object logRequestAndResponse(ProceedingJoinPoint joinPoint) throws Throwable {
-    if (!log.isDebugEnabled()) {
+    if (!log.isInfoEnabled()) {
       return joinPoint.proceed();
     }
     final long startTime = System.currentTimeMillis();
