@@ -61,11 +61,9 @@ public class MateCommandServiceImpl implements MateCommandService {
           this.historyRepository.save(MateHistory.from(MateActionType.ACCEPT, mate));
         },
         mate -> mate.canAccept(meId),
-        mate -> {
-          var me = mate.getMe();
-          var myMate = mate.getMyMate();
-          return this.qRepository.existsMateBetweenUsers(MateStatusType.MATCHED, me, myMate);
-        });
+        mate ->
+            !this.qRepository.existsMateBetweenUsers(
+                MateStatusType.MATCHED, mate.getMe(), mate.getMyMate()));
   }
 
   @Override

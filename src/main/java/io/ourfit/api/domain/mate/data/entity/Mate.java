@@ -7,7 +7,6 @@ import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.*;
@@ -32,11 +31,11 @@ public class Mate extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "me_id", nullable = false)
   private User me;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "my_mate_id", nullable = false)
   private User myMate;
 
@@ -79,17 +78,5 @@ public class Mate extends BaseEntity {
   public boolean canUnmate(final long userId) {
     return this.statusType == MateStatusType.MATCHED
         && (this.me.getId().equals(userId) || this.myMate.getId().equals(userId));
-  }
-
-  public long getDaysSinceAccepted() {
-    if (this.acceptedAt == null) {
-      return -1;
-    }
-
-    LocalDateTime endDate =
-        this.statusType == MateStatusType.UNMATED ? this.deletedAt : LocalDateTime.now();
-    final long daysBetween = ChronoUnit.DAYS.between(this.acceptedAt, endDate);
-
-    return Math.max(1, daysBetween + 1); // 수락한 날부터 1일로 계산
   }
 }

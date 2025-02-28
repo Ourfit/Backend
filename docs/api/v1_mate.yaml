@@ -44,8 +44,8 @@ paths:
           required: false
           schema:
             type: string
-            enum: [ "APPLY", "ACCEPT", "UNMATE" ]
-            example: "APPLY"
+            enum: [ "APPLY", "RECEIVE", "ACCEPT", "UNMATE" ]
+            example: "RECEIVE"
         - name: page
           in: query
           description: "페이지 번호(1부터 시작) / 기본값: 1"
