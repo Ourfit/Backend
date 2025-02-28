@@ -3,6 +3,7 @@ package io.ourfit.api.domain.mate.service.impl;
 import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.entity.MateHistory;
 import io.ourfit.api.domain.mate.data.enums.MateActionType;
+import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 import io.ourfit.api.domain.mate.service.MateCommandService;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.domain.user.data.entity.User;
@@ -42,8 +43,8 @@ public class MateCommandServiceImpl implements MateCommandService {
             .findById(receiverId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
 
-    if (this.qRepository.existsPendingRequestBetweenUsers(me, myMate)) {
-      throw new DuplicatedException(ApiExceptionType.RESOURCE_IDENTICAL);
+    if (this.qRepository.existsMateBetweenUsers(MateStatusType.PENDING, me, myMate)) {
+      throw new DuplicatedException(ApiExceptionType.RESOURCE_ALREADY_EXISTS);
     }
 
     Mate mate = this.repository.save(Mate.of(me, myMate));
@@ -59,7 +60,12 @@ public class MateCommandServiceImpl implements MateCommandService {
           this.workoutService.initialize(mate);
           this.historyRepository.save(MateHistory.from(MateActionType.ACCEPT, mate));
         },
-        mate -> mate.canAccept(meId));
+        mate -> mate.canAccept(meId),
+        mate -> {
+          var me = mate.getMe();
+          var myMate = mate.getMyMate();
+          return this.qRepository.existsMateBetweenUsers(MateStatusType.MATCHED, me, myMate);
+        });
   }
 
   @Override

@@ -81,14 +81,14 @@ public class MateQRepositoryImpl implements MateQRepository {
 
   @Override
   @Transactional(readOnly = true)
-  public boolean existsPendingRequestBetweenUsers(User requester, User requestee) {
+  public boolean existsMateBetweenUsers(MateStatusType statusType, User user1, User user2) {
     return this.queryFactory
             .selectOne()
             .from(qMate)
             .where(
-                qMate.statusType.eq(MateStatusType.PENDING),
-                qMate.me.eq(requester),
-                qMate.myMate.eq(requestee))
+                qMate.statusType.eq(statusType),
+                (qMate.me.eq(user1).and(qMate.myMate.eq(user2)))
+                    .or(qMate.me.eq(user2).and(qMate.myMate.eq(user1))))
             .fetchFirst()
         != null;
   }
