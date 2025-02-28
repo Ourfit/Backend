@@ -19,6 +19,9 @@ import org.springframework.http.HttpHeaders;
 @ConfigurationProperties(prefix = "jwt")
 public record JwtProperties(String issuer, String secret, SecretKey key) {
 
+  /** 토큰 타입 정보 */
+  public static final String TOKEN_TYPE = "JWT";
+
   /** JWT 인증을 위한 {@link HttpHeaders#AUTHORIZATION} 헤더의 접두사 */
   public static final String BEARER_PREFIX = "Bearer ";
 

@@ -91,6 +91,9 @@ public class JwtProviderImpl implements JwtProvider {
 
   private String createAccessToken(String userId, String claim, Date now) {
     return Jwts.builder()
+        .header()
+        .type(TOKEN_TYPE)
+        .and()
         .issuer(this.jwtProperties.issuer())
         .subject(userId)
         .issuedAt(now)
@@ -103,6 +106,9 @@ public class JwtProviderImpl implements JwtProvider {
 
   private String createRefreshToken(final long userId, Date now) {
     return Jwts.builder()
+        .header()
+        .type(TOKEN_TYPE)
+        .and()
         .issuer(this.jwtProperties.issuer())
         .subject(Long.toString(userId))
         .issuedAt(now)
