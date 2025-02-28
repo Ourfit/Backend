@@ -26,7 +26,7 @@ public class MateQueryServiceImpl implements MateQueryService {
   }
 
   @Override
-  public Optional<MateInfoDto> findCurrentMateInfo(User user) {
-    return this.qRepository.findCurrentMateInfo(user);
+  public Optional<MateInfoDto> findCurrentMateInfo(User currentUser) {
+    return this.qRepository.findCurrentMateInfo(currentUser);
   }
 }

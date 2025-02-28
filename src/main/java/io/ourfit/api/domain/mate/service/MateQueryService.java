@@ -10,5 +10,5 @@ public interface MateQueryService {
 
   Optional<Mate> findByIdAndStatus(long mateId, MateStatusType status);
 
-  Optional<MateInfoDto> findCurrentMateInfo(User user);
+  Optional<MateInfoDto> findCurrentMateInfo(User currentUser);
 }
