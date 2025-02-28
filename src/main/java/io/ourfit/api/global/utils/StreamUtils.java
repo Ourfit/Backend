@@ -46,6 +46,13 @@ public final class StreamUtils {
     return tCollection.stream().map(converter).collect(Collectors.toUnmodifiableSet());
   }
 
+  public static <T, R> Set<R> mapToHashSet(Collection<T> tCollection, Function<T, R> converter) {
+    if (tCollection == null) {
+      return new HashSet<>();
+    }
+    return tCollection.stream().map(converter).collect(Collectors.toSet());
+  }
+
   /**
    * 엔티티에 대해 여러 필터를 적용하여 모두 통과하면 원본 엔티티를 반환한다. <br>
    * 만약 하나라도 실패하면 지정된 예외를 던진다.

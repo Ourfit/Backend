@@ -5,5 +5,9 @@ public enum MateRoleType {
   /** 행동을 수행한 사용자 */
   ACTOR,
   /** 행동의 대상 사용자 */
-  TARGET
+  TARGET;
+
+  public static boolean isTarget(String roleValue) {
+    return TARGET.name().equals(roleValue);
+  }
 }

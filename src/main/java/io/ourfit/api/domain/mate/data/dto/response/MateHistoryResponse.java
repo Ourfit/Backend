@@ -36,8 +36,8 @@ public record MateHistoryResponse(
     return new MateHistoryResponse(
         dto.id(),
         dto.mateId(),
-        dto.actionType().name(),
-        dto.roleType().name(),
+        dto.resolveActionType().name(),
+        dto.roleType(),
         dto.isRead(),
         dto.actorId(),
         dto.actorNickname(),
