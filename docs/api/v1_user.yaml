@@ -21,7 +21,8 @@ info:
     | 2025.02.25 | 메이트 탐색 API 설명 추가 |
     | 2025.02.27 | 메이트 탐색 API 파라미터 오타 수정 |
     | 2025.02.27 | 메이트 탐색 API `gender` 파라미터 설명 추가  |
-  version: 0.1.3
+    | 2025.02.28 | 메이트 탐색 API `nickname` 파라미터 설명 추가  |
+  version: 0.1.4
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -63,6 +64,13 @@ paths:
       security:
         - bearerAuth: [ ]
       parameters:
+        - name: nickname
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "운초"
+          description: "닉네임"
         - name: gender
           in: query
           required: false
