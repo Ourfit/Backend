@@ -16,6 +16,7 @@ import java.util.Set;
  * 사용자 회원가입 요청 DTO
  *
  * @param oAuthId OAuth2 ID
+ * @param code Ourfit 인가 코드
  * @param nickname 사용할 닉네임
  * @param region1 사용자의 지역(시/도)
  * @param region2 사용자의 지역(시/군/구)
@@ -28,6 +29,7 @@ import java.util.Set;
  */
 public record UserSignUpRequest(
     @NotEmpty String oAuthId,
+    @NotEmpty String code,
     @Enumerable(type = OAuth2ProviderType.class) String provider,
     @Nickname String nickname,
     @NotEmpty String region1,
@@ -42,6 +44,7 @@ public record UserSignUpRequest(
   public UserSignUpDto toDto() {
     return new UserSignUpDto(
         this.oAuthId,
+        this.code,
         OAuth2ProviderType.valueOf(this.provider),
         this.nickname,
         this.region1,

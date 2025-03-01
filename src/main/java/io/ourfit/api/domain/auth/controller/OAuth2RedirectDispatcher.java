@@ -4,6 +4,7 @@ import static io.ourfit.api.domain.auth.data.OAuth2Properties.OAUTH2_REDIRECT_UR
 
 import io.jsonwebtoken.lang.Assert;
 import io.ourfit.api.domain.auth.data.OAuth2Properties;
+import io.ourfit.api.domain.auth.service.AuthService;
 import io.ourfit.api.domain.auth.template.OAuth2ProfileContextHolder;
 import io.ourfit.api.domain.auth.template.OAuth2TemplateFactory;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
@@ -23,8 +24,9 @@ import org.springframework.web.bind.annotation.*;
 public class OAuth2RedirectDispatcher {
 
   private final OAuth2TemplateFactory templateFactory;
-  private final UserQueryService userQueryService;
   private final OAuth2Properties oAuth2Properties;
+  private final UserQueryService userQueryService;
+  private final AuthService authService;
 
   @GetMapping("/v1/oauth2/{provider}/redirect")
   public ResponseEntity<Void> handleOAuth2Callback(
@@ -46,12 +48,13 @@ public class OAuth2RedirectDispatcher {
 
   private ResponseEntity<Void> doHandleInternal(
       OAuth2ProviderType provider, String code, String redirectUri) {
-    final String oAuthId =
-        this.templateFactory.getByProviderType(provider).issueToken(code).getId();
+    final var oAuthId = this.templateFactory.getByProviderType(provider).issueToken(code).getId();
+    final var authCode = this.authService.issueAuthCode(oAuthId);
     OAuth2ProfileContextHolder.clear();
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(
-            OAUTH2_REDIRECT_URI.expand(redirectUri, oAuthId, this.getRegistrationStatus(oAuthId)))
+            OAUTH2_REDIRECT_URI.expand(
+                redirectUri, oAuthId, authCode, this.getRegistrationStatus(oAuthId)))
         .build();
   }
 

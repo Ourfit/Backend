@@ -22,7 +22,8 @@ info:
     | 2025.02.27 | 메이트 탐색 API 파라미터 오타 수정 |
     | 2025.02.27 | 메이트 탐색 API `gender` 파라미터 설명 추가  |
     | 2025.02.28 | 메이트 탐색 API `nickname` 파라미터 설명 추가  |
-  version: 0.1.4
+    | 2025.03.01 | 회원 가입 요청에 `code` 항목 추가  |
+  version: 0.1.5
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -298,6 +299,7 @@ components:
             type: object
             required:
               - oAuthId
+              - code
               - provider
               - nickname
               - region1
@@ -313,6 +315,10 @@ components:
                 type: string
                 example: "57291628"
                 description: "OAuth2 ID"
+              code:
+                type: string
+                example: "29znd7Sd72hsa"
+                description: "Ourfit 서비스 인가 코드"
               provider:
                 type: string
                 enum: [ "KAKAO" ]

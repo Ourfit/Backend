@@ -35,13 +35,12 @@ public class AuthController {
   @PostMapping("/tokens")
   public ResponseEntity<SingleResponse<OurfitToken>> authenticate(
       @RequestBody @Valid final TokenIssueRequest request) {
-    final var ourfitToken = this.authService.issue(request.oAuthId());
-    final var refreshTokenCookie =
-        ResponseCookieUtils.refreshTokenCookie(ourfitToken.refreshToken());
+    final var token = this.authService.issueToken(request.oAuthId(), request.code());
+    final var refreshTokenCookie = ResponseCookieUtils.refreshTokenCookie(token.refreshToken());
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-        .body(ApiResponse.of(ourfitToken));
+        .body(ApiResponse.of(token));
   }
 
   @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
@@ -53,13 +52,13 @@ public class AuthController {
     }
     var refreshTokenCookie = findRefreshTokenCookie(request);
 
-    var ourfitToken = this.authService.reissue(accessToken, refreshTokenCookie.getValue());
+    var ourfitToken = this.authService.reissueToken(accessToken, refreshTokenCookie.getValue());
     return createReissueResponse(ourfitToken);
   }
 
   @DeleteMapping("/tokens")
   public ResponseEntity<Void> revoke(@AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.authService.revoke(userDetails.getUser());
+    this.authService.revokeToken(userDetails.getUser());
     return ResponseEntity.noContent().build();
   }
 

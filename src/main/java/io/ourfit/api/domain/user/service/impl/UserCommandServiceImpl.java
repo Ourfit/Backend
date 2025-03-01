@@ -1,6 +1,7 @@
 package io.ourfit.api.domain.user.service.impl;
 
 import io.ourfit.api.domain.auth.data.dto.internal.OAuth2UserInfo;
+import io.ourfit.api.domain.auth.service.AuthService;
 import io.ourfit.api.domain.auth.service.OAuth2Service;
 import io.ourfit.api.domain.reference.service.RegionService;
 import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserCommandServiceImpl implements UserCommandService {
 
   private final UserRepository repository;
+  private final AuthService authService;
   private final OAuth2Service oAuth2Service;
   private final WorkoutService workoutService;
   private final RegionService regionService;
@@ -42,6 +44,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
   @Override
   public User save(UserSignUpDto signUpDto) {
+    this.authService.consumeAuthCode(signUpDto.oAuthId(), signUpDto.code());
     if (!this.regionService.isValidRegion(
         signUpDto.region1(), signUpDto.region2(), signUpDto.region3())) {
       throw new InvalidParameterException(ApiExceptionType.INVALID_REGION);

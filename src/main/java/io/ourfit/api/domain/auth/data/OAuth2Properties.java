@@ -12,7 +12,7 @@ import org.springframework.web.util.UriTemplate;
 public record OAuth2Properties(String url, Kakao kakao) {
 
   public static final UriTemplate OAUTH2_REDIRECT_URI =
-      new UriTemplate("{clientUrl}?oAuthId={oAuthId}&status={status}");
+      new UriTemplate("{clientUrl}?oAuthId={oAuthId}&code={code}&status={status}");
 
   /**
    * Kakao OAuth2 Properties
