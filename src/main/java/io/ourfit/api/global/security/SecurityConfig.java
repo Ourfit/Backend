@@ -128,7 +128,11 @@ public class SecurityConfig {
   protected CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowedOriginPatterns(
-        List.of("https://ourfit.life", "https://*.ourfit.life", "http://localhost:3000"));
+        List.of(
+            "https://ourfit.life",
+            "https://*.ourfit.life",
+            "https://ourfit.github.io",
+            "http://localhost:3000"));
     corsConfiguration.setAllowedMethods(
         StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));
     corsConfiguration.setAllowCredentials(true);
