@@ -46,6 +46,16 @@ public final class StreamUtils {
     return tCollection.stream().map(converter).collect(Collectors.toUnmodifiableSet());
   }
 
+  /**
+   * 컬렉션의 각 요소를 변환하여 새로운 {@link HashSet}으로 반환한다.
+   *
+   * @param tCollection 변환할 원본 컬렉션
+   * @param converter 요소를 변환하는 함수
+   * @return 변환된 HashSet (원본 컬렉션이 {@code null}이면, 빈 HashSet 반환)
+   * @param <T> 원본 컬렉션의 요소 타입
+   * @param <R> 변환된 HashSet의 요소 타입
+   * @apiNote 반환된 Set은 변경 가능(mutable) 하다.
+   */
   public static <T, R> Set<R> mapToHashSet(Collection<T> tCollection, Function<T, R> converter) {
     if (tCollection == null) {
       return new HashSet<>();

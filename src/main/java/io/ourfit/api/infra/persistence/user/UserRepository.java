@@ -13,8 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
   @EntityGraph(attributePaths = {"favoriteWorkouts", "favoriteWorkoutPlaces"})
   Optional<User> findByIdWithFavorites(Long id);
 
-  Optional<User> findByoAuthId(String oAuthId);
-
   boolean existsByoAuthIdAndDeletedAtIsNull(String oAuthId);
 
   boolean existsByNicknameAndDeletedAtIsNull(String nickname);

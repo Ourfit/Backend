@@ -73,16 +73,14 @@ public class UserCommandServiceImpl implements UserCommandService {
   }
 
   @Override
-  public void setWorkoutPreferences(
-      final long id, UserWorkoutPreferencesUpdateDto workoutPreferencesUpdateDto) {
+  public void setWorkoutPreferences(final long id, UserWorkoutPreferencesUpdateDto updateDto) {
     this.ifFoundThen(
         id,
         user -> {
-          user.setPreferredWorkoutTime(workoutPreferencesUpdateDto.preferredWorkoutTime());
+          user.setPreferredWorkoutTime(updateDto.preferredWorkoutTime());
           user.setFavoriteWorkoutPlaces(
-              UserFavoriteWorkoutPlace.of(user, workoutPreferencesUpdateDto.favoritePlaces()));
-          user.setFavoriteWorkouts(
-              this.buildFavoriteWorkouts(user, workoutPreferencesUpdateDto.favoriteWorkouts()));
+              UserFavoriteWorkoutPlace.of(user, updateDto.favoritePlaces()));
+          user.setFavoriteWorkouts(this.buildFavoriteWorkouts(user, updateDto.favoriteWorkouts()));
         });
   }
 

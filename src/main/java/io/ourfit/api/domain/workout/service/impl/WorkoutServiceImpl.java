@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
 
@@ -19,13 +19,11 @@ public class WorkoutServiceImpl implements WorkoutService {
 
   @Override
   @Cacheable(value = "WORKOUT_TYPES", key = "0", unless = "#result.isEmpty()")
-  @Transactional(readOnly = true)
   public List<Workout> findAll() {
     return this.repository.findAll();
   }
 
   @Override
-  @Transactional(readOnly = true)
   public Set<Workout> findAllByCodeIn(Set<String> codes) {
     return this.repository.findAllByCodeIn(codes);
   }
