@@ -51,7 +51,7 @@ public class UserQueryServiceImpl implements UserQueryService {
   }
 
   @Override
-  @Cacheable(value = "USER_INFO", key = "#result.get().id", unless = "#result.isEmpty()")
+  @Cacheable(value = "USER_INFO", key = "#result.orElse(null)?.id", unless = "#result.isEmpty()")
   public Optional<User> findByOAuthId(String oAuthId) {
     return this.repository.findOne(Specification.allOf(oAuthId(oAuthId), isDeleted(false)));
   }
