@@ -142,7 +142,7 @@ public class SecurityConfig {
             "X-Ourfit-Api-Key",
             "X-Request-With"));
     corsConfiguration.setExposedHeaders(
-        List.of(HttpHeaders.LOCATION, HttpHeaders.LAST_MODIFIED, HttpHeaders.RETRY_AFTER));
+        List.of(HttpHeaders.LAST_MODIFIED, HttpHeaders.RETRY_AFTER));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", corsConfiguration);
