@@ -97,7 +97,7 @@ paths:
             description: "운동 종목 (GET v1/workout-types 로 확인 가능)"
         - name: page
           in: query
-          description: "페이지 번호(1부터 시작) / 기본값: 1"
+          description: "페이지 번호(1부터 시작) / 기본값: 0"
           required: false
           schema:
             type: integer

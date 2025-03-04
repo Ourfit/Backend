@@ -8,6 +8,7 @@ import io.ourfit.api.infra.persistence.user.UserQRepository;
 import io.ourfit.api.infra.persistence.user.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,21 +30,28 @@ public class UserQueryServiceImpl implements UserQueryService {
   }
 
   @Override
+  @Cacheable(value = "USER_INFO", key = "#id", unless = "#result.isEmpty()")
   public Optional<User> findById(long id) {
     return this.findById(id, false);
   }
 
   @Override
+  @Cacheable(
+      value = "USER_INFO",
+      key = "#id",
+      unless = "#result.isEmpty() && #includeDeleted = false")
   public Optional<User> findById(final long id, final boolean includeDeleted) {
     return this.repository.findOne(Specification.allOf(id(id), isDeleted(includeDeleted)));
   }
 
   @Override
+  @Cacheable(value = "USER_DTL_INFO", key = "#id", unless = "#result.isEmpty()")
   public Optional<User> findByIdWithFavorites(final long id) {
     return this.repository.findByIdWithFavorites(id);
   }
 
   @Override
+  @Cacheable(value = "USER_INFO", key = "#result.get().id", unless = "#result.isEmpty()")
   public Optional<User> findByOAuthId(String oAuthId) {
     return this.repository.findOne(Specification.allOf(oAuthId(oAuthId), isDeleted(false)));
   }

@@ -3,10 +3,8 @@ package io.ourfit.api.domain.challenge.service.impl;
 import io.ourfit.api.domain.challenge.data.dto.internal.ChallengeCreateDto;
 import io.ourfit.api.domain.challenge.data.entity.Challenge;
 import io.ourfit.api.domain.challenge.service.ChallengeService;
-import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 import io.ourfit.api.domain.mate.service.MateQueryService;
-import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.DuplicatedException;
@@ -33,11 +31,11 @@ public class ChallengeServiceImpl implements ChallengeService {
 
   @Override
   public void create(final long userId, ChallengeCreateDto challengeCreateDto) {
-    User challenger =
+    var challenger =
         this.userQueryService
             .findById(userId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
-    Mate mate =
+    var mate =
         this.mateQueryService
             .findByIdAndStatus(challengeCreateDto.mateId(), MateStatusType.MATCHED)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE));

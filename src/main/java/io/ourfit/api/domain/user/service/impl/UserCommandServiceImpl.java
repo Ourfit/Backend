@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +45,7 @@ public class UserCommandServiceImpl implements UserCommandService {
   private final OurfitS3Client s3Client;
 
   @Override
+  @CachePut(value = "USER_INFO", key = "#result.id")
   public User save(UserSignUpDto signUpDto) {
     this.authService.consumeAuthCode(signUpDto.oAuthId(), signUpDto.code());
     if (!this.regionService.isValidRegion(
@@ -63,6 +66,7 @@ public class UserCommandServiceImpl implements UserCommandService {
   }
 
   @Override
+  @CacheEvict(value = "USER_INFO", key = "#id")
   public void updateBasicInfo(final long id, UserBasicInfoUpdateDto basicInfoUpdateDto) {
     if (basicInfoUpdateDto.nickname() != null
         && this.repository.existsByNicknameAndDeletedAtIsNull(basicInfoUpdateDto.nickname())) {
@@ -73,6 +77,7 @@ public class UserCommandServiceImpl implements UserCommandService {
   }
 
   @Override
+  @CacheEvict(value = "USER_INFO", key = "#id")
   public void setWorkoutPreferences(final long id, UserWorkoutPreferencesUpdateDto updateDto) {
     this.ifFoundThen(
         id,
@@ -85,11 +90,13 @@ public class UserCommandServiceImpl implements UserCommandService {
   }
 
   @Override
+  @CacheEvict(value = "USER_INFO", key = "#id")
   public void setProfile(final long id, UserProfileUpdateDto profileUpdateDto) {
     this.ifFoundThen(id, user -> user.setProfile(profileUpdateDto));
   }
 
   @Override
+  @CacheEvict(value = "USER_INFO", key = "#id")
   public void setProfileImage(final long id, MultipartFile profileImage) {
     this.ifFoundThen(
         id,
@@ -111,6 +118,7 @@ public class UserCommandServiceImpl implements UserCommandService {
   }
 
   @Override
+  @CacheEvict(value = "USER_INFO", key = "#id")
   public void delete(final long id) {
     this.ifFoundThen(
         id,

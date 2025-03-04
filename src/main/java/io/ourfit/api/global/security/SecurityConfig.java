@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,7 +40,7 @@ public class SecurityConfig {
   public static final String REFRESH_TOKEN_COOKIE_KEY = "ourfit_rt";
 
   private static final List<HttpMethod> DEFAULT_PERMIT_METHODS =
-      List.of(GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS);
+      List.of(GET, POST, PUT, PATCH, DELETE, OPTIONS);
 
   private final SecurityFilterFactory filterFactory;
 
@@ -126,13 +127,22 @@ public class SecurityConfig {
   @Bean
   protected CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
-    corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-    //    corsConfiguration.setAllowedOriginPatterns(
-    //        List.of("https://ourfit.life", "https://*.ourfit.life"));
-    corsConfiguration.addAllowedHeader("*");
+    corsConfiguration.setAllowedOriginPatterns(
+        List.of("https://ourfit.life", "https://*.ourfit.life", "http://localhost:3000"));
     corsConfiguration.setAllowedMethods(
         StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));
     corsConfiguration.setAllowCredentials(true);
+    corsConfiguration.setAllowedHeaders(
+        List.of(
+            HttpHeaders.AUTHORIZATION,
+            HttpHeaders.COOKIE,
+            HttpHeaders.CONTENT_TYPE,
+            HttpHeaders.CACHE_CONTROL,
+            HttpHeaders.IF_MODIFIED_SINCE,
+            "X-Ourfit-Api-Key",
+            "X-Request-With"));
+    corsConfiguration.setExposedHeaders(
+        List.of(HttpHeaders.LOCATION, HttpHeaders.LAST_MODIFIED, HttpHeaders.RETRY_AFTER));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", corsConfiguration);

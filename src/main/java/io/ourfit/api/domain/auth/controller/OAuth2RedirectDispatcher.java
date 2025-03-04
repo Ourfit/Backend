@@ -25,8 +25,8 @@ public class OAuth2RedirectDispatcher {
 
   private final OAuth2TemplateFactory templateFactory;
   private final OAuth2Properties oAuth2Properties;
-  private final UserQueryService userQueryService;
   private final AuthService authService;
+  private final UserQueryService userQueryService;
 
   @GetMapping("/v1/oauth2/{provider}/redirect")
   public ResponseEntity<Void> handleOAuth2Callback(
