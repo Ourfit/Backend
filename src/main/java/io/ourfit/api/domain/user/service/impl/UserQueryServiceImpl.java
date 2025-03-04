@@ -30,22 +30,19 @@ public class UserQueryServiceImpl implements UserQueryService {
   }
 
   @Override
-  @Cacheable(value = "USER_INFO", key = "#id", unless = "#result.isEmpty()")
+  @Cacheable(value = "USER_INFO", key = "#id")
   public Optional<User> findById(long id) {
     return this.findById(id, false);
   }
 
   @Override
-  @Cacheable(
-      value = "USER_INFO",
-      key = "#id",
-      unless = "#result.isEmpty() && #includeDeleted = false")
+  @Cacheable(value = "USER_INFO", key = "#id", unless = "#includeDeleted = false")
   public Optional<User> findById(final long id, final boolean includeDeleted) {
     return this.repository.findOne(Specification.allOf(id(id), isDeleted(includeDeleted)));
   }
 
   @Override
-  @Cacheable(value = "USER_DTL_INFO", key = "#id", unless = "#result.isEmpty()")
+  @Cacheable(value = "USER_DTL_INFO", key = "#id")
   public Optional<User> findByIdWithFavorites(final long id) {
     return this.repository.findByIdWithFavorites(id);
   }
