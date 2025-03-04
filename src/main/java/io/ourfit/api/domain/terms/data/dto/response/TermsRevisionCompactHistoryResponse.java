@@ -15,6 +15,8 @@ public record TermsRevisionCompactHistoryResponse(
   public static TermsRevisionCompactHistoryResponse from(
       TermsRevisionCompactHistoryDto historyDto) {
     return new TermsRevisionCompactHistoryResponse(
-        historyDto.version(), historyDto.revisionNote(), historyDto.createdAt().toString());
+        historyDto.version().doubleValue(),
+        historyDto.revisionNote(),
+        historyDto.createdAt().toString());
   }
 }

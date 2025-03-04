@@ -1,5 +1,6 @@
 package io.ourfit.api.domain.terms.data.dto.internal;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -10,4 +11,4 @@ import java.time.LocalDateTime;
  * @param createdAt 개정 일시
  */
 public record TermsRevisionCompactHistoryDto(
-    Double version, String revisionNote, LocalDateTime createdAt) {}
+    BigDecimal version, String revisionNote, LocalDateTime createdAt) {}
