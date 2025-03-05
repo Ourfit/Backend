@@ -44,7 +44,7 @@ public interface ChallengeService {
   /**
    * 사용자 정보로 현재 진행 중인 챌린지(챌린지 기록 포함)를 조회한다.
    *
-   * @param userId 조회할 사용자 ID
+   * @param user 조회할 사용자 정보
    * @return 조회된 챌린지
    */
   List<Challenge> findAllByUser(User user);

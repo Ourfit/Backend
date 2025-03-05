@@ -19,7 +19,13 @@ import java.util.stream.Stream;
 import lombok.*;
 
 @Entity
-@Table(name = "challenge")
+@Table(
+    name = "challenge",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uq_challenge_mate_user",
+          columnNames = {"user_id", "mate_id", "deleted_at"})
+    })
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -51,7 +57,7 @@ public class Challenge extends BaseEntity {
   @Setter
   @Convert(converter = DayOfWeekSetConverter.class)
   @Column(name = "goal_workout_day_of_week", nullable = false)
-  private Set<DayOfWeek> goalWorkoutDayOfWeek;
+  private Set<DayOfWeek> goalWorkoutDayOfWeeks;
 
   @Column(
       name = "challenge_duration_in_months",
@@ -81,7 +87,7 @@ public class Challenge extends BaseEntity {
         .mate(mate)
         .user(challenger)
         .goalWorkoutCount(challengeDto.goalWorkoutCount())
-        .goalWorkoutDayOfWeek(challengeDto.goalWorkoutDayOfWeek())
+        .goalWorkoutDayOfWeeks(challengeDto.goalWorkoutDayOfWeeks())
         .challengeDurationInMonths(challengeDto.challengeDurationInMonths())
         .startAt(challengeDto.startAt())
         .endAt(challengeDto.endAt())
@@ -90,11 +96,11 @@ public class Challenge extends BaseEntity {
 
   public void createChallengeRecords() {
     this.challengeRecords =
-        this.generateRecords(this.goalWorkoutDayOfWeek, this.startAt, this.endAt);
+        this.generateRecords(this.goalWorkoutDayOfWeeks, this.startAt, this.endAt);
   }
 
   public void updatePlannedRecords(Set<DayOfWeek> newGoalDayOfWeeks) {
-    if (this.goalWorkoutDayOfWeek.equals(newGoalDayOfWeeks)) {
+    if (this.goalWorkoutDayOfWeeks.equals(newGoalDayOfWeeks)) {
       return; // 목표 요일이 변경되지 않았다면 업데이트 필요 없음
     }
     // 미래 기록만 필터링

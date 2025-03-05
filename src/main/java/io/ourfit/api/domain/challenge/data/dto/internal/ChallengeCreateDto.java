@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @param mateId 메이트 ID
  * @param goalWorkoutCount 목표 운동 횟수
- * @param goalWorkoutDayOfWeek 목표 운동 요일
+ * @param goalWorkoutDayOfWeeks 목표 운동 요일
  * @param challengeDurationInMonths 챌린지 기간(월)
  * @param startAt 시작일
  * @param endAt 종료일
@@ -19,7 +19,7 @@ import java.util.Set;
 public record ChallengeCreateDto(
     long mateId,
     short goalWorkoutCount,
-    Set<DayOfWeek> goalWorkoutDayOfWeek,
+    Set<DayOfWeek> goalWorkoutDayOfWeeks,
     short challengeDurationInMonths,
     LocalDate startAt,
     LocalDate endAt) {

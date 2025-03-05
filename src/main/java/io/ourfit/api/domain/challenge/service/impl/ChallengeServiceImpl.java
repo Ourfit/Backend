@@ -55,7 +55,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     this.ifFoundThen(
         challengeId,
         challenge -> {
-          challenge.setGoalWorkoutDayOfWeek(goalDayOfWeeks);
+          challenge.setGoalWorkoutDayOfWeeks(goalDayOfWeeks);
           challenge.updatePlannedRecords(goalDayOfWeeks);
         });
   }
@@ -75,7 +75,9 @@ public class ChallengeServiceImpl implements ChallengeService {
   @Transactional(readOnly = true)
   public List<Challenge> findAllByUser(User user) {
     var mate =
-        this.mateQueryService.findByUserAndStatus(user, MateStatusType.MATCHED).orElseThrow();
+        this.mateQueryService
+            .findByUserAndStatus(user, MateStatusType.MATCHED)
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE));
     return this.repository.findAllByMate(mate);
   }
 

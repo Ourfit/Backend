@@ -24,7 +24,7 @@ public class MateQueryServiceImpl implements MateQueryService {
 
   @Override
   public Optional<Mate> findByIdAndStatus(final long mateId, MateStatusType status) {
-    return this.repository.findByIdAndStatusType(mateId, status);
+    return this.repository.findOne(Specification.allOf(idEq(mateId), statusTypeEq(status)));
   }
 
   @Override
@@ -35,6 +35,10 @@ public class MateQueryServiceImpl implements MateQueryService {
   @Override
   public Optional<MateInfoDto> findCurrentMateInfo(User currentUser) {
     return this.qRepository.findCurrentMateInfo(currentUser);
+  }
+
+  private static Specification<Mate> idEq(long mateId) {
+    return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Mate_.id), mateId);
   }
 
   private static Specification<Mate> isMeOrMyMate(User user) {
