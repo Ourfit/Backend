@@ -1,6 +1,8 @@
 package io.ourfit.api.global.advice;
 
 import io.micrometer.common.util.StringUtils;
+import io.ourfit.api.global.config.properties.WebhookProperties;
+import io.ourfit.api.global.data.annotation.RequireAdminNotification;
 import io.ourfit.api.global.data.dto.WebhookRequest;
 import io.ourfit.api.global.utils.OurfitSpelParser;
 import io.ourfit.api.infra.client.http.DiscordClient;
@@ -9,14 +11,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-/**
- * {@link RequireAdminNotification} 어노테이션이 붙은 메소드의 실행 결과에 따라 관리자에게 알림을 보내는 Advice <br>
- * 상용 환경({@code @Profile("prod")})에서만 동작하도록 설정되어 있습니다.
- */
+/** {@link RequireAdminNotification} 어노테이션이 붙은 메소드의 실행 결과에 따라 관리자에게 알림을 보내는 Advice */
 @Aspect
 @Component
 @Profile("prod")
@@ -25,38 +23,33 @@ public class AdminNotifierAdvice {
 
   public static final String MESSAGE_PREFIX = "[관리자 알림] ";
 
-  @Value("${discord.webhook.server-id}")
-  private String serverId;
-
-  @Value("${discord.webhook.token}")
-  private String webhookToken;
-
   private final DiscordClient discordClient;
+  private final WebhookProperties webhookProperties;
 
   @Around("@annotation(requireAdminNotify)")
   public Object handleNotification(
       ProceedingJoinPoint joinPoint, RequireAdminNotification requireAdminNotify) throws Throwable {
     Object methodResult = joinPoint.proceed();
 
-    if (this.shouldNotify(joinPoint, requireAdminNotify, methodResult)) {
+    if (shouldNotify(joinPoint, requireAdminNotify, methodResult)) {
+      WebhookProperties.Discord discordProperties = this.webhookProperties.discord();
       String message = MESSAGE_PREFIX.concat(requireAdminNotify.message());
       WebhookRequest request = new WebhookRequest(message);
-      this.discordClient.send(this.serverId, this.webhookToken, request);
+      this.discordClient.send(discordProperties.serverId(), discordProperties.token(), request);
     }
 
     return methodResult;
   }
 
-  private boolean shouldNotify(
+  private static boolean shouldNotify(
       ProceedingJoinPoint joinPoint,
       RequireAdminNotification requireAdminNotify,
       Object methodResult) {
     String condition = requireAdminNotify.condition();
-    return StringUtils.isBlank(condition)
-        || this.evaluateCondition(condition, joinPoint, methodResult);
+    return StringUtils.isBlank(condition) || evaluateCondition(condition, joinPoint, methodResult);
   }
 
-  private boolean evaluateCondition(
+  private static boolean evaluateCondition(
       String expression, ProceedingJoinPoint joinPoint, Object methodResult) {
     MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
     return OurfitSpelParser.evaluateExpression(

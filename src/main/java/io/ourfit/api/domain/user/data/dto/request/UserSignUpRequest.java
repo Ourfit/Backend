@@ -1,7 +1,6 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
 import io.ourfit.api.domain.mate.data.enums.TimePrefrenceType;
-import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
@@ -39,21 +38,4 @@ public record UserSignUpRequest(
     @Age Integer age,
     @Enumerable(type = SkillLevelType.class) String skillLevel,
     @Enumerable(type = TimePrefrenceType.class) String preferredWorkoutTime,
-    @Size(min = 1, max = 3) Set<String> favoriteWorkouts) {
-
-  public UserSignUpDto toDto() {
-    return new UserSignUpDto(
-        this.oAuthId,
-        this.code,
-        OAuth2ProviderType.valueOf(this.provider),
-        this.nickname,
-        this.region1,
-        this.region2,
-        this.region3,
-        GenderType.valueOf(this.gender),
-        this.age,
-        SkillLevelType.valueOf(this.skillLevel),
-        TimePrefrenceType.valueOf(this.preferredWorkoutTime),
-        this.favoriteWorkouts);
-  }
-}
+    @Size(min = 1, max = 3) Set<String> favoriteWorkouts) {}

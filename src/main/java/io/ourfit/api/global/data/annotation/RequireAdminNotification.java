@@ -1,4 +1,4 @@
-package io.ourfit.api.global.advice;
+package io.ourfit.api.global.data.annotation;
 
 import java.lang.annotation.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;

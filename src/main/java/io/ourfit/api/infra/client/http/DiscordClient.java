@@ -1,6 +1,6 @@
 package io.ourfit.api.infra.client.http;
 
-import io.ourfit.api.global.advice.RequireAdminNotification;
+import io.ourfit.api.global.data.annotation.RequireAdminNotification;
 import io.ourfit.api.global.data.dto.WebhookRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
