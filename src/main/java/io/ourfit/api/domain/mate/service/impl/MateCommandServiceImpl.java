@@ -34,20 +34,14 @@ public class MateCommandServiceImpl implements MateCommandService {
 
   @Override
   public void apply(final long meId, final long receiverId) {
-    User me =
-        this.userQueryService
-            .findById(meId)
-            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
-    User myMate =
-        this.userQueryService
-            .findById(receiverId)
-            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
+    final var me = this.findUserById(meId);
+    final var myMate = this.findUserById(receiverId);
 
-    if (this.qRepository.existsMateBetweenUsers(MateStatusType.PENDING, me, myMate)) {
+    if (this.qRepository.hasMateWithStatus(MateStatusType.PENDING, me, myMate)) {
       throw new DuplicatedException(ApiExceptionType.RESOURCE_ALREADY_EXISTS);
     }
 
-    Mate mate = this.repository.save(Mate.of(me, myMate));
+    final var mate = this.repository.save(Mate.of(me, myMate));
     this.historyRepository.save(MateHistory.from(MateActionType.APPLY, mate));
   }
 
@@ -61,9 +55,7 @@ public class MateCommandServiceImpl implements MateCommandService {
           this.historyRepository.save(MateHistory.from(MateActionType.ACCEPT, mate));
         },
         mate -> mate.canAccept(meId),
-        mate ->
-            !this.qRepository.existsMateBetweenUsers(
-                MateStatusType.MATCHED, mate.getMe(), mate.getMyMate()));
+        mate -> !this.qRepository.hasMatchedMateEither(mate.getMe(), mate.getMyMate()));
   }
 
   @Override
@@ -87,5 +79,11 @@ public class MateCommandServiceImpl implements MateCommandService {
             () -> {
               throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE);
             });
+  }
+
+  private User findUserById(long userId) {
+    return this.userQueryService
+        .findById(userId)
+        .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
   }
 }

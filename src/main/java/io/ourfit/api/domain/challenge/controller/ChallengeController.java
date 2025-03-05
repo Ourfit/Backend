@@ -3,8 +3,10 @@ package io.ourfit.api.domain.challenge.controller;
 import io.ourfit.api.domain.challenge.data.dto.internal.ChallengeCreateDto;
 import io.ourfit.api.domain.challenge.data.dto.request.ChallengeCreateRequest;
 import io.ourfit.api.domain.challenge.data.dto.request.ChallengeUpdateRequest;
-import io.ourfit.api.domain.challenge.data.dto.response.MyChallengeInfoResponse;
+import io.ourfit.api.domain.challenge.data.dto.response.ChallengeInfoResponse;
+import io.ourfit.api.domain.challenge.data.entity.Challenge;
 import io.ourfit.api.domain.challenge.service.ChallengeService;
+import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.data.ApiResponse;
 import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.exception.custom.InvalidParameterException;
@@ -12,6 +14,7 @@ import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import io.ourfit.api.global.utils.StreamUtils;
 import jakarta.validation.Valid;
 import java.time.DayOfWeek;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +30,12 @@ public class ChallengeController {
 
   /** 현재 진행 중인 내 챌린지 조회 */
   @GetMapping("/me")
-  public ResponseEntity<SingleResponse<MyChallengeInfoResponse>> getCurrentChallengeRecord(
+  public ResponseEntity<SingleResponse<ChallengeInfoResponse>> getCurrentChallengeRecord(
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    MyChallengeInfoResponse response =
-        this.service
-            .findByUserIdWithRecords(userDetails.getId())
-            .map(MyChallengeInfoResponse::from)
-            .orElse(null);
+    User currentUser = userDetails.getUser();
+
+    List<Challenge> result = this.service.findAllByUser(currentUser);
+    ChallengeInfoResponse response = ChallengeInfoResponse.from(currentUser, result);
 
     return ResponseEntity.ok(ApiResponse.of(response));
   }

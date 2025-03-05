@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MateQRepositoryImpl implements MateQRepository {
 
@@ -59,7 +60,11 @@ public class MateQRepositoryImpl implements MateQRepository {
                         Expressions.cases()
                             .when(qMate.me.eq(currentUser))
                             .then(qMate.myMate.age)
-                            .otherwise(qMate.me.age)),
+                            .otherwise(qMate.me.age),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.skillLevelType)
+                            .otherwise(qMate.me.skillLevelType)),
                     Projections.constructor(
                         MateWorkoutDto.class,
                         qMateWorkout.placeName,
@@ -80,8 +85,19 @@ public class MateQRepositoryImpl implements MateQRepository {
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public boolean existsMateBetweenUsers(MateStatusType statusType, User user1, User user2) {
+  public boolean hasMatchedMateEither(User user1, User user2) {
+    return this.queryFactory
+            .selectOne()
+            .from(qMate)
+            .where(
+                qMate.statusType.eq(MateStatusType.MATCHED),
+                qMate.me.in(user1, user2).or(qMate.myMate.in(user1, user2)))
+            .fetchFirst()
+        != null;
+  }
+
+  @Override
+  public boolean hasMateWithStatus(MateStatusType statusType, User user1, User user2) {
     return this.queryFactory
             .selectOne()
             .from(qMate)

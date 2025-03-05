@@ -2,7 +2,9 @@ package io.ourfit.api.domain.challenge.service;
 
 import io.ourfit.api.domain.challenge.data.dto.internal.ChallengeCreateDto;
 import io.ourfit.api.domain.challenge.data.entity.Challenge;
+import io.ourfit.api.domain.user.data.entity.User;
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,10 +42,10 @@ public interface ChallengeService {
   Optional<Challenge> findById(long challengeId);
 
   /**
-   * 사용자 ID로 현재 진행 중인 챌린지(챌린지 기록 포함)를 조회한다.
+   * 사용자 정보로 현재 진행 중인 챌린지(챌린지 기록 포함)를 조회한다.
    *
    * @param userId 조회할 사용자 ID
    * @return 조회된 챌린지
    */
-  Optional<Challenge> findByUserIdWithRecords(long userId);
+  List<Challenge> findAllByUser(User user);
 }

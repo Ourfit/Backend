@@ -9,5 +9,7 @@ public interface MateQRepository {
 
   Optional<MateInfoDto> findCurrentMateInfo(User meOrMyMate);
 
-  boolean existsMateBetweenUsers(MateStatusType statusType, User user1, User user2);
+  boolean hasMatchedMateEither(User user1, User user2);
+
+  boolean hasMateWithStatus(MateStatusType statusType, User user1, User user2);
 }
