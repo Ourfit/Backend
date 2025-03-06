@@ -149,6 +149,10 @@ public class User extends AuditableBaseEntity {
     return this.roleType.isAdmin();
   }
 
+  public String getFullRegion() {
+    return String.join(" ", this.region1, this.region2, this.region3);
+  }
+
   public boolean isNicknameUpdatable() {
     return this.nickNameUpdatedAt == null
         || this.nickNameUpdatedAt.plus(NICKNAME_UPDATE_INTERVAL).isBefore(LocalDateTime.now());

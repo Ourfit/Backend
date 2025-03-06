@@ -28,7 +28,7 @@ public record OAuth2Properties(String url, Kakao kakao) {
    * Kakao OAuth2 Properties
    *
    * @param adminKey Kakao Admin Key
-   * @param clientId Kakao Client ID
+   * @param clientId Kakao Client ID (REST API Key)
    * @param clientSecret Kakao Client Secret
    * @param redirectUri Kakao Redirect URI
    */
@@ -46,5 +46,9 @@ public record OAuth2Properties(String url, Kakao kakao) {
     public static final String GRANT_TYPE_RENEW = "refresh_token";
 
     public static final String TARGET_ID_TYPE = "user_id";
+
+    public String getApiKey() {
+      return ADMIN_KEY_PREFIX.concat(this.clientId);
+    }
   }
 }

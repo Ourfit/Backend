@@ -10,8 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  * @param documents 응답 결과
  * @param meta 응답 관련 정보
  */
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record KakaoAddressSearchDto(Document[] documents, Meta meta) {
+public record AddressCoordinates(Document[] documents, Meta meta) {
 
   /**
    * 주소 → 좌표 변환 응답
@@ -22,6 +21,7 @@ public record KakaoAddressSearchDto(Document[] documents, Meta meta) {
    * @param longitude X 좌표값, 경위도인 경우 경도(longitude)
    * @param latitude Y 좌표값, 경위도인 경우 위도(latitude)
    */
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public record Document(
       String addressName,
       String addressType,
@@ -36,5 +36,6 @@ public record KakaoAddressSearchDto(Document[] documents, Meta meta) {
    * @param pageableCount {@code total_count} 중 노출 가능 문서 수 (최대: {@code 45})
    * @param totalCount 검색어에 검색된 문서 수
    */
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public record Meta(boolean isEnd, int pageableCount, int totalCount) {}
 }

@@ -7,12 +7,13 @@ import io.ourfit.api.global.data.ApiResponse;
 import io.ourfit.api.global.data.dto.ListResponse;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.data.annotation.RateLimit;
+import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.global.utils.StringUtils;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,9 +50,20 @@ public class RegionController {
     return ResponseEntity.ok(ApiResponse.of(contents));
   }
 
-  //  @GetMapping("/places")
+  @GetMapping("/places")
   public ResponseEntity<ListResponse<PlaceResponse>> findAllPlacesByKeyword(
-      @RequestParam("q") String keyword) {
-    return ResponseEntity.ok(ApiResponse.of(List.of()));
+      @RequestParam("q") String keyword, @AuthenticationPrincipal OurfitUserDetails userDetails) {
+    final var sanitizedKeyword =
+        StringUtils.normalizeKoreanKeyword(keyword, MAX_KEYWORD_LENGTH, MIN_KEYWORD_LENGTH);
+
+    if (sanitizedKeyword.isBlank()) {
+      return ResponseEntity.ok().build();
+    }
+
+    var contents =
+        StreamUtils.mapToList(
+            this.service.findByUserAndKeyword(userDetails.getUser(), keyword).sportFacilities(),
+            PlaceResponse::from);
+    return ResponseEntity.ok(ApiResponse.of(contents));
   }
 }

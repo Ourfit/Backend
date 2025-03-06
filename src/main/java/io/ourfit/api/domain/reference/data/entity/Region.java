@@ -32,6 +32,12 @@ public class Region extends BaseEntity {
   @Column(name = "region3", nullable = false, length = 50)
   private String region3;
 
+  @Column(name = "longitude", nullable = false, columnDefinition = "decimal(9, 6)")
+  private Double longitude;
+
+  @Column(name = "latitude", nullable = false, columnDefinition = "decimal(9, 6)")
+  private Double latitude;
+
   public String getFullName() {
     return String.join(" ", this.region1, this.region2, this.region3);
   }

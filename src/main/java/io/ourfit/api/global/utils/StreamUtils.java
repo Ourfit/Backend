@@ -30,6 +30,23 @@ public final class StreamUtils {
   }
 
   /**
+   * 컬렉션의 각 요소를 변환하여 새로운 {@link List}로 반환한다.
+   *
+   * @param tArrays 변환할 원본 컬렉션
+   * @param converter 요소를 변환하는 함수
+   * @return 변환된 리스트 (원본 컬렉션이 {@code null}이면, 빈 리스트 반환)
+   * @param <T> 원본 컬렉션의 요소 타입
+   * @param <R> 변환된 리스트의 요소 타입
+   * @apiNote 반환된 리스트는 불변이다.
+   */
+  public static <T, R> List<R> mapToList(T[] tArrays, Function<T, R> converter) {
+    if (tArrays == null) {
+      return List.of();
+    }
+    return Arrays.stream(tArrays).map(converter).toList();
+  }
+
+  /**
    * 컬렉션의 각 요소를 변환하여 새로운 {@link Set}으로 반환한다.
    *
    * @param tCollection 변환할 원본 컬렉션
