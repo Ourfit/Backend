@@ -28,7 +28,7 @@ public record MateCandidateSearchDto(
     return new MateCandidateSearchDto(
         user.getRegion3(),
         request.nickname(),
-        GenderType.findByName(request.gender()),
+        GenderType.findByName(request.gender()).orElse(null),
         StreamUtils.mapToList(request.preferredTimes(), TimePrefrenceType::valueOf),
         request.workoutTypes());
   }

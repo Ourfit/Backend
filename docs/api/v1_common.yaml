@@ -112,7 +112,7 @@ paths:
           description: 조회 할 약관의 타입
       responses:
         200:
-          $ref: "#/components/schemas/TermsResponse"
+          $ref: "#/components/responses/TermsResponse"
         400:
           description: |
             요청 본문이 올바른 형식이 아님
@@ -137,7 +137,7 @@ paths:
           description: 조회 할 약관의 타입
       responses:
         200:
-          $ref: "#/components/schemas/TermsRevisionHistoryResponse"
+          $ref: "#/components/responses/TermsRevisionHistoryResponse"
         400:
           description: |
             요청 본문이 올바른 형식이 아님
@@ -167,7 +167,7 @@ paths:
           description: 조회 할 약관의 버전
       responses:
         200:
-          $ref: "#/components/schemas/TermsResponse"
+          $ref: "#/components/responses/TermsResponse"
         400:
           description: |
             요청 본문이 올바른 형식이 아님
@@ -309,7 +309,7 @@ components:
           nullable: false
         placeName:
           type: string
-          example:
+          example: "바운드짐 신림점"
           description: "장소(업체)명"
           nullable: false
         distance:

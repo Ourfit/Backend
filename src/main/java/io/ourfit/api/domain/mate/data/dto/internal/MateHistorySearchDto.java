@@ -14,6 +14,6 @@ public record MateHistorySearchDto(Set<MateActionType> actionTypes) {
 
   public static MateHistorySearchDto fromRequest(MateHistorySearchRequest request) {
     return new MateHistorySearchDto(
-        StreamUtils.mapToHashSet(request.actionTypes(), MateActionType::findByName));
+        StreamUtils.mapToHashSet(request.actionTypes(), MateActionType::getByNameOrNull));
   }
 }

@@ -9,6 +9,7 @@ import io.ourfit.api.domain.challenge.service.ChallengeService;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.data.ApiResponse;
 import io.ourfit.api.global.data.dto.SingleResponse;
+import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import io.ourfit.api.global.utils.StreamUtils;
@@ -45,8 +46,8 @@ public class ChallengeController {
   public ResponseEntity<Void> createChallenge(
       @RequestBody @Valid ChallengeCreateRequest request,
       @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    if (request.isGoalSettingInValid()) {
-      throw new InvalidParameterException("Challenge goal setting is invalid");
+    if (request.isDateSettingInValid()) {
+      throw new InvalidParameterException(ApiExceptionType.INVALID_DATE_RANGE);
     }
     this.service.create(userDetails.getId(), ChallengeCreateDto.fromRequest(request));
     return ResponseEntity.status(HttpStatus.CREATED).build();

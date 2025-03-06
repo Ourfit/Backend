@@ -1,6 +1,5 @@
 package io.ourfit.api.domain.user.data.entity.enums;
 
-import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,13 +16,6 @@ public enum RoleType {
 
   /** 권한 이름 */
   private final String roleName;
-
-  public static RoleType fromLevel(final int level) {
-    return Arrays.stream(RoleType.values())
-        .filter(userType -> userType.level == level)
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Invalid level"));
-  }
 
   public boolean isSuperAdmin() {
     return this == SUPER_ADMIN;

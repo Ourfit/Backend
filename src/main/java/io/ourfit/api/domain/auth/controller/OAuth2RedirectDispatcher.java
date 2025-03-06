@@ -2,16 +2,17 @@ package io.ourfit.api.domain.auth.controller;
 
 import static io.ourfit.api.domain.auth.data.OAuth2Properties.OAUTH2_REDIRECT_URI;
 
-import io.jsonwebtoken.lang.Assert;
 import io.ourfit.api.domain.auth.data.OAuth2Properties;
 import io.ourfit.api.domain.auth.service.AuthService;
 import io.ourfit.api.domain.auth.template.OAuth2ProfileContextHolder;
 import io.ourfit.api.domain.auth.template.OAuth2TemplateFactory;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.service.UserQueryService;
+import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,18 +31,18 @@ public class OAuth2RedirectDispatcher {
 
   @GetMapping("/v1/oauth2/{provider}/redirect")
   public ResponseEntity<Void> handleOAuth2Callback(
-      @PathVariable String provider, @RequestParam String code) {
-    Assert.notNull(code, "Authorization code must not be null");
-    final var providerType = OAuth2ProviderType.from(provider);
+      @PathVariable String provider, @RequestParam @NotEmpty String code) {
+    final var providerType =
+        OAuth2ProviderType.findByName(provider).orElseThrow(InvalidParameterException::new);
     OAuth2ProfileContextHolder.setAsProduction();
     return this.doHandleInternal(providerType, code, this.oAuth2Properties.url());
   }
 
   @GetMapping("/v1-dev/oauth2/{provider}/redirect")
   public ResponseEntity<Void> handleDevelopOAuth2Callback(
-      @PathVariable String provider, @RequestParam String code) {
-    Assert.notNull(code, "Authorization code must not be null");
-    final var providerType = OAuth2ProviderType.from(provider);
+      @PathVariable String provider, @RequestParam @NotEmpty String code) {
+    final var providerType =
+        OAuth2ProviderType.findByName(provider).orElseThrow(InvalidParameterException::new);
     OAuth2ProfileContextHolder.setAsDevelop();
     return this.doHandleInternal(providerType, code, "http://localhost:3000");
   }

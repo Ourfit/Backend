@@ -1,6 +1,7 @@
 package io.ourfit.api.global.exception;
 
 import static io.ourfit.api.global.exception.ApiExceptionType.INTERNAL_SERVER_ERROR;
+import static io.ourfit.api.global.exception.ApiExceptionType.INVALID_PARAMETER;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -16,12 +17,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 /** 전역 예외 처리 클래스 */
@@ -37,9 +39,14 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.internalServerError(this.resolveMessage(INTERNAL_SERVER_ERROR)));
   }
 
-  @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class})
-  protected ResponseEntity<ErrorResponse> handleBadRequestException(Exception ex) {
-    return ResponseEntity.badRequest().body(ErrorResponse.badRequest(ex.getLocalizedMessage()));
+  @ExceptionHandler({
+    MissingServletRequestParameterException.class,
+    HandlerMethodValidationException.class,
+    HttpMessageNotReadableException.class
+  })
+  protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(Exception ignored) {
+    return ResponseEntity.badRequest()
+        .body(ErrorResponse.badRequest(this.resolveMessage(INVALID_PARAMETER)));
   }
 
   @ExceptionHandler(AuthenticationException.class)
@@ -78,9 +85,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   protected ResponseEntity<ErrorResponse> handleArgumentNotValidException(
       MethodArgumentNotValidException ex) {
-    BindingResult bindingResult = ex.getBindingResult();
     String message =
-        bindingResult.getFieldErrors().stream()
+        ex.getBindingResult().getFieldErrors().stream()
             .map(
                 fieldError ->
                     "%s - %s.".formatted(fieldError.getField(), fieldError.getDefaultMessage()))

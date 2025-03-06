@@ -14,7 +14,7 @@ public enum MateActionType {
   /** 메이트 해제 */
   UNMATE;
 
-  @Nullable public static MateActionType findByName(String name) {
+  @Nullable public static MateActionType getByNameOrNull(String name) {
     return Arrays.stream(values()).filter(v -> v.name().equals(name)).findFirst().orElse(null);
   }
 }
