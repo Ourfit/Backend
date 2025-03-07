@@ -12,4 +12,8 @@ public interface OurfitUserDetails extends UserDetails {
   boolean isSuperAdmin();
 
   boolean isAdmin();
+
+  static OurfitUserDetails from(User user) {
+    return new OurfitUserDetailsImpl(user);
+  }
 }

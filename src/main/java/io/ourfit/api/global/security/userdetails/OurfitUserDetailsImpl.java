@@ -11,10 +11,6 @@ public record OurfitUserDetailsImpl(User user) implements OurfitUserDetails, Ser
 
   @Serial private static final long serialVersionUID = 2025010101L;
 
-  public static OurfitUserDetailsImpl from(User user) {
-    return new OurfitUserDetailsImpl(user);
-  }
-
   @Override
   public User getUser() {
     return this.user;

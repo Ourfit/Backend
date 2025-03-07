@@ -2,6 +2,7 @@ package io.ourfit.api.domain.reference.data.entity;
 
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
+import java.io.Serial;
 import lombok.*;
 
 @Entity
@@ -17,6 +18,8 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Region extends BaseEntity {
+
+  @Serial private static final long serialVersionUID = 2025030601L;
 
   @Id
   @Column(name = "id")

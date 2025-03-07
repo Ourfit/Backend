@@ -48,6 +48,10 @@ public interface ApiResponse<T> {
     return new ListResponse<>(MESSAGE_OK, data);
   }
 
+  static <T> ListResponse<T> empty() {
+    return new ListResponse<>(MESSAGE_OK, List.of());
+  }
+
   static <T> SliceResponse<T> of(Slice<T> data) {
     return new SliceResponse<>(MESSAGE_OK, SliceResponse.SliceData.from(data));
   }

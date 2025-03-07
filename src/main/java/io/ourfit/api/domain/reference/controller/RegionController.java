@@ -42,11 +42,11 @@ public class RegionController {
         StringUtils.normalizeKoreanKeyword(keyword, MAX_KEYWORD_LENGTH, MIN_KEYWORD_LENGTH);
 
     if (sanitizedKeyword.isBlank()) {
-      return ResponseEntity.ok().build();
+      return ResponseEntity.ok(ApiResponse.empty());
     }
 
     var contents =
-        StreamUtils.mapToList(this.service.findAllByKeyword(keyword), RegionResponse::from);
+        StreamUtils.mapToList(this.service.findAllRegionByKeyword(keyword), RegionResponse::from);
     return ResponseEntity.ok(ApiResponse.of(contents));
   }
 
@@ -57,13 +57,16 @@ public class RegionController {
         StringUtils.normalizeKoreanKeyword(keyword, MAX_KEYWORD_LENGTH, MIN_KEYWORD_LENGTH);
 
     if (sanitizedKeyword.isBlank()) {
-      return ResponseEntity.ok().build();
+      return ResponseEntity.ok(ApiResponse.empty());
     }
 
-    var contents =
-        StreamUtils.mapToList(
-            this.service.findByUserAndKeyword(userDetails.getUser(), keyword).sportFacilities(),
-            PlaceResponse::from);
-    return ResponseEntity.ok(ApiResponse.of(contents));
+    return ResponseEntity.ok(
+        this.service
+            .findPlacesByUserAndKeyword(userDetails.getUser(), keyword)
+            .map(
+                places ->
+                    ApiResponse.of(
+                        StreamUtils.mapToList(places.sportFacilities(), PlaceResponse::from)))
+            .orElse(ApiResponse.empty()));
   }
 }
