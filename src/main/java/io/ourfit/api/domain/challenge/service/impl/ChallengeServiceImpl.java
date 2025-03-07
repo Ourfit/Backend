@@ -54,10 +54,8 @@ public class ChallengeServiceImpl implements ChallengeService {
   public void setGoalDayOfWeeks(final long challengeId, Set<DayOfWeek> goalDayOfWeeks) {
     this.ifFoundThen(
         challengeId,
-        challenge -> {
-          challenge.setGoalWorkoutDayOfWeeks(goalDayOfWeeks);
-          challenge.updatePlannedRecords(goalDayOfWeeks);
-        });
+        challenge -> challenge.setNewGoalDayOfWeeks(goalDayOfWeeks),
+        challenge -> challenge.getGoalWorkoutCount().equals((short) goalDayOfWeeks.size()));
   }
 
   @Override

@@ -11,10 +11,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.*;
 
@@ -54,7 +53,6 @@ public class Challenge extends BaseEntity {
       columnDefinition = "tinyint unsigned")
   private Short goalWorkoutCount;
 
-  @Setter
   @Convert(converter = DayOfWeekSetConverter.class)
   @Column(name = "goal_workout_day_of_week", nullable = false)
   private Set<DayOfWeek> goalWorkoutDayOfWeeks;
@@ -77,7 +75,7 @@ public class Challenge extends BaseEntity {
 
   @Builder.Default
   @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ChallengeRecord> challengeRecords = new ArrayList<>();
+  private Set<ChallengeRecord> challengeRecords = new HashSet<>();
 
   public static Challenge of(Mate mate, User challenger, ChallengeCreateDto challengeDto) {
     return Challenge.builder()
@@ -96,30 +94,20 @@ public class Challenge extends BaseEntity {
         this.generateRecords(this.goalWorkoutDayOfWeeks, this.startAt, this.endAt);
   }
 
-  public void updatePlannedRecords(Set<DayOfWeek> newGoalDayOfWeeks) {
-    if (this.goalWorkoutDayOfWeeks.equals(newGoalDayOfWeeks)) {
+  public void setNewGoalDayOfWeeks(Set<DayOfWeek> newGoalDayOfWeeks) {
+    if (this.goalWorkoutDayOfWeeks.containsAll(newGoalDayOfWeeks)) {
       return; // 목표 요일이 변경되지 않았다면 업데이트 필요 없음
     }
-    // 미래 기록만 필터링
-    LocalDate today = LocalDate.now();
-    Iterator<ChallengeRecord> futureRecordsIterator =
-        this.challengeRecords.stream()
-            .filter(challengeRecord -> challengeRecord.getRecordDate().isAfter(today))
-            .iterator();
-    LocalDate currentDate = today.plusDays(1);
+    LocalDate now = LocalDate.now();
+    LocalDate newRecordStartDate = this.startAt.isAfter(now) ? this.startAt : now.plusDays(1);
 
-    while (!currentDate.isAfter(this.endAt) && futureRecordsIterator.hasNext()) {
-      var challengeRecord = futureRecordsIterator.next();
-      if (newGoalDayOfWeeks.contains(currentDate.getDayOfWeek())) {
-        challengeRecord.setRecordDate(currentDate);
-      } else {
-        futureRecordsIterator.remove(); // 새로운 요일에 맞지 않으면 삭제
-      }
-      currentDate = currentDate.plusDays(1);
-    }
-
-    // Records 수가 부족하면 새로운 기록 추가
-    this.challengeRecords.addAll(this.generateRecords(newGoalDayOfWeeks, currentDate, this.endAt));
+    this.challengeRecords.removeIf(
+        challengeRecord ->
+            challengeRecord.getRecordDate().isAfter(now)
+                && !newGoalDayOfWeeks.contains(challengeRecord.getRecordDate().getDayOfWeek()));
+    this.goalWorkoutDayOfWeeks = newGoalDayOfWeeks;
+    this.challengeRecords.addAll(
+        this.generateRecords(newGoalDayOfWeeks, newRecordStartDate, this.endAt));
   }
 
   public boolean isOwner(User user) {
@@ -143,13 +131,13 @@ public class Challenge extends BaseEntity {
     return ChronoUnit.DAYS.between(LocalDate.now(), this.endAt);
   }
 
-  private List<ChallengeRecord> generateRecords(
+  private Set<ChallengeRecord> generateRecords(
       Set<DayOfWeek> goalDays, LocalDate start, LocalDate end) {
     return Stream.iterate(start, date -> date.plusDays(1))
         .limit(ChronoUnit.DAYS.between(start, end) + 1)
         .filter(date -> goalDays.contains(date.getDayOfWeek()))
         .map(date -> ChallengeRecord.ofNew(this, date))
-        .toList();
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   public void delete() {

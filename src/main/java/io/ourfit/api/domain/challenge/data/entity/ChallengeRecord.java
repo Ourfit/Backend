@@ -5,7 +5,9 @@ import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.time.LocalDate;
+import java.util.Objects;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
@@ -67,5 +69,23 @@ public class ChallengeRecord extends BaseEntity {
 
   public boolean isNotDone() {
     return !this.isCompleted;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || Hibernate.getClass(this) != Hibernate.getClass(obj)) {
+      return false;
+    }
+    ChallengeRecord that = (ChallengeRecord) obj;
+    return Objects.equals(this.challenge, that.challenge)
+        && Objects.equals(this.recordDate, that.recordDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.challenge, this.recordDate);
   }
 }

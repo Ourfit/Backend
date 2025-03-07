@@ -50,6 +50,6 @@ public class UserFavoriteWorkout extends BaseEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(user.getId(), workout.getCode());
+    return Objects.hash(this.user.getId(), this.workout.getCode());
   }
 }
