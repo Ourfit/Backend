@@ -76,10 +76,7 @@ public class Challenge extends BaseEntity {
   private LocalDateTime deletedAt;
 
   @Builder.Default
-  @OneToMany(
-      mappedBy = "challenge",
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-      orphanRemoval = true)
+  @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ChallengeRecord> challengeRecords = new ArrayList<>();
 
   public static Challenge of(Mate mate, User challenger, ChallengeCreateDto challengeDto) {
