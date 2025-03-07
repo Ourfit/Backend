@@ -21,7 +21,7 @@ public class TimeZoneController {
 
   private final Clock clock;
 
-  @GetMapping("/timezones")
+  @GetMapping("/v1/timezones")
   public ResponseEntity<Object> getTimeZone() {
     return ResponseEntity.ok(
         Map.of(
