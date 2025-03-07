@@ -164,7 +164,7 @@ public class User extends AuditableBaseEntity {
         throw new IllegalEntityStateException();
       }
       this.nickname = basicInfoDto.nickname();
-      this.nickNameUpdatedAt = LocalDateTime.now();
+      this.nickNameUpdatedAt = LocalDateTime.now(CLOCK);
     }
     if (basicInfoDto.age() != null) {
       this.age = basicInfoDto.age();
@@ -202,6 +202,6 @@ public class User extends AuditableBaseEntity {
   }
 
   public void delete() {
-    this.deletedAt = LocalDateTime.now();
+    this.deletedAt = LocalDateTime.now(CLOCK);
   }
 }

@@ -1,10 +1,14 @@
 package io.ourfit.api.global.data.entity;
 
+import static io.ourfit.api.global.config.TimeConfig.DEFAULT_ZONE_ID;
+
 import io.ourfit.api.global.data.RedisSerializable;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,6 +30,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity implements Serializable, RedisSerializable {
+
+  @Transient protected static final Clock CLOCK = Clock.system(DEFAULT_ZONE_ID);
 
   @CreatedDate
   @Column(nullable = false, updatable = false)

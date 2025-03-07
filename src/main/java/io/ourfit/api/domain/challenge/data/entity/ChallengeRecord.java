@@ -60,7 +60,7 @@ public class ChallengeRecord extends BaseEntity {
   }
 
   public boolean isChallengeDay() {
-    return this.recordDate.equals(LocalDate.now());
+    return this.recordDate.equals(LocalDate.now(CLOCK));
   }
 
   public boolean isDone() {
