@@ -26,37 +26,23 @@ public class ExceptionLogFormatter {
   public String doFormat(Throwable ex) {
     StringBuilder logBuilder = new StringBuilder();
     StackTraceElement[] stackTraces = ex.getStackTrace();
-    // 1. 예외 요약
+    // 예외 요약
     logBuilder
         .append(LINE_SEPARATOR)
-        .append("=== Exception Log - ")
-        .append(ex.getClass().getSimpleName())
-        .append(" ===")
+        .append(String.format("=== Exception Log - %s ===", ex.getClass().getSimpleName()))
         .append(LINE_SEPARATOR);
     logBuilder.append("Message: ").append(ex.getMessage()).append(LINE_SEPARATOR);
-    // 2. 발생 위치
+    // 발생 위치
     logBuilder.append("At: ");
     appendStackTrace(logBuilder, stackTraces);
-    // 3. 스레드 정보
+    // 스레드 정보
     Thread currentThread = Thread.currentThread();
     logBuilder
         .append("Thread: ")
         .append(currentThread.getName())
-        .append(" (ID: ")
-        .append(currentThread.getId())
-        .append(")")
+        .append(String.format(" (ID: %d)", currentThread.getId()))
         .append(LINE_SEPARATOR);
-    // 4. 메서드 정보
-    StackTraceElement origin = stackTraces[0];
-    logBuilder
-        .append("Origin: ")
-        .append(origin.getClassName())
-        .append(".")
-        .append(origin.getMethodName())
-        .append(":")
-        .append(origin.getLineNumber())
-        .append(LINE_SEPARATOR);
-    // 5. 원인 정보
+    // 원인 정보
     Throwable cause = ex.getCause();
     if (cause != null) {
       logBuilder
@@ -67,7 +53,7 @@ public class ExceptionLogFormatter {
           .append(cause.getMessage())
           .append(LINE_SEPARATOR);
     }
-    // 6. HTTP 요청 정보
+    // HTTP 요청 정보
     logBuilder.append("-- Additional Information --").append(LINE_SEPARATOR);
     if (this.currentRequest != null) {
       logBuilder
@@ -82,7 +68,7 @@ public class ExceptionLogFormatter {
         logBuilder.append("Query String: ").append(queryString).append(LINE_SEPARATOR);
       }
     }
-    // 7. 요청 사용자 정보
+    // 요청 사용자 정보
     this.auditorAware
         .getCurrentAuditorUser()
         .ifPresentOrElse(
