@@ -1,4 +1,4 @@
-package io.ourfit.api.global.data.dto;
+package io.ourfit.api.global.web.hook;
 
 /**
  * Discord Webhook 요청 DTO

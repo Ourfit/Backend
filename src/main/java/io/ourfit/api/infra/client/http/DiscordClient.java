@@ -1,7 +1,6 @@
 package io.ourfit.api.infra.client.http;
 
-import io.ourfit.api.global.data.annotation.RequireAdminNotification;
-import io.ourfit.api.global.data.dto.WebhookRequest;
+import io.ourfit.api.global.web.hook.WebhookRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface DiscordClient {
 
   /**
-   * Discord 웹훅 메시지 전송 <br>
-   *
-   * <p>{@link RequireAdminNotification}로 알림을 보낼 때 등에 사용
+   * Discord 웹훅 메시지 전송
    *
    * @param serverId 서버 ID
    * @param webhookToken 웹훅 토큰
