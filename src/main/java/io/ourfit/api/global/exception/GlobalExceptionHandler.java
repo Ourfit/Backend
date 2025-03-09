@@ -5,6 +5,7 @@ import static io.ourfit.api.global.exception.ApiExceptionType.INVALID_PARAMETER;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import io.ourfit.api.global.config.properties.EnvironmentProfileType;
 import io.ourfit.api.global.data.dto.ErrorResponse;
 import io.ourfit.api.global.web.hook.WebhookService;
 import jakarta.validation.ConstraintViolationException;
@@ -37,6 +38,7 @@ public class GlobalExceptionHandler {
   private final ExceptionLogFormatter formatter;
   private final MessageSource customMessageSource;
   private final WebhookService webhookService;
+  private final EnvironmentProfileType currentProfile;
 
   @ExceptionHandler(Exception.class)
   protected ResponseEntity<ErrorResponse> handleAllUncaughtException(Exception ex) {
@@ -134,7 +136,7 @@ public class GlobalExceptionHandler {
     String logMessage = this.formatter.doFormat(ex);
 
     log.error(logMessage);
-    if (sendWebhook) {
+    if (this.currentProfile.isRemote() && sendWebhook) {
       this.webhookService.send(logMessage);
     }
   }

@@ -92,7 +92,7 @@ public class SecurityConfig {
     return http.httpBasic(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
-        .cors(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
@@ -132,7 +132,8 @@ public class SecurityConfig {
             "https://ourfit.life",
             "https://*.ourfit.life",
             "https://ourfit.github.io",
-            "http://localhost:3000"));
+            "http://localhost:3000",
+            "http://localhost:63342"));
     corsConfiguration.setAllowedMethods(
         StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));
     corsConfiguration.setAllowCredentials(true);
@@ -142,11 +143,11 @@ public class SecurityConfig {
             HttpHeaders.COOKIE,
             HttpHeaders.CONTENT_TYPE,
             HttpHeaders.CACHE_CONTROL,
-            HttpHeaders.IF_MODIFIED_SINCE,
+            HttpHeaders.IF_NONE_MATCH,
             "X-Ourfit-Api-Key",
+            "X-Ourfit-Trace-Id",
             "X-Request-With"));
-    corsConfiguration.setExposedHeaders(
-        List.of(HttpHeaders.LAST_MODIFIED, HttpHeaders.RETRY_AFTER));
+    corsConfiguration.setExposedHeaders(List.of(HttpHeaders.RETRY_AFTER));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", corsConfiguration);

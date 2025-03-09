@@ -32,9 +32,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     if (!(authentication instanceof JwtAuthenticationToken)) {
       throw new AuthenticationCredentialsNotFoundException("JwtAuthenticationToken is required");
     }
-    String token = ((JwtAuthenticationToken) authentication).getCredentials().toString();
-    Claims claims = this.validateAndGetClaims(token);
-    Long userId = Long.parseLong(claims.getSubject());
+    String token = authentication.getCredentials().toString();
+    long userId = Long.parseLong(this.validateAndGetClaims(token).getSubject());
 
     return this.userQueryService
         .findById(userId)
@@ -47,7 +46,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     return this.jwtProvider
         .parse(token)
         .filter(this::isNotExpired)
-        .orElseThrow(() -> new BadCredentialsException("Token is expired or invalid."));
+        .orElseThrow(() -> new BadCredentialsException("Token is expired or invalid"));
   }
 
   private boolean isNotExpired(Claims claims) {
