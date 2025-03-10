@@ -3,13 +3,14 @@ package io.ourfit.api.global.utils;
 import static io.ourfit.api.global.data.Versionable.GMT_ZONE;
 import static io.ourfit.api.global.data.Versionable.RFC_1123_FORMAT;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public final class DateTimeFormatUtils {
+public final class DateTimeUtils {
 
-  private DateTimeFormatUtils() {}
+  private DateTimeUtils() {}
 
   /**
    * {@link LocalDateTime}을 RFC 1123 형식의 문자열로 변환한다.
@@ -22,14 +23,19 @@ public final class DateTimeFormatUtils {
   }
 
   /**
-   * RFC 1123 형식의 문자열을 {@link LocalDateTime}
+   * RFC 1123 형식의 문자열을 {@link LocalDateTime} 객체로 파싱한다.
    *
-   * @param rfc1123String
-   * @return
+   * @param rfc1123String RFC 1123 형식의 문자열
+   * @return 파싱한 {@link LocalDateTime} 객체
    */
   public static LocalDateTime toLocalDateTime(String rfc1123String) {
     return ZonedDateTime.parse(rfc1123String, RFC_1123_FORMAT)
         .withZoneSameInstant(ZoneId.systemDefault())
         .toLocalDateTime();
+  }
+
+  public static boolean isWithinThisWeek(
+      LocalDate date, LocalDate startOfWeek, LocalDate endOfWeek) {
+    return !date.isBefore(startOfWeek) && !date.isAfter(endOfWeek);
   }
 }
