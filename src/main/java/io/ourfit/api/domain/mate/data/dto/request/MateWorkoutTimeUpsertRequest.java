@@ -16,8 +16,8 @@ import java.util.Set;
  */
 public record MateWorkoutTimeUpsertRequest(
     @Enumerable(type = DayOfWeek.class) Set<String> workoutDays,
-    @NotNull @JsonFormat(pattern = "HH:mm:ss") LocalTime startAt,
-    @NotNull @JsonFormat(pattern = "HH:mm:ss") LocalTime endAt) {
+    @NotNull @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul") LocalTime startAt,
+    @NotNull @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul") LocalTime endAt) {
 
   public boolean isTimeSettingInValid() {
     return this.startAt.isAfter(this.endAt);

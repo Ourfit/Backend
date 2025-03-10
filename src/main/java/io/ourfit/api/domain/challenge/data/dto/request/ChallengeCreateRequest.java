@@ -22,8 +22,8 @@ public record ChallengeCreateRequest(
     @Positive short goalWorkoutCount,
     @Enumerable(type = DayOfWeek.class) Set<String> goalWorkoutDayOfWeeks,
     @Positive short challengeDurationInMonths,
-    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate startAt,
-    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate endAt) {
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate startAt,
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate endAt) {
 
   public boolean isDateSettingInValid() {
     return (this.goalWorkoutDayOfWeeks == null
