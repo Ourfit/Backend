@@ -63,7 +63,7 @@ public class Mate extends BaseEntity {
 
   public void accept() {
     this.statusType = MateStatusType.MATCHED;
-    this.acceptedAt = LocalDateTime.now(CLOCK);
+    this.acceptedAt = LocalDateTime.now();
   }
 
   public boolean canAccept(final long userId) {
@@ -72,7 +72,7 @@ public class Mate extends BaseEntity {
 
   public void unmate() {
     this.statusType = MateStatusType.UNMATED;
-    this.deletedAt = LocalDateTime.now(CLOCK);
+    this.deletedAt = LocalDateTime.now();
   }
 
   public boolean canUnmate(final long userId) {

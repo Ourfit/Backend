@@ -1,10 +1,10 @@
 package io.ourfit.api.global.utils;
 
-import static io.ourfit.api.global.config.TimeConfig.DEFAULT_ZONE_ID;
 import static io.ourfit.api.global.data.Versionable.GMT_ZONE;
 import static io.ourfit.api.global.data.Versionable.RFC_1123_FORMAT;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public final class DateTimeFormatUtils {
@@ -29,7 +29,7 @@ public final class DateTimeFormatUtils {
    */
   public static LocalDateTime toLocalDateTime(String rfc1123String) {
     return ZonedDateTime.parse(rfc1123String, RFC_1123_FORMAT)
-        .withZoneSameInstant(DEFAULT_ZONE_ID)
+        .withZoneSameInstant(ZoneId.systemDefault())
         .toLocalDateTime();
   }
 }

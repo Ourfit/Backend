@@ -101,7 +101,7 @@ public class Challenge extends BaseEntity {
     if (this.goalWorkoutDayOfWeeks.containsAll(newGoalDayOfWeeks)) {
       return; // 목표 요일이 변경되지 않았다면 업데이트 필요 없음
     }
-    LocalDate now = LocalDate.now(CLOCK);
+    LocalDate now = LocalDate.now();
     LocalDate newRecordStartDate = this.startAt.isAfter(now) ? this.startAt : now.plusDays(1);
 
     this.challengeRecords.removeIf(
@@ -124,7 +124,7 @@ public class Challenge extends BaseEntity {
   }
 
   public long calculateDayElapsed() {
-    LocalDate now = LocalDate.now(CLOCK);
+    LocalDate now = LocalDate.now();
     if (this.startAt.isAfter(now)) {
       return 0;
     }
@@ -132,7 +132,7 @@ public class Challenge extends BaseEntity {
   }
 
   public long calculateRemainingDays() {
-    return ChronoUnit.DAYS.between(LocalDate.now(CLOCK), this.endAt);
+    return ChronoUnit.DAYS.between(LocalDate.now(), this.endAt);
   }
 
   private Set<ChallengeRecord> generateRecords(
@@ -145,6 +145,6 @@ public class Challenge extends BaseEntity {
   }
 
   public void delete() {
-    this.deletedAt = LocalDateTime.now(CLOCK);
+    this.deletedAt = LocalDateTime.now();
   }
 }
