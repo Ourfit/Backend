@@ -74,7 +74,10 @@ public class Challenge extends BaseEntity {
   private LocalDateTime deletedAt;
 
   @Builder.Default
-  @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(
+      mappedBy = "challenge",
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+      orphanRemoval = true)
   private Set<ChallengeRecord> challengeRecords = new HashSet<>();
 
   public static Challenge of(Mate mate, User challenger, ChallengeCreateDto challengeDto) {
@@ -115,9 +118,9 @@ public class Challenge extends BaseEntity {
   }
 
   public long calculateCompletionRate() {
-    long totalDays = Math.max(1, ChronoUnit.DAYS.between(this.startAt, this.endAt) + 1);
-    long doneDays = this.challengeRecords.stream().filter(ChallengeRecord::isDone).count();
-    return (doneDays * 100) / totalDays;
+    long totalRecords = Math.max(1, this.challengeRecords.size());
+    long doneRecords = this.challengeRecords.stream().filter(ChallengeRecord::isDone).count();
+    return (doneRecords * 100) / totalRecords;
   }
 
   public long calculateDayElapsed() {

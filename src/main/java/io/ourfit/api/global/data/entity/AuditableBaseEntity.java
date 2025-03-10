@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -17,7 +16,6 @@ import org.springframework.data.annotation.LastModifiedBy;
  * 모든 Entity 클래스는 이 클래스 또는 {@link BaseEntity}를 상속받도록 구성해야 함!
  */
 @Getter
-@SuperBuilder
 @MappedSuperclass
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

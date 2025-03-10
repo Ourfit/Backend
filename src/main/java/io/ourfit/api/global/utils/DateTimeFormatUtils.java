@@ -1,25 +1,35 @@
 package io.ourfit.api.global.utils;
 
+import static io.ourfit.api.global.config.TimeConfig.DEFAULT_ZONE_ID;
+import static io.ourfit.api.global.data.Versionable.GMT_ZONE;
+import static io.ourfit.api.global.data.Versionable.RFC_1123_FORMAT;
+
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public final class DateTimeFormatUtils {
 
-  private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
-  private static final ZoneId GMT_ZONE = ZoneId.of("GMT");
-  private static final DateTimeFormatter RFC_1123_FORMAT = DateTimeFormatter.RFC_1123_DATE_TIME;
-
   private DateTimeFormatUtils() {}
 
+  /**
+   * {@link LocalDateTime}을 RFC 1123 형식의 문자열로 변환한다.
+   *
+   * @param localDateTime 변환할 {@link LocalDateTime} 객체
+   * @return RFC 1123 형식의 문자열
+   */
   public static String toRFC1123String(LocalDateTime localDateTime) {
     return localDateTime.atZone(GMT_ZONE).format(RFC_1123_FORMAT);
   }
 
+  /**
+   * RFC 1123 형식의 문자열을 {@link LocalDateTime}
+   *
+   * @param rfc1123String
+   * @return
+   */
   public static LocalDateTime toLocalDateTime(String rfc1123String) {
     return ZonedDateTime.parse(rfc1123String, RFC_1123_FORMAT)
-        .withZoneSameInstant(DEFAULT_ZONE)
+        .withZoneSameInstant(DEFAULT_ZONE_ID)
         .toLocalDateTime();
   }
 }
