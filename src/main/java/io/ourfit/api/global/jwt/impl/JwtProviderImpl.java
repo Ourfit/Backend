@@ -12,7 +12,6 @@ import io.ourfit.api.global.jwt.JwtProvider;
 import io.ourfit.api.global.jwt.OurfitToken;
 import io.ourfit.api.global.jwt.TokenException;
 import io.ourfit.api.infra.redis.OurfitRefreshTokenRepository;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtProviderImpl implements JwtProvider {
 
-  private final Clock clock;
   private final JwtProperties jwtProperties;
   private final OurfitRefreshTokenRepository refreshTokenRepository;
 
@@ -129,10 +127,10 @@ public class JwtProviderImpl implements JwtProvider {
   }
 
   private Date toDate(Duration duration) {
-    return Date.from(Instant.now(this.clock).plus(duration));
+    return Date.from(Instant.now().plus(duration));
   }
 
   private Date getCurrentTime() {
-    return Date.from(Instant.now(this.clock));
+    return Date.from(Instant.now());
   }
 }
