@@ -101,8 +101,9 @@ public class Challenge extends BaseEntity {
       return; // 목표 요일이 변경되지 않았다면 업데이트 X
     }
     LocalDate now = LocalDate.now();
+    final boolean isChallengeStarted = this.startAt.isEqual(now) || this.startAt.isBefore(now);
     LocalDate newStartDate =
-        this.startAt.isBefore(now) ? now.plusWeeks(1).with(DayOfWeek.MONDAY) : this.startAt;
+        isChallengeStarted ? now.plusWeeks(1).with(DayOfWeek.MONDAY) : this.startAt;
 
     List<ChallengeRecord> removableRecords =
         this.getRemovableRecords(newGoalDayOfWeeks, newStartDate);
