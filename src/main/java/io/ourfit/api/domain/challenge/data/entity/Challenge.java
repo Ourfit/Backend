@@ -5,7 +5,6 @@ import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.data.entity.BaseEntity;
 import io.ourfit.api.global.persistence.converter.DayOfWeekSetConverter;
-import io.ourfit.api.global.utils.DateTimeUtils;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.time.DayOfWeek;
@@ -102,21 +101,14 @@ public class Challenge extends BaseEntity {
       return; // 목표 요일이 변경되지 않았다면 업데이트 X
     }
     LocalDate now = LocalDate.now();
-    LocalDate startOfThisWeek = now.with(DayOfWeek.MONDAY);
-    LocalDate endOfThisWeek = now.with(DayOfWeek.SUNDAY);
+    LocalDate newStartDate =
+        this.startAt.isBefore(now) ? now.plusWeeks(1).with(DayOfWeek.MONDAY) : this.startAt;
 
-    List<ChallengeRecord> removableRecords = this.getRemovableRecords(newGoalDayOfWeeks, now);
+    List<ChallengeRecord> removableRecords =
+        this.getRemovableRecords(newGoalDayOfWeeks, newStartDate);
     removableRecords.forEach(this.challengeRecords::remove);
 
-    long completedThisWeek = this.getCompletedCountThisWeek(startOfThisWeek, endOfThisWeek);
-
-    Set<ChallengeRecord> newRecords = this.generateRecords(newGoalDayOfWeeks, now, this.endAt);
-
-    List<ChallengeRecord> thisWeekRecords =
-        filterThisWeekRecords(newRecords, startOfThisWeek, endOfThisWeek);
-    this.trimExcessRecords(thisWeekRecords, newRecords, completedThisWeek);
-
-    this.challengeRecords.addAll(newRecords);
+    this.challengeRecords.addAll(this.generateRecords(newGoalDayOfWeeks, newStartDate, this.endAt));
     this.goalWorkoutDayOfWeeks = newGoalDayOfWeeks;
   }
 
@@ -148,7 +140,7 @@ public class Challenge extends BaseEntity {
 
   private Set<ChallengeRecord> generateRecords(
       Set<DayOfWeek> goalDays, LocalDate start, LocalDate end) {
-    return Stream.iterate(start.minusDays(1), date -> date.plusDays(1))
+    return Stream.iterate(start, date -> date.plusDays(1))
         .limit(ChronoUnit.DAYS.between(start, end) + 1)
         .filter(date -> goalDays.contains(date.getDayOfWeek()))
         .map(date -> ChallengeRecord.ofNew(this, date))
@@ -156,43 +148,11 @@ public class Challenge extends BaseEntity {
   }
 
   private List<ChallengeRecord> getRemovableRecords(
-      Set<DayOfWeek> newGoalDayOfWeeks, LocalDate now) {
-    LocalDate yesterday = now.minusDays(1);
+      Set<DayOfWeek> newGoalDayOfWeeks, LocalDate newStartDate) {
     return this.challengeRecords.stream()
         .filter(ChallengeRecord::isNotDone)
-        .filter(cRecord -> cRecord.getRecordDate().isAfter(yesterday))
+        .filter(cRecord -> cRecord.getRecordDate().isAfter(newStartDate))
         .filter(cRecord -> !newGoalDayOfWeeks.contains(cRecord.getRecordDate().getDayOfWeek()))
         .toList();
-  }
-
-  private long getCompletedCountThisWeek(LocalDate startOfWeek, LocalDate endOfWeek) {
-    return this.challengeRecords.stream()
-        .filter(ChallengeRecord::isDone)
-        .filter(
-            cRecord ->
-                DateTimeUtils.isWithinThisWeek(cRecord.getRecordDate(), startOfWeek, endOfWeek))
-        .count();
-  }
-
-  private void trimExcessRecords(
-      List<ChallengeRecord> thisWeekRecords,
-      Set<ChallengeRecord> newRecords,
-      long completedThisWeek) {
-    while (completedThisWeek + thisWeekRecords.size() > this.goalWorkoutCount
-        && !thisWeekRecords.isEmpty()) {
-      ChallengeRecord lastRecord = thisWeekRecords.remove(thisWeekRecords.size() - 1);
-      newRecords.remove(lastRecord);
-    }
-  }
-
-  private static List<ChallengeRecord> filterThisWeekRecords(
-      Set<ChallengeRecord> newRecords, LocalDate startOfWeek, LocalDate endOfWeek) {
-    return new ArrayList<>(
-        newRecords.stream()
-            .filter(
-                cRecord ->
-                    DateTimeUtils.isWithinThisWeek(cRecord.getRecordDate(), startOfWeek, endOfWeek))
-            .sorted(Comparator.comparing(ChallengeRecord::getRecordDate))
-            .toList());
   }
 }
