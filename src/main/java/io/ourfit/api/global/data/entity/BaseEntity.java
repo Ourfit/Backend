@@ -2,6 +2,7 @@ package io.ourfit.api.global.data.entity;
 
 import static io.ourfit.api.global.config.TimeConfig.DEFAULT_ZONE_ID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ourfit.api.global.data.RedisSerializable;
 import io.ourfit.api.global.data.Versionable;
 import io.ourfit.api.global.utils.DateTimeFormatUtils;
@@ -43,11 +44,13 @@ public abstract class BaseEntity implements Serializable, RedisSerializable, Ver
   private LocalDateTime updatedAt;
 
   @Override
+  @JsonIgnore
   public String getETag() {
     return HashUtils.hash("MD5", this.createdAt.toString(), this.updatedAt.toString());
   }
 
   @Override
+  @JsonIgnore
   public String getLastModified() {
     return DateTimeFormatUtils.toRFC1123String(this.updatedAt);
   }
