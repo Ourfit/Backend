@@ -3,6 +3,7 @@ package io.ourfit.api.domain.mate.service.impl;
 import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.entity.MateHistory;
 import io.ourfit.api.domain.mate.data.enums.MateActionType;
+import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 import io.ourfit.api.domain.mate.service.MateCommandService;
 import io.ourfit.api.domain.mate.service.MateWorkoutService;
 import io.ourfit.api.domain.user.data.entity.User;
@@ -33,20 +34,14 @@ public class MateCommandServiceImpl implements MateCommandService {
 
   @Override
   public void apply(final long meId, final long receiverId) {
-    User me =
-        this.userQueryService
-            .findById(meId)
-            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
-    User myMate =
-        this.userQueryService
-            .findById(receiverId)
-            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
+    final var me = this.findUserById(meId);
+    final var myMate = this.findUserById(receiverId);
 
-    if (this.qRepository.existsPendingRequestBetweenUsers(me, myMate)) {
-      throw new DuplicatedException(ApiExceptionType.RESOURCE_IDENTICAL);
+    if (this.qRepository.hasMateWithStatus(MateStatusType.PENDING, me, myMate)) {
+      throw new DuplicatedException(ApiExceptionType.RESOURCE_ALREADY_EXISTS);
     }
 
-    Mate mate = this.repository.save(Mate.of(me, myMate));
+    final var mate = this.repository.save(Mate.of(me, myMate));
     this.historyRepository.save(MateHistory.from(MateActionType.APPLY, mate));
   }
 
@@ -59,7 +54,8 @@ public class MateCommandServiceImpl implements MateCommandService {
           this.workoutService.initialize(mate);
           this.historyRepository.save(MateHistory.from(MateActionType.ACCEPT, mate));
         },
-        mate -> mate.canAccept(meId));
+        mate -> mate.canAccept(meId),
+        mate -> !this.qRepository.hasMatchedMateEither(mate.getMe(), mate.getMyMate()));
   }
 
   @Override
@@ -83,5 +79,11 @@ public class MateCommandServiceImpl implements MateCommandService {
             () -> {
               throw new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE);
             });
+  }
+
+  private User findUserById(long userId) {
+    return this.userQueryService
+        .findById(userId)
+        .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
   }
 }

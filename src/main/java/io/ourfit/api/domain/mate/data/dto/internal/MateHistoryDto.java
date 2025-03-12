@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
  * 메이트 내역 DTO
  *
  * @param id 내역 ID
- * @param actionType 액션 타입
  * @param roleType 역할 타입 (요청 사용자가 ACTOR인지 TARGET인지)
  * @param isRead 읽음 여부 (이 API를 요청한 사용자가 읽었는지)
  * @param actorId 행동을 수행한 사용자 ID
@@ -23,7 +22,7 @@ public record MateHistoryDto(
     long id,
     long mateId,
     MateActionType actionType,
-    MateRoleType roleType,
+    String roleType,
     boolean isRead,
     long actorId,
     String actorNickname,
@@ -31,4 +30,12 @@ public record MateHistoryDto(
     long targetId,
     String targetNickname,
     String targetProfileImageUrl,
-    LocalDateTime createdAt) {}
+    LocalDateTime createdAt) {
+
+  public MateActionType resolveActionType() {
+    if (MateActionType.APPLY == this.actionType && MateRoleType.isTarget(this.roleType)) {
+      return MateActionType.RECEIVE;
+    }
+    return this.actionType;
+  }
+}

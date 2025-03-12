@@ -19,7 +19,11 @@ info:
     | 2025.02.24 | 사용자 상세 조회 응답에 `age` 필드 추가 |
     | 2025.02.24 | 프로필 이미지 설정 API에 요청 제한 빈도(`Rate Limit`) 관련 설명 보완 |
     | 2025.02.25 | 메이트 탐색 API 설명 추가 |
-  version: 0.1.1
+    | 2025.02.27 | 메이트 탐색 API 파라미터 오타 수정 |
+    | 2025.02.27 | 메이트 탐색 API `gender` 파라미터 설명 추가  |
+    | 2025.02.28 | 메이트 탐색 API `nickname` 파라미터 설명 추가  |
+    | 2025.03.01 | 회원 가입 요청에 `code` 항목 추가  |
+  version: 0.1.5
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -61,6 +65,13 @@ paths:
       security:
         - bearerAuth: [ ]
       parameters:
+        - name: nickname
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "운초"
+          description: "닉네임"
         - name: gender
           in: query
           required: false
@@ -68,7 +79,7 @@ paths:
             type: string
             enum: [ 'F', 'M' ]
           description: "성별"
-        - name: peferredTimes
+        - name: preferredTimes
           in: query
           required: false
           schema:
@@ -86,7 +97,7 @@ paths:
             description: "운동 종목 (GET v1/workout-types 로 확인 가능)"
         - name: page
           in: query
-          description: "페이지 번호(1부터 시작) / 기본값: 1"
+          description: "페이지 번호(1부터 시작) / 기본값: 0"
           required: false
           schema:
             type: integer
@@ -288,6 +299,7 @@ components:
             type: object
             required:
               - oAuthId
+              - code
               - provider
               - nickname
               - region1
@@ -303,6 +315,10 @@ components:
                 type: string
                 example: "57291628"
                 description: "OAuth2 ID"
+              code:
+                type: string
+                example: "29znd7Sd72hsa"
+                description: "Ourfit 서비스 인가 코드"
               provider:
                 type: string
                 enum: [ "KAKAO" ]

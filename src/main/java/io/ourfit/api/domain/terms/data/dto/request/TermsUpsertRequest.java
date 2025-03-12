@@ -1,6 +1,7 @@
 package io.ourfit.api.domain.terms.data.dto.request;
 
 import io.ourfit.api.domain.terms.data.entity.TermsType;
+import io.ourfit.api.global.web.validation.Enumerable;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -13,7 +14,7 @@ import jakarta.validation.constraints.NotBlank;
  * @param revisionNote 변경 사유
  */
 public record TermsUpsertRequest(
-    @NotBlank String type,
+    @Enumerable(type = TermsType.class) String type,
     boolean isRequired,
     @NotBlank String title,
     @NotBlank String content,

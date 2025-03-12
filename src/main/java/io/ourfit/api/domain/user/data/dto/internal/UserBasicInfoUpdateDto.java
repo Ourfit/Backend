@@ -28,6 +28,6 @@ public record UserBasicInfoUpdateDto(
         request.region1(),
         request.region2(),
         request.region3(),
-        SkillLevelType.findByName(request.skillLevel()));
+        SkillLevelType.findByName(request.skillLevel()).orElse(null));
   }
 }

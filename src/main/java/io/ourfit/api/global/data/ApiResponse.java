@@ -5,6 +5,7 @@ import io.ourfit.api.global.data.dto.PageResponse;
 import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.data.dto.SliceResponse;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Slice;
  *
  * @param <T> 응답 데이터의 타입
  * @see SingleResponse 단일 응답 객체
+ * @see ListResponse 리스트 응답 객체
  * @see SliceResponse 페이징[Slice] 응답 객체
  * @see PageResponse 페이지[Page] 응답 객체
  */
@@ -23,7 +25,7 @@ public interface ApiResponse<T> {
   /**
    * 응답 메시지를 반환한다.
    *
-   * @return 응답 메시지(주로 {@code "OK"})
+   * @return 응답 메시지(주로 {@code OK})
    */
   String getMessage();
 
@@ -46,11 +48,15 @@ public interface ApiResponse<T> {
     return new ListResponse<>(MESSAGE_OK, data);
   }
 
+  static <T> ListResponse<T> empty() {
+    return new ListResponse<>(MESSAGE_OK, List.of());
+  }
+
   static <T> SliceResponse<T> of(Slice<T> data) {
     return new SliceResponse<>(MESSAGE_OK, SliceResponse.SliceData.from(data));
   }
 
-  static <T> PageResponse<T> of(org.springframework.data.domain.Page<T> data) {
+  static <T> PageResponse<T> of(Page<T> data) {
     return new PageResponse<>(MESSAGE_OK, PageResponse.PageData.from(data));
   }
 }

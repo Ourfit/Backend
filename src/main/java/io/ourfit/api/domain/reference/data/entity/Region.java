@@ -2,6 +2,7 @@ package io.ourfit.api.domain.reference.data.entity;
 
 import io.ourfit.api.global.data.entity.BaseEntity;
 import jakarta.persistence.*;
+import java.io.Serial;
 import lombok.*;
 
 @Entity
@@ -18,6 +19,8 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Region extends BaseEntity {
 
+  @Serial private static final long serialVersionUID = 2025030601L;
+
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +34,12 @@ public class Region extends BaseEntity {
 
   @Column(name = "region3", nullable = false, length = 50)
   private String region3;
+
+  @Column(name = "longitude", nullable = false, columnDefinition = "decimal(9, 6)")
+  private Double longitude;
+
+  @Column(name = "latitude", nullable = false, columnDefinition = "decimal(9, 6)")
+  private Double latitude;
 
   public String getFullName() {
     return String.join(" ", this.region1, this.region2, this.region3);

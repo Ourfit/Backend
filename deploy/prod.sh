@@ -47,5 +47,5 @@ echo ">> Done"
 
 echo "> Deploy new application"
 JAR_NAME=$(basename "$ARTIFACT")
-sudo nohup java -jar $REPOSITORY/"$JAR_NAME" --spring.profiles.active=prod 2>&1 &
+sudo nohup java -Duser.timezone=Asia/Seoul -jar $REPOSITORY/"$JAR_NAME" --spring.profiles.active=prod 2>&1 &
 echo ">> Deploy process has been completed!"

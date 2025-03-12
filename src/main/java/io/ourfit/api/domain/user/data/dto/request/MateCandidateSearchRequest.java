@@ -8,11 +8,13 @@ import java.util.Set;
 /**
  * 사용자 검색 요청 DTO
  *
- * @param gender 조회할 성별
- * @param preferredTimes 조회할 선호 시간대
- * @param workoutTypes 조회할 운동 종류
+ * @param nickname 검색할 닉네임
+ * @param gender 검색할 성별
+ * @param preferredTimes 검색할 선호 시간대
+ * @param workoutTypes 검색할 운동 종류
  */
 public record MateCandidateSearchRequest(
+    String nickname,
     @Enumerable(type = GenderType.class, required = false) String gender,
     @Enumerable(type = TimePrefrenceType.class, required = false) Set<String> preferredTimes,
     Set<String> workoutTypes) {}

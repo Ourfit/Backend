@@ -3,7 +3,6 @@ package io.ourfit.api.domain.challenge.service.impl;
 import io.ourfit.api.domain.challenge.data.dto.internal.ChallengeCreateDto;
 import io.ourfit.api.domain.challenge.data.entity.Challenge;
 import io.ourfit.api.domain.challenge.service.ChallengeService;
-import io.ourfit.api.domain.mate.data.entity.Mate;
 import io.ourfit.api.domain.mate.data.enums.MateStatusType;
 import io.ourfit.api.domain.mate.service.MateQueryService;
 import io.ourfit.api.domain.user.data.entity.User;
@@ -14,6 +13,7 @@ import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.utils.StreamUtils;
 import io.ourfit.api.infra.persistence.challenge.ChallengeRepository;
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -33,16 +33,16 @@ public class ChallengeServiceImpl implements ChallengeService {
 
   @Override
   public void create(final long userId, ChallengeCreateDto challengeCreateDto) {
-    User challenger =
+    var challenger =
         this.userQueryService
             .findById(userId)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_USER));
-    Mate mate =
+    var mate =
         this.mateQueryService
             .findByIdAndStatus(challengeCreateDto.mateId(), MateStatusType.MATCHED)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE));
 
-    if (this.repository.existsByMateAndUser(mate, challenger)) {
+    if (this.repository.existsByMateAndUserAndDeletedAtIsNull(mate, challenger)) {
       throw new DuplicatedException();
     }
 
@@ -54,10 +54,8 @@ public class ChallengeServiceImpl implements ChallengeService {
   public void setGoalDayOfWeeks(final long challengeId, Set<DayOfWeek> goalDayOfWeeks) {
     this.ifFoundThen(
         challengeId,
-        challenge -> {
-          challenge.setGoalWorkoutDayOfWeek(goalDayOfWeeks);
-          challenge.updatePlannedRecords(goalDayOfWeeks);
-        });
+        challenge -> challenge.setNewGoalDayOfWeeks(goalDayOfWeeks),
+        challenge -> challenge.getGoalWorkoutCount().equals((short) goalDayOfWeeks.size()));
   }
 
   @Override
@@ -73,8 +71,12 @@ public class ChallengeServiceImpl implements ChallengeService {
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<Challenge> findByUserIdWithRecords(final long userId) {
-    return this.repository.findByIdWithRecords(userId);
+  public List<Challenge> findAllByUser(User user) {
+    var mate =
+        this.mateQueryService
+            .findByUserAndStatus(user, MateStatusType.MATCHED)
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_MATE));
+    return this.repository.findAllByMate(mate);
   }
 
   @SafeVarargs

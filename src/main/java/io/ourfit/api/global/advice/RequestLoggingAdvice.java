@@ -26,7 +26,7 @@ public class RequestLoggingAdvice {
 
   @Around("execution(* io.ourfit.api..*.controller.*.*(..))")
   public Object logRequestAndResponse(ProceedingJoinPoint joinPoint) throws Throwable {
-    if (!log.isInfoEnabled()) {
+    if (!log.isDebugEnabled()) {
       return joinPoint.proceed();
     }
     final long startTime = System.currentTimeMillis();
@@ -60,7 +60,7 @@ public class RequestLoggingAdvice {
 
   /** 요청 정보 로깅 */
   private static void logRequest(HttpServletRequest request) {
-    log.info(
+    log.debug(
         """
         [Incoming Request Received] - {} {}
         From: {}
@@ -79,7 +79,7 @@ public class RequestLoggingAdvice {
       HttpServletRequest request,
       ContentCachingResponseWrapper responseWrapper,
       final long elapsedTime) {
-    log.info(
+    log.debug(
         """
         [Outgoing Response Sent] - {} {}
         Status: {}

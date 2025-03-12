@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MateQRepositoryImpl implements MateQRepository {
 
@@ -29,7 +30,7 @@ public class MateQRepositoryImpl implements MateQRepository {
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<MateInfoDto> findCurrentMateInfo(User meOrMyMate) {
+  public Optional<MateInfoDto> findCurrentMateInfo(User currentUser) {
     var result =
         this.queryFactory
             .select(
@@ -40,11 +41,30 @@ public class MateQRepositoryImpl implements MateQRepository {
                     getDaysSinceAccepted(),
                     Projections.constructor(
                         MyMateInfoDto.class,
-                        qMate.myMate.id,
-                        qMate.myMate.profileImageUrl,
-                        qMate.myMate.nickname,
-                        qMate.myMate.genderType,
-                        qMate.myMate.age),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.id)
+                            .otherwise(qMate.me.id),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.profileImageUrl)
+                            .otherwise(qMate.me.profileImageUrl),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.nickname)
+                            .otherwise(qMate.me.nickname),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.genderType)
+                            .otherwise(qMate.me.genderType),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.age)
+                            .otherwise(qMate.me.age),
+                        Expressions.cases()
+                            .when(qMate.me.eq(currentUser))
+                            .then(qMate.myMate.skillLevelType)
+                            .otherwise(qMate.me.skillLevelType)),
                     Projections.constructor(
                         MateWorkoutDto.class,
                         qMateWorkout.placeName,
@@ -58,22 +78,33 @@ public class MateQRepositoryImpl implements MateQRepository {
             .leftJoin(qMate.myMate, qMyMate)
             .where(
                 qMate.statusType.eq(MateStatusType.MATCHED),
-                qMate.me.eq(meOrMyMate).or(qMate.myMate.eq(meOrMyMate)))
+                qMate.me.eq(currentUser).or(qMate.myMate.eq(currentUser)))
             .fetchOne();
 
     return Optional.ofNullable(result);
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public boolean existsPendingRequestBetweenUsers(User requester, User requestee) {
+  public boolean hasMatchedMateEither(User user1, User user2) {
     return this.queryFactory
             .selectOne()
             .from(qMate)
             .where(
-                qMate.statusType.eq(MateStatusType.PENDING),
-                qMate.me.eq(requester),
-                qMate.myMate.eq(requestee))
+                qMate.statusType.eq(MateStatusType.MATCHED),
+                qMate.me.in(user1, user2).or(qMate.myMate.in(user1, user2)))
+            .fetchFirst()
+        != null;
+  }
+
+  @Override
+  public boolean hasMateWithStatus(MateStatusType statusType, User user1, User user2) {
+    return this.queryFactory
+            .selectOne()
+            .from(qMate)
+            .where(
+                qMate.statusType.eq(statusType),
+                (qMate.me.eq(user1).and(qMate.myMate.eq(user2)))
+                    .or(qMate.me.eq(user2).and(qMate.myMate.eq(user1))))
             .fetchFirst()
         != null;
   }

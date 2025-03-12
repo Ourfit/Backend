@@ -1,9 +1,6 @@
 package io.ourfit.api.domain.user.controller;
 
-import io.ourfit.api.domain.user.data.dto.internal.MateCandidateSearchDto;
-import io.ourfit.api.domain.user.data.dto.internal.UserBasicInfoUpdateDto;
-import io.ourfit.api.domain.user.data.dto.internal.UserProfileUpdateDto;
-import io.ourfit.api.domain.user.data.dto.internal.UserWorkoutPreferencesUpdateDto;
+import io.ourfit.api.domain.user.data.dto.internal.*;
 import io.ourfit.api.domain.user.data.dto.request.*;
 import io.ourfit.api.domain.user.data.dto.response.BasicUserInfoResponse;
 import io.ourfit.api.domain.user.data.dto.response.DetailedUserInfoResponse;
@@ -130,7 +127,7 @@ public class UserController {
   @PostMapping
   public ResponseEntity<SingleResponse<OurfitToken>> create(
       @RequestBody @Valid UserSignUpRequest request) {
-    var user = this.commandService.save(request.toDto());
+    var user = this.commandService.save(UserSignUpDto.fromRequest(request));
     var ourfitToken = this.jwtProvider.create(user);
     var refreshTokenCookie = ResponseCookieUtils.refreshTokenCookie(ourfitToken.refreshToken());
 

@@ -21,7 +21,7 @@ import lombok.Builder;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record TermsResponse(
-    Long id,
+    long id,
     boolean isRequired,
     String type,
     String title,

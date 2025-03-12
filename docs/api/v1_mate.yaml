@@ -44,11 +44,11 @@ paths:
           required: false
           schema:
             type: string
-            enum: [ "APPLY", "ACCEPT", "UNMATE" ]
-            example: "APPLY"
+            enum: [ "APPLY", "RECEIVE", "ACCEPT", "UNMATE" ]
+            example: "RECEIVE"
         - name: page
           in: query
-          description: "페이지 번호(1부터 시작) / 기본값: 1"
+          description: "페이지 번호(1부터 시작) / 기본값: 0"
           required: false
           schema:
             type: integer
@@ -210,7 +210,10 @@ paths:
                   items:
                     type: string
                     enum: [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
-                    example: [ "MONDAY", "WEDNESDAY", "FRIDAY" ]
+                    example:
+                      - "MONDAY"
+                      - "WEDNESDAY"
+                      - "FRIDAY"
                     description: 함께 운동하는 요일
                 startAt:
                   type: string
@@ -371,7 +374,7 @@ components:
           nullable: false
         roleType:
           type: string
-          enum: [ "ACTOR", "TARGET"]
+          enum: [ "ACTOR", "TARGET" ]
           example: "ACTOR"
           description: |
             요청 사용자의 역할

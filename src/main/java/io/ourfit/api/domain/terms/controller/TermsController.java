@@ -10,6 +10,8 @@ import io.ourfit.api.domain.terms.service.TermsService;
 import io.ourfit.api.global.data.ApiResponse;
 import io.ourfit.api.global.data.dto.ListResponse;
 import io.ourfit.api.global.data.dto.SingleResponse;
+import io.ourfit.api.global.exception.ApiExceptionType;
+import io.ourfit.api.global.exception.custom.InvalidParameterException;
 import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.security.data.annotation.AdminApi;
 import io.ourfit.api.global.utils.StreamUtils;
@@ -44,20 +46,22 @@ public class TermsController {
 
   @GetMapping("/{type}")
   public ResponseEntity<SingleResponse<TermsResponse>> findByType(@PathVariable final String type) {
+    TermsType termsType = findTermsTypeByName(type);
     TermsResponse response =
         this.termsService
-            .findByType(TermsType.findByName(type))
+            .findByType(termsType)
             .map(TermsResponse::toDetailed)
-            .orElseThrow(NoSuchEntityException::new);
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_TERMS));
     return ResponseEntity.ok(ApiResponse.of(response));
   }
 
   @GetMapping("/{type}/revisions")
   public ResponseEntity<ListResponse<TermsRevisionCompactHistoryResponse>>
       findRevisionHistoriesByType(@PathVariable final String type) {
+    TermsType termsType = findTermsTypeByName(type);
     List<TermsRevisionCompactHistoryResponse> response =
         StreamUtils.mapToList(
-            this.revisionHistoryService.findCompactHistoriesByType(TermsType.findByName(type)),
+            this.revisionHistoryService.findCompactHistoriesByType(termsType),
             TermsRevisionCompactHistoryResponse::from);
     return ResponseEntity.ok(ApiResponse.of(response));
   }
@@ -65,12 +69,18 @@ public class TermsController {
   @GetMapping("/{type}/revisions/{version}")
   public ResponseEntity<SingleResponse<TermsResponse>> findRevisionByTypeAndVersion(
       @PathVariable final String type, @PathVariable final Double version) {
+    TermsType termsType = findTermsTypeByName(type);
     TermsResponse response =
         this.revisionHistoryService
-            .findByTypeAndVersion(TermsType.findByName(type), version)
+            .findByTypeAndVersion(termsType, version)
             .map(TermsResponse::toDetailed)
-            .orElseThrow(NoSuchEntityException::new);
+            .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_TERMS));
 
     return ResponseEntity.ok(ApiResponse.of(response));
+  }
+
+  private static TermsType findTermsTypeByName(String type) {
+    return TermsType.findByName(type)
+        .orElseThrow(() -> new InvalidParameterException(ApiExceptionType.BAD_REQUEST));
   }
 }

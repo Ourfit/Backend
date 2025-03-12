@@ -7,4 +7,4 @@ import jakarta.validation.constraints.NotEmpty;
  *
  * @param oAuthId 토큰을 발급할 사용자의 OAuth ID
  */
-public record TokenIssueRequest(@NotEmpty String oAuthId) {}
+public record TokenIssueRequest(@NotEmpty String code, @NotEmpty String oAuthId) {}

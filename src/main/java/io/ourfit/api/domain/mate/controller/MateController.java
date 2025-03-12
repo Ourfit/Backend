@@ -32,7 +32,7 @@ public class MateController {
   @PostMapping("/{mateId}/accept")
   public ResponseEntity<Void> acceptMate(
       @PathVariable final long mateId, @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.commandService.accept(userDetails.getId(), mateId);
+    this.commandService.accept(mateId, userDetails.getId());
     return ResponseEntity.ok().build();
   }
 
@@ -40,7 +40,7 @@ public class MateController {
   @DeleteMapping("/{mateId}")
   public ResponseEntity<Void> unmate(
       @PathVariable final long mateId, @AuthenticationPrincipal OurfitUserDetails userDetails) {
-    this.commandService.unmate(userDetails.getId(), mateId);
+    this.commandService.unmate(mateId, userDetails.getId());
     return ResponseEntity.ok().build();
   }
 

@@ -28,6 +28,7 @@ public enum ApiExceptionType {
   NOT_FOUND_MATE(404, 404003, "io.ourfit.api.exception.NOT_FOUND_MATE.message"),
   NOT_FOUND_MATE_WORKOUT(404, 404004, "io.ourfit.api.exception.NOT_FOUND_MATE_WORKOUT.message"),
   NOT_FOUND_CHALLENGE(404, 404005, "io.ourfit.api.exception.NOT_FOUND_CHALLENGE.message"),
+  NOT_FOUND_TERMS(404, 404006, "io.ourfit.api.exception.NOT_FOUND_TERMS.message"),
 
   NOT_ALLOWED_METHOD(405, 405000, "io.ourfit.api.exception.NOT_ALLOWED_METHOD.message"),
 

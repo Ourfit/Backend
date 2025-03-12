@@ -1,7 +1,5 @@
 package io.ourfit.api.infra.persistence.mate.impl;
 
-import static com.querydsl.core.types.ExpressionUtils.count;
-
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -62,7 +60,9 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
             .innerJoin(qMateHistory.mate, qMate)
             .innerJoin(qMateHistory.actor, qActor)
             .innerJoin(qMateHistory.target, qTarget)
-            .where(qActor.id.eq(userId).or(qTarget.id.eq(userId)), actionTypeIn(searchDto))
+            .where(
+                qActor.id.eq(userId).or(qTarget.id.eq(userId)),
+                filterByActionType(userId, searchDto))
             .orderBy(qMateHistory.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -73,10 +73,11 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
             .map(
                 query ->
                     query
-                        .select(count(qMateHistory))
+                        .select(qMateHistory.count())
                         .from(qMateHistory)
                         .where(
-                            qActor.id.eq(userId).or(qTarget.id.eq(userId)), actionTypeIn(searchDto))
+                            qActor.id.eq(userId).or(qTarget.id.eq(userId)),
+                            filterByActionType(userId, searchDto))
                         .fetchOne())
             .orElse(0L);
 
@@ -92,20 +93,33 @@ public class MateHistoryQRepositoryImpl implements MateHistoryQRepository {
         .otherwise(false);
   }
 
-  private static Expression<MateRoleType> mateRoleType(long userId) {
+  private static Expression<String> mateRoleType(long userId) {
     return Expressions.cases()
         .when(qMateHistory.actor.id.eq(userId))
-        .then(MateRoleType.ACTOR)
+        .then(Expressions.constant(MateRoleType.ACTOR.name()))
         .when(qMateHistory.target.id.eq(userId))
-        .then(MateRoleType.TARGET)
-        .otherwise(MateRoleType.ACTOR);
+        .then(Expressions.constant(MateRoleType.TARGET.name()))
+        .otherwise(Expressions.constant(MateRoleType.ACTOR.name()));
   }
 
-  private static BooleanExpression actionTypeIn(MateHistorySearchDto searchDto) {
+  private static BooleanExpression filterByActionType(long userId, MateHistorySearchDto searchDto) {
     Set<MateActionType> actionTypes = searchDto.actionTypes();
     if (actionTypes == null || actionTypes.isEmpty()) {
       return null;
     }
+    if (actionTypes.contains(MateActionType.RECEIVE)) {
+      actionTypes.remove(MateActionType.RECEIVE);
+      var receivedRequestCondition =
+          qMateHistory.target.id.eq(userId).and(qMateHistory.actionType.eq(MateActionType.APPLY));
+      return qMateHistory.actionType.in(actionTypes).or(receivedRequestCondition);
+    }
+    if (actionTypes.contains(MateActionType.APPLY)) {
+      actionTypes.remove(MateActionType.APPLY);
+      var sentRequestCondition =
+          qMateHistory.actor.id.eq(userId).and(qMateHistory.actionType.eq(MateActionType.APPLY));
+      return qMateHistory.actionType.in(actionTypes).or(sentRequestCondition);
+    }
+    // orElse
     return qMateHistory.actionType.in(actionTypes);
   }
 }

@@ -1,9 +1,13 @@
 package io.ourfit.api.domain.reference.service.impl;
 
+import io.ourfit.api.domain.reference.data.dto.internal.Places;
 import io.ourfit.api.domain.reference.data.entity.Region;
 import io.ourfit.api.domain.reference.service.RegionService;
+import io.ourfit.api.domain.user.data.entity.User;
+import io.ourfit.api.infra.client.http.KakaoLocalClient;
 import io.ourfit.api.infra.persistence.reference.RegionRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegionServiceImpl implements RegionService {
 
   private final RegionRepository repository;
+  private final KakaoLocalClient localClient;
 
   @Override
-  public List<Region> findAllByKeyword(String keyword) {
+  public List<Region> findAllRegionByKeyword(String keyword) {
     return this.repository.findAllByKeyword(keyword);
+  }
+
+  @Override
+  public Optional<Places> findPlacesByUserAndKeyword(User user, String keyword) {
+    return this.repository
+        .findOneByKeyword(user.getFullRegion())
+        .map(
+            region ->
+                this.localClient.searchByKeyword(
+                    keyword, region.getLongitude(), region.getLatitude()));
   }
 
   @Override

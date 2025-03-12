@@ -1,6 +1,7 @@
 package io.ourfit.api.domain.terms.data.entity;
 
 import java.util.Arrays;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -22,10 +23,9 @@ public enum TermsType {
 
   private final String title;
 
-  public static TermsType findByName(final String type) {
+  public static Optional<TermsType> findByName(final String type) {
     return Arrays.stream(TermsType.values())
         .filter(terms -> terms.name().equalsIgnoreCase(type))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("No Such Terms Type exists"));
+        .findFirst();
   }
 }

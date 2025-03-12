@@ -1,7 +1,6 @@
 package io.ourfit.api.domain.user.data.dto.request;
 
 import io.ourfit.api.domain.mate.data.enums.TimePrefrenceType;
-import io.ourfit.api.domain.user.data.dto.internal.UserSignUpDto;
 import io.ourfit.api.domain.user.data.entity.enums.GenderType;
 import io.ourfit.api.domain.user.data.entity.enums.OAuth2ProviderType;
 import io.ourfit.api.domain.user.data.entity.enums.SkillLevelType;
@@ -16,6 +15,7 @@ import java.util.Set;
  * 사용자 회원가입 요청 DTO
  *
  * @param oAuthId OAuth2 ID
+ * @param code Ourfit 인가 코드
  * @param nickname 사용할 닉네임
  * @param region1 사용자의 지역(시/도)
  * @param region2 사용자의 지역(시/군/구)
@@ -28,6 +28,7 @@ import java.util.Set;
  */
 public record UserSignUpRequest(
     @NotEmpty String oAuthId,
+    @NotEmpty String code,
     @Enumerable(type = OAuth2ProviderType.class) String provider,
     @Nickname String nickname,
     @NotEmpty String region1,
@@ -37,20 +38,4 @@ public record UserSignUpRequest(
     @Age Integer age,
     @Enumerable(type = SkillLevelType.class) String skillLevel,
     @Enumerable(type = TimePrefrenceType.class) String preferredWorkoutTime,
-    @Size(min = 1, max = 3) Set<String> favoriteWorkouts) {
-
-  public UserSignUpDto toDto() {
-    return new UserSignUpDto(
-        this.oAuthId,
-        OAuth2ProviderType.valueOf(this.provider),
-        this.nickname,
-        this.region1,
-        this.region2,
-        this.region3,
-        GenderType.valueOf(this.gender),
-        this.age,
-        SkillLevelType.valueOf(this.skillLevel),
-        TimePrefrenceType.valueOf(this.preferredWorkoutTime),
-        this.favoriteWorkouts);
-  }
-}
+    @Size(min = 1, max = 3) Set<String> favoriteWorkouts) {}

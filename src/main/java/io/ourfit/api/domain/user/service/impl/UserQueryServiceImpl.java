@@ -35,7 +35,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
   @Override
   public Optional<User> findById(final long id, final boolean includeDeleted) {
-    return this.repository.findOne(Specification.allOf(id(id), isDeleted(includeDeleted)));
+    return this.repository.findOne(Specification.allOf(idEq(id), isDeleted(includeDeleted)));
   }
 
   @Override
@@ -45,29 +45,29 @@ public class UserQueryServiceImpl implements UserQueryService {
 
   @Override
   public Optional<User> findByOAuthId(String oAuthId) {
-    return this.repository.findOne(Specification.allOf(oAuthId(oAuthId), isDeleted(false)));
+    return this.repository.findOne(Specification.allOf(oAuthIdEq(oAuthId), isDeleted(false)));
   }
 
   @Override
   public boolean existsByOAuthId(String oAuthId) {
-    return this.repository.exists(Specification.allOf(oAuthId(oAuthId), isDeleted(false)));
+    return this.repository.exists(Specification.allOf(oAuthIdEq(oAuthId), isDeleted(false)));
   }
 
   @Override
   public boolean existsByNickname(String nickname) {
-    return this.repository.exists(Specification.allOf(nickname(nickname), isDeleted(false)));
+    return this.repository.exists(Specification.allOf(nicknameEq(nickname), isDeleted(false)));
   }
 
-  private static Specification<User> id(final long id) {
+  private static Specification<User> idEq(final long id) {
     return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(User_.id), id);
   }
 
-  private static Specification<User> oAuthId(final String oAuthId) {
+  private static Specification<User> oAuthIdEq(final String oAuthId) {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.equal(root.get(User_.oAuthId), oAuthId);
   }
 
-  private static Specification<User> nickname(final String nickname) {
+  private static Specification<User> nicknameEq(final String nickname) {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.equal(root.get(User_.nickname), nickname);
   }

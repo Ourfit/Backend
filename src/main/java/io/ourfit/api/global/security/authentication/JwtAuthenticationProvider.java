@@ -4,14 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.service.UserQueryService;
 import io.ourfit.api.global.jwt.JwtProvider;
-import io.ourfit.api.global.security.userdetails.OurfitUserDetailsImpl;
+import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
 import java.time.Instant;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,19 +29,24 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    return Optional.of(authentication)
-        .map(JwtAuthenticationToken.class::cast)
-        .map(JwtAuthenticationToken::getCredentials)
-        .map(Object::toString)
-        .flatMap(this.jwtProvider::parse)
-        .filter(this::isNotExpired)
-        .map(Claims::getSubject)
-        .map(Long::parseLong)
-        .flatMap(this.userQueryService::findById)
+    if (!(authentication instanceof JwtAuthenticationToken)) {
+      throw new AuthenticationCredentialsNotFoundException("JwtAuthenticationToken is required");
+    }
+    String token = authentication.getCredentials().toString();
+    long userId = Long.parseLong(this.validateAndGetClaims(token).getSubject());
+
+    return this.userQueryService
+        .findById(userId)
         .filter(User::isEnabled)
-        .map(OurfitUserDetailsImpl::from)
-        .map(JwtAuthenticationToken::authenticated)
-        .orElseThrow(() -> new BadCredentialsException("Failed to authenticate token"));
+        .map(user -> JwtAuthenticationToken.authenticated(OurfitUserDetails.from(user)))
+        .orElseThrow(() -> new UsernameNotFoundException("User not found or disabled"));
+  }
+
+  private Claims validateAndGetClaims(String token) {
+    return this.jwtProvider
+        .parse(token)
+        .filter(this::isNotExpired)
+        .orElseThrow(() -> new BadCredentialsException("Token is expired or invalid"));
   }
 
   private boolean isNotExpired(Claims claims) {

@@ -3,6 +3,7 @@ package io.ourfit.api.domain.mate.data.entity;
 import io.ourfit.api.domain.mate.data.enums.MateActionType;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.data.entity.BaseEntity;
+import io.ourfit.api.global.exception.custom.ForbiddenActionException;
 import jakarta.persistence.*;
 import java.io.Serial;
 import lombok.*;
@@ -62,7 +63,7 @@ public class MateHistory extends BaseEntity {
     } else if (this.target.getId().equals(userId)) {
       this.targetRead = true;
     } else {
-      throw new IllegalArgumentException("이 이력에 대한 권한이 없음");
+      throw new ForbiddenActionException();
     }
   }
 }
