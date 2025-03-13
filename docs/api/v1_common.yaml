@@ -12,7 +12,8 @@ info:
     | 2025.02.18 | 지역 정보 API 추가, Common API로 이름 변경 |
     | 2025.03.04 | 약관 API 추가 |
     | 2025.03.06 | 장소 검색 API 추가 |
-  version: 0.0.4
+    | 2025.03.13 | 공휴일 조회 API 추가 |
+  version: 0.0.5
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -87,6 +88,22 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/PlaceListResponse"
+  /v1/holidays/{yearMonth}:
+    get:
+      summary: 공휴일 정보 조회 API
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: yearMonth
+          in: path
+          description: 조회할 연월(yyyy-MM)
+          required: true
+          schema:
+            type: string
+            example: "2025-03"
+      responses:
+        200:
+          $ref: "#/components/responses/HolidayListResponse"
   /v1/terms:
     get:
       summary: 약관 목록 조회
@@ -233,6 +250,30 @@ components:
                 properties:
                   data:
                     $ref: "#/components/schemas/TermsListResponse"
+    HolidayListResponse:
+      description: 공휴일 정보 조회 응답
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "schemas.yaml#/components/schemas/BaseResponse"
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        name:
+                          type: string
+                          example: "삼일절"
+                          description: 공휴일 이름
+                          nullable: false
+                        date:
+                          type: string
+                          format: date-time
+                          example: "2025-03-01"
+                          description: 날짜 (yyyy-MM-dd)
+                          nullable: false
     TermsListResponse:
       description: 약관 목록 조회 응답
       content:

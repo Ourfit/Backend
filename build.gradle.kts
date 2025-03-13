@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.ourfit"
-version = "1.0.0"
+version = "1.0.1"
 
 java {
     toolchain {
@@ -26,6 +26,7 @@ val jpaModelGenVersion by extra("6.6.4.Final")
 val jjwtVersion by extra("0.12.6")
 val j2htmlVersion by extra("1.6.0")
 val tikaVersion by extra("3.0.0")
+val jacksonVersion by extra("2.17.3")
 val flywayDBVersion by extra("10.15.0")
 
 repositories {
@@ -63,8 +64,8 @@ dependencies {
     annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:$jpaModelGenVersion")
     // Mail HTML Template
     implementation("com.j2html:j2html:$j2htmlVersion")
-    // Apache Tika
     implementation("org.apache.tika:tika-core:$tikaVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     // DataBase Schema Migration
     implementation("org.flywaydb:flyway-mysql:$flywayDBVersion")
     implementation("org.flywaydb:flyway-core:$flywayDBVersion")
