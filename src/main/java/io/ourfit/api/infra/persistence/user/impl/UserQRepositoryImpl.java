@@ -63,7 +63,7 @@ public class UserQRepositoryImpl implements UserQRepository {
             qUser.ne(requestedUser),
             qUser.deletedAt.isNull(),
             isNotMatchedWithMate(),
-            region3Eqauls(searchDto),
+            region2Eqauls(searchDto),
             nicknameLike(searchDto),
             genderEquals(searchDto),
             preferredTimesIn(searchDto),
@@ -118,7 +118,7 @@ public class UserQRepositoryImpl implements UserQRepository {
                         qUser.deletedAt.isNull(),
                         isNotMatchedWithMate(),
                         nicknameLike(searchDto),
-                        region3Eqauls(searchDto),
+                        region2Eqauls(searchDto),
                         genderEquals(searchDto),
                         preferredTimesIn(searchDto),
                         workoutsIn(searchDto))
@@ -135,8 +135,8 @@ public class UserQRepositoryImpl implements UserQRepository {
         .notExists();
   }
 
-  private static BooleanExpression region3Eqauls(MateCandidateSearchDto searchDto) {
-    return qUser.region3.eq(searchDto.region3());
+  private static BooleanExpression region2Eqauls(MateCandidateSearchDto searchDto) {
+    return qUser.region2.eq(searchDto.region2());
   }
 
   private static BooleanExpression nicknameLike(MateCandidateSearchDto searchDto) {
