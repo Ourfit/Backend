@@ -13,7 +13,8 @@ info:
     | 2025.02.15 | `description` 보완 |
     | 2025.02.19 | `description` 보완 |
     | 2025.02.24 | `intensityLevel` 예시 수정 |
-  version: 0.0.4
+    | 2025.03.05 | 챌린지 조회에 메이트의 챌린지 정보도 포함하도록 수정 |
+  version: 0.0.5
 servers:
   - url: https://api.ourfit.life
 paths:
@@ -85,7 +86,7 @@ paths:
           description: 챌린지 삭제 성공
   /v1/challenges/me:
     get:
-      summary: 내가 현재 진행 중인 챌린지 정보 조회 API
+      summary: 나와 내 메이트가 현재 진행 중인 챌린지 정보 조회 API
       security:
         - bearerAuth: [ ]
       responses:
@@ -263,29 +264,79 @@ components:
                   data:
                     type: object
                     properties:
-                      challengeId:
-                        type: number
-                        example: 32
-                        description: 챌린지 ID
-                      dayElapsed:
-                        type: number
-                        example: 5
-                        description: 챌린지 진행 일수
-                      completionRate:
-                        type: number
-                        example: 10
-                        description: 챌린지 완료율(%)
-                      remainingDays:
-                        type: number
-                        example: 35
-                        description: 종료까지 남은 일수
-                      startAt:
-                        type: string
-                        format: date-time
-                        example: "2025-03-01"
-                        description: 챌린지 시작일(yyyy-MM-dd)
-                      endAt:
-                        type: string
-                        format: date-time
-                        example: "2025-03-31"
-                        description: 챌린지 종료일(yyyy-MM-dd)
+                      me:
+                        type: object
+                        nullable: true
+                        description: 내가 현재 진행 중인 챌린지 정보
+                        properties:
+                          challengeId:
+                            type: number
+                            example: 32
+                            description: 챌린지 ID
+                          dayElapsed:
+                            type: number
+                            example: 5
+                            description: 챌린지 진행 일수
+                          completionRate:
+                            type: number
+                            example: 10
+                            description: 챌린지 완료율(%)
+                          remainingDays:
+                            type: number
+                            example: 35
+                            description: 종료까지 남은 일수
+                          goalWorkoutDayOfWeeks:
+                            type: array
+                            items:
+                              type: string
+                              enum: [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+                              example: "MONDAY"
+                              description: 목표 운동 요일
+                          startAt:
+                            type: string
+                            format: date-time
+                            example: "2025-03-01"
+                            description: 챌린지 시작일(yyyy-MM-dd)
+                          endAt:
+                            type: string
+                            format: date-time
+                            example: "2025-03-31"
+                            description: 챌린지 종료일(yyyy-MM-dd)
+                      myMate:
+                        type: object
+                        nullable: true
+                        description: 내 메이트가 현재 진행 중인 챌린지 정보
+                        properties:
+                          challengeId:
+                            type: number
+                            example: 33
+                            description: 챌린지 ID
+                          dayElapsed:
+                            type: number
+                            example: 3
+                            description: 챌린지 진행 일수
+                          completionRate:
+                            type: number
+                            example: 5
+                            description: 챌린지 완료율(%)
+                          remainingDays:
+                            type: number
+                            example: 50
+                            description: 종료까지 남은 일수
+                          goalWorkoutDayOfWeeks:
+                            type: array
+                            items:
+                              type: string
+                              enum: [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+                              example: "FRIDAY"
+                              description: 목표 운동 요일
+                          startAt:
+                            type: string
+                            format: date-time
+                            example: "2025-03-01"
+                            description: 챌린지 시작일(yyyy-MM-dd)
+                          endAt:
+                            type: string
+                            format: date-time
+                            example: "2025-04-31"
+                            description: 챌린지 종료일(yyyy-MM-dd)
