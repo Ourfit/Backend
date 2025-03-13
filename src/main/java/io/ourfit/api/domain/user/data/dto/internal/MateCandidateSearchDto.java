@@ -11,14 +11,14 @@ import java.util.Set;
 /**
  * 사용자 검색 DTO
  *
- * @param region3 요청 사용자의 동네(동/읍/면)
+ * @param region2 요청 사용자의 동네(시/군/구) (<i>지역 3에서 임시 변경</i>)
  * @param nickname 검색할 닉네임
  * @param gender 검색할 성별
  * @param preferredTimes 검색할 선호 시간대
  * @param workoutTypes 검색할 운동 종류
  */
 public record MateCandidateSearchDto(
-    String region3,
+    String region2,
     String nickname,
     GenderType gender,
     List<TimePrefrenceType> preferredTimes,
@@ -26,7 +26,7 @@ public record MateCandidateSearchDto(
 
   public static MateCandidateSearchDto fromRequest(MateCandidateSearchRequest request, User user) {
     return new MateCandidateSearchDto(
-        user.getRegion3(),
+        user.getRegion2(),
         request.nickname(),
         GenderType.findByName(request.gender()).orElse(null),
         StreamUtils.mapToList(request.preferredTimes(), TimePrefrenceType::valueOf),
