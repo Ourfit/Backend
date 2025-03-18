@@ -138,7 +138,29 @@ components:
                   type: boolean
                   example: false
                   description: "현재 페이지가 비어 있는지 여부"
-
+    SliceResponse:
+      description: "커서 기반 페이징 응답"
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: object
+          properties:
+            data:
+              type: object
+              description: "페이지네이션 데이터"
+              properties:
+                lastId:
+                  type: number
+                  example: 51
+                  description: "마지막 요소의 ID"
+                  nullable: true
+                hasNext:
+                  type: boolean
+                  example: true
+                  description: "다음 페이지가 있는지 여부"
+                  nullable: false
+                content:
+                  type: array
+                  description: "응답 데이터 목록"
     ErrorResponse:
       description: "표준 오류 응답"
       type: object

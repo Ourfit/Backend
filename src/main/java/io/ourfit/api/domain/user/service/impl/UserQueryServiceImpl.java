@@ -4,12 +4,14 @@ import io.ourfit.api.domain.user.data.dto.internal.*;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.User_;
 import io.ourfit.api.domain.user.service.UserQueryService;
+import io.ourfit.api.global.data.Cursorable;
 import io.ourfit.api.infra.persistence.user.UserQRepository;
 import io.ourfit.api.infra.persistence.user.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,12 @@ public class UserQueryServiceImpl implements UserQueryService {
   public Page<UserInfoDto> findMateCandidates(
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
     return this.qRepository.findMateCandidates(requestedUser, searchDto, pageable);
+  }
+
+  @Override
+  public Slice<UserInfoDto> findMateCandidates(
+      User requestedUser, MateCandidateSearchDto searchDto, Cursorable cursorable) {
+    return this.qRepository.findMateCandidates(requestedUser, searchDto, cursorable);
   }
 
   @Override
