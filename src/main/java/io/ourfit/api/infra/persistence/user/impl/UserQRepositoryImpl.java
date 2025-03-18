@@ -213,10 +213,10 @@ public class UserQRepositoryImpl implements UserQRepository {
   }
 
   private static BooleanExpression lastIdGreaterThan(Cursorable cursorable) {
-    var lastId = cursorable.getLastId();
-    if (lastId == null) {
+    var cursor = cursorable.getCursor();
+    if (cursor == null) {
       return null;
     }
-    return qUser.id.gt(cursorable.getLastId());
+    return qUser.id.gt(cursor);
   }
 }

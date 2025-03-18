@@ -8,14 +8,14 @@ import org.springframework.data.domain.Sort;
 /**
  * {@link Slice} 처리를 위한 커서 기반 요청 객체
  *
- * @param lastId 이전 요청에서 마지막으로 조회된 항목의 ID (없을 경우 {@code null})
+ * @param cursor 이전 요청에서 마지막으로 조회된 항목의 커서 (첫 요청인 경우 {@code null})
  * @param size 한 번에 조회할 항목의 개수
  */
-public record CursorRequest(Long lastId, int size) implements Cursorable {
+public record CursorRequest(Long cursor, int size) implements Cursorable {
 
   @Override
-  public Long getLastId() {
-    return this.lastId;
+  public Long getCursor() {
+    return this.cursor;
   }
 
   @Override
