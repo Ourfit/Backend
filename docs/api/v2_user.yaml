@@ -57,13 +57,13 @@ paths:
             items:
               enum: [ "GYM", "PILATES", "SWIMMING", "DANCE", "SQUASH", "BOXING", "GOLF", "TENNIS", "YOGA", "CROSSFIT" ]
             description: "운동 종목 (GET v1/workout-types 로 확인 가능)"
-        - name: lastId
+        - name: cursor
           in: query
-          description: "페이지 번호(1부터 시작) / 기본값: 0"
+          description: "이전 요청에서 마지막 항목의 ID (첫 요청인 경우 생략 또는 null)"
           required: false
           schema:
             type: number
-            example: 1
+            example: 32
         - name: size
           in: query
           description: "페이지 크기 / 기본값: 20"

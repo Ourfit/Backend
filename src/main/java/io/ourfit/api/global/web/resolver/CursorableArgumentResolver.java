@@ -23,11 +23,11 @@ public class CursorableArgumentResolver implements HandlerMethodArgumentResolver
       ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest,
       WebDataBinderFactory binderFactory) {
-    String lastIdStr = webRequest.getParameter("lastId");
+    String cursorStr = webRequest.getParameter("cursor");
     String sizeStr = webRequest.getParameter("size");
 
-    Long lastId = lastIdStr != null ? Long.parseLong(lastIdStr) : null;
+    Long cursor = cursorStr != null ? Long.parseLong(cursorStr) : null;
     int size = sizeStr != null ? Integer.parseInt(sizeStr) : DEFAULT_SIZE;
-    return new CursorRequest(lastId, size);
+    return new CursorRequest(cursor, size);
   }
 }
