@@ -53,14 +53,14 @@ paths:
           required: false
           schema:
             type: integer
-            example: 1
+            example: 0
         - name: size
           in: query
-          description: "페이지 크기 / 기본값: 10"
+          description: "페이지 크기 / 기본값: 20"
           required: false
           schema:
             type: integer
-            example: 10
+            example: 20
       responses:
         200:
           $ref: "#/components/responses/MateHistoryPageResponse"

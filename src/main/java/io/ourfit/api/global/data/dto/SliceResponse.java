@@ -2,6 +2,7 @@ package io.ourfit.api.global.data.dto;
 
 import io.ourfit.api.global.data.ApiResponse;
 import java.util.List;
+import java.util.function.ToLongFunction;
 import org.springframework.data.domain.Slice;
 
 /**
@@ -29,16 +30,24 @@ public record SliceResponse<T>(String message, SliceData<T> data)
    *
    * @param hasNext 다음 페이지 존재 여부
    * @param content 응답 데이터
-   * @param <T>
+   * @param <T> 응답 데이터의 타입
    */
-  public record SliceData<T>(boolean hasNext, List<T> content) {
+  public record SliceData<T>(Long lastId, boolean hasNext, List<T> content) {
 
     public static <T> SliceData<T> empty() {
-      return new SliceData<>(false, null);
+      return new SliceData<>(null, false, List.of());
     }
 
-    public static <T> SliceData<T> from(Slice<T> slice) {
-      return new SliceData<>(slice.hasNext(), slice.getContent());
+    public static <T> SliceData<T> from(Slice<T> slice, ToLongFunction<T> idExtractor) {
+      List<T> content = slice.getContent();
+      return new SliceData<>(extractLastId(content, idExtractor), slice.hasNext(), content);
+    }
+
+    private static <T> Long extractLastId(List<T> content, ToLongFunction<T> idExtractor) {
+      if (content.isEmpty()) {
+        return null;
+      }
+      return idExtractor.applyAsLong(content.get(content.size() - 1));
     }
   }
 }

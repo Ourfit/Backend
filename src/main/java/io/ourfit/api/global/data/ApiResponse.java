@@ -5,6 +5,7 @@ import io.ourfit.api.global.data.dto.PageResponse;
 import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.data.dto.SliceResponse;
 import java.util.List;
+import java.util.function.ToLongFunction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 
@@ -52,11 +53,11 @@ public interface ApiResponse<T> {
     return new ListResponse<>(MESSAGE_OK, List.of());
   }
 
-  static <T> SliceResponse<T> of(Slice<T> data) {
-    return new SliceResponse<>(MESSAGE_OK, SliceResponse.SliceData.from(data));
-  }
-
   static <T> PageResponse<T> of(Page<T> data) {
     return new PageResponse<>(MESSAGE_OK, PageResponse.PageData.from(data));
+  }
+
+  static <T> SliceResponse<T> of(Slice<T> data, ToLongFunction<T> idExtractor) {
+    return new SliceResponse<>(MESSAGE_OK, SliceResponse.SliceData.from(data, idExtractor));
   }
 }

@@ -18,6 +18,7 @@ import io.ourfit.api.domain.user.data.entity.QUser;
 import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.domain.user.data.entity.association.QUserFavoriteWorkout;
 import io.ourfit.api.domain.workout.data.entity.QWorkout;
+import io.ourfit.api.global.data.Cursorable;
 import io.ourfit.api.infra.persistence.user.UserQRepository;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,22 @@ public class UserQRepositoryImpl implements UserQRepository {
     return new PageImpl<>(contents, pageable, totalCount);
   }
 
+  @Override
+  public Slice<UserInfoDto> findMateCandidates(
+      User requestedUser, MateCandidateSearchDto searchDto, Cursorable cursorable) {
+    var userIds = this.findMateCandidatesIds(requestedUser, searchDto, cursorable);
+
+    if (userIds.isEmpty()) {
+      return Page.empty(cursorable);
+    }
+
+    boolean hasNext = userIds.size() > cursorable.getPageSize();
+    if (hasNext) {
+      userIds.remove(userIds.size() - 1);
+    }
+    return new SliceImpl<>(this.fetchUserInfos(userIds), cursorable, hasNext);
+  }
+
   private List<Long> findMateCandidatesIds(
       User requestedUser, MateCandidateSearchDto searchDto, Pageable pageable) {
     return this.queryFactory
@@ -71,6 +88,26 @@ public class UserQRepositoryImpl implements UserQRepository {
         .orderBy(qUser.createdAt.asc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
+        .fetch();
+  }
+
+  private List<Long> findMateCandidatesIds(
+      User requestedUser, MateCandidateSearchDto searchDto, Cursorable cursorable) {
+    return this.queryFactory
+        .select(qUser.id)
+        .from(qUser)
+        .where(
+            lastIdGreaterThan(cursorable),
+            qUser.ne(requestedUser),
+            qUser.deletedAt.isNull(),
+            isNotMatchedWithMate(),
+            region2Eqauls(searchDto),
+            nicknameLike(searchDto),
+            genderEquals(searchDto),
+            preferredTimesIn(searchDto),
+            workoutsIn(searchDto))
+        .orderBy(qUser.createdAt.asc())
+        .limit(cursorable.getPageSize() + 1L)
         .fetch();
   }
 
@@ -173,5 +210,13 @@ public class UserQRepositoryImpl implements UserQRepository {
             .join(qWorkout)
             .on(qFavoriteWorkout.workout.eq(qWorkout))
             .where(qWorkout.code.in(searchDto.workoutTypes())));
+  }
+
+  private static BooleanExpression lastIdGreaterThan(Cursorable cursorable) {
+    var lastId = cursorable.getLastId();
+    if (lastId == null) {
+      return null;
+    }
+    return qUser.id.gt(cursorable.getLastId());
   }
 }
