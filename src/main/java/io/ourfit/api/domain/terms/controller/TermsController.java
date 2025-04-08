@@ -16,6 +16,7 @@ import io.ourfit.api.global.exception.custom.NoSuchEntityException;
 import io.ourfit.api.global.security.data.annotation.AdminApi;
 import io.ourfit.api.global.utils.StreamUtils;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -68,11 +69,11 @@ public class TermsController {
 
   @GetMapping("/{type}/revisions/{version}")
   public ResponseEntity<SingleResponse<TermsResponse>> findRevisionByTypeAndVersion(
-      @PathVariable final String type, @PathVariable final Double version) {
+      @PathVariable final String type, @PathVariable final double version) {
     TermsType termsType = findTermsTypeByName(type);
     TermsResponse response =
         this.revisionHistoryService
-            .findByTypeAndVersion(termsType, version)
+            .findByTypeAndVersion(termsType, BigDecimal.valueOf(version))
             .map(TermsResponse::toDetailed)
             .orElseThrow(() -> new NoSuchEntityException(ApiExceptionType.NOT_FOUND_TERMS));
 

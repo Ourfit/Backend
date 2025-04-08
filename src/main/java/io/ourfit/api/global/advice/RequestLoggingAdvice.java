@@ -41,7 +41,7 @@ public class RequestLoggingAdvice {
       return joinPoint.proceed();
     }
 
-    ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+    var responseWrapper = new ContentCachingResponseWrapper(response);
 
     logRequest(request);
 
