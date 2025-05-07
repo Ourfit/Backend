@@ -5,8 +5,6 @@ import io.ourfit.api.domain.user.data.entity.User;
 import io.ourfit.api.global.utils.StreamUtils;
 import java.time.DayOfWeek;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 public record ChallengeInfoResponse(ChallengeDetail me, ChallengeDetail myMate) {
 
   public static ChallengeInfoResponse from(User currentUser, List<Challenge> challenges) {
-    Map<Boolean, Optional<ChallengeDetail>> partitioned =
+    var partitioned =
         challenges.stream()
             .collect(
                 Collectors.partitioningBy(

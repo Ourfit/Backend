@@ -6,6 +6,7 @@ import io.ourfit.api.domain.terms.data.entity.TermsType;
 import io.ourfit.api.domain.terms.service.TermsRevisionHistoryService;
 import io.ourfit.api.infra.persistence.terms.TermsRevisionHistoryQRepository;
 import io.ourfit.api.infra.persistence.terms.TermsRevisionHistoryRepository;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,8 @@ public class TermsRevisionHistoryServiceImpl implements TermsRevisionHistoryServ
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<TermsRevisionHistory> findByTypeAndVersion(TermsType termsType, Double version) {
+  public Optional<TermsRevisionHistory> findByTypeAndVersion(
+      TermsType termsType, BigDecimal version) {
     return this.revisionHistoryRepository.findByTypeAndVersion(termsType, version);
   }
 }

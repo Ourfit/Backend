@@ -49,8 +49,8 @@ public class OAuth2RedirectDispatcher {
 
   private ResponseEntity<Void> doHandleInternal(
       OAuth2ProviderType provider, String code, String redirectUri) {
-    String oAuthId = this.templateFactory.getByProviderType(provider).issueToken(code).getId();
-    String authCode = this.authService.issueAuthCode(oAuthId).getCode();
+    final var oAuthId = this.templateFactory.getByProviderType(provider).issueToken(code).getId();
+    final var authCode = this.authService.issueAuthCode(oAuthId).getCode();
     OAuth2ProfileContextHolder.clear();
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(

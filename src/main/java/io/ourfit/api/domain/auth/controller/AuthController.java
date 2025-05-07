@@ -46,7 +46,7 @@ public class AuthController {
   @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping("/tokens/refresh")
   public ResponseEntity<SingleResponse<OurfitToken>> reissue(HttpServletRequest request) {
-    var accessToken = JwtUtils.extractToken(request);
+    final var accessToken = JwtUtils.extractToken(request);
     if (accessToken == null) {
       throw new AuthenticationException();
     }
@@ -77,7 +77,7 @@ public class AuthController {
   }
 
   private static Cookie findRefreshTokenCookie(HttpServletRequest request) {
-    Cookie[] cookies = request.getCookies();
+    var cookies = request.getCookies();
     if (cookies == null || cookies.length == 0) {
       throw new AuthenticationException();
     }

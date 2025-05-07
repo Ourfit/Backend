@@ -129,6 +129,7 @@ public class SecurityConfig {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowedOriginPatterns(
         List.of(
+            "*",
             "https://ourfit.life",
             "https://*.ourfit.life",
             "https://ourfit.github.io",

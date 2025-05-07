@@ -51,8 +51,8 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
   public String upload(String directoryPath, String fileName, MultipartFile file) {
     S3Utils.validatePath(directoryPath);
     S3Utils.validateFile(file);
-    final String extension = S3Utils.extractExtension(file);
-    final String key = directoryPath.concat(DIRECTORY_DELIMETER).concat(fileName).concat(extension);
+    final var extension = S3Utils.extractExtension(file);
+    final var key = directoryPath.concat(DIRECTORY_DELIMETER).concat(fileName).concat(extension);
     this.putObjectInternal(key, file);
     return this.buildObjectUrl(key);
   }
@@ -65,7 +65,7 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
 
   @Override
   public void deleteByKey(final String key) {
-    DeleteObjectRequest request =
+    var request =
         DeleteObjectRequest.builder().bucket(this.awsProperties.s3().bucket()).key(key).build();
     this.deleteObjectInternal(request);
   }
@@ -77,7 +77,7 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
 
   private ListObjectsV2Response getListObjectsInternal(final String path) {
     try {
-      ListObjectsV2Request request =
+      var request =
           ListObjectsV2Request.builder()
               .bucket(this.awsProperties.s3().bucket())
               .prefix(path)
@@ -91,7 +91,7 @@ public class OurfitS3ClientImpl extends AbstractAwsClient implements OurfitS3Cli
 
   private void putObjectInternal(final String key, final MultipartFile file) {
     try {
-      PutObjectRequest request =
+      var request =
           PutObjectRequest.builder().bucket(this.awsProperties.s3().bucket()).key(key).build();
       this.s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
     } catch (SdkException | IOException e) {

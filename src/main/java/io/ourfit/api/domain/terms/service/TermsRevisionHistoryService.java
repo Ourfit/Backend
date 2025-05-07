@@ -3,6 +3,7 @@ package io.ourfit.api.domain.terms.service;
 import io.ourfit.api.domain.terms.data.dto.internal.TermsRevisionCompactHistoryDto;
 import io.ourfit.api.domain.terms.data.entity.TermsRevisionHistory;
 import io.ourfit.api.domain.terms.data.entity.TermsType;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,5 +31,5 @@ public interface TermsRevisionHistoryService {
    * @param version 조회할 약관 버전
    * @return 약관 개정 이력 정보, 존재하지 않을 경우 {@link Optional#empty()}
    */
-  Optional<TermsRevisionHistory> findByTypeAndVersion(TermsType termsType, Double version);
+  Optional<TermsRevisionHistory> findByTypeAndVersion(TermsType termsType, BigDecimal version);
 }
