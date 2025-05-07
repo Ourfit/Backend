@@ -36,7 +36,7 @@ public class ChallengeController {
     User currentUser = userDetails.getUser();
 
     List<Challenge> result = this.service.findAllByUser(currentUser);
-    ChallengeInfoResponse response = ChallengeInfoResponse.from(currentUser, result);
+    var response = ChallengeInfoResponse.from(currentUser, result);
 
     return ResponseEntity.ok(ApiResponse.of(response));
   }
