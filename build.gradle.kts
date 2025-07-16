@@ -28,6 +28,7 @@ val j2htmlVersion by extra("1.6.0")
 val tikaVersion by extra("3.0.0")
 val jacksonVersion by extra("2.17.3")
 val flywayDBVersion by extra("10.15.0")
+val archUnitVersion by extra("1.4.1")
 
 repositories {
     mavenCentral()
@@ -80,6 +81,7 @@ dependencies {
         exclude(group = "junit", module = "junit")
     }
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.tngtech.archunit:archunit-junit5:$archUnitVersion")
     // Test Containers
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:mysql")
