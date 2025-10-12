@@ -1,8 +1,8 @@
 package io.ourfit.api.global.security.filter.impl;
 
-import io.ourfit.api.global.jwt.impl.JwtUtils;
 import io.ourfit.api.global.security.authentication.JwtAuthenticationToken;
 import io.ourfit.api.global.security.filter.AbstractSecurityFilter;
+import io.ourfit.api.global.utils.HttpRequestUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +29,8 @@ public class JwtAuthenticationFilter extends AbstractSecurityFilter {
       return;
     }
 
-    Optional<String> userToken = Optional.of(request).map(JwtUtils::extractToken);
+    Optional<String> userToken =
+        Optional.of(request).map(HttpRequestUtils::extractAuthorization);
 
     if (userToken.isEmpty()) {
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No Authorization Header");

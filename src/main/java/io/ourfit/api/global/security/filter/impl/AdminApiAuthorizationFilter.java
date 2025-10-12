@@ -5,6 +5,7 @@ import io.ourfit.api.global.security.data.OurfitAuditorAware;
 import io.ourfit.api.global.security.data.annotation.AdminApi;
 import io.ourfit.api.global.security.filter.AbstractSecurityFilter;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
+import io.ourfit.api.global.utils.HttpRequestUtils;
 import io.ourfit.api.global.web.resolver.HandlerMethodAnnotationResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -98,7 +99,7 @@ public class AdminApiAuthorizationFilter extends AbstractSecurityFilter {
             .requestUri(request.getRequestURI())
             .httpStatus(response.getStatus())
             .isSuccessful(isSuccessful)
-            .remoteAddress(request.getRemoteAddr())
+            .remoteAddress(HttpRequestUtils.resolveClientIp(request))
             .userAgent(request.getHeader(HttpHeaders.USER_AGENT))
             .timestamp(LocalDateTime.now())
             .build();

@@ -8,11 +8,11 @@ import io.ourfit.api.global.data.ApiResponse;
 import io.ourfit.api.global.data.dto.SingleResponse;
 import io.ourfit.api.global.exception.custom.AuthenticationException;
 import io.ourfit.api.global.jwt.OurfitToken;
-import io.ourfit.api.global.jwt.impl.JwtUtils;
 import io.ourfit.api.global.security.data.annotation.PublicApi;
 import io.ourfit.api.global.security.data.enums.AccessLevel;
 import io.ourfit.api.global.security.data.enums.KeyValidation;
 import io.ourfit.api.global.security.userdetails.OurfitUserDetails;
+import io.ourfit.api.global.utils.HttpRequestUtils;
 import io.ourfit.api.global.utils.ResponseCookieUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +46,7 @@ public class AuthController {
   @PublicApi(accessLevel = AccessLevel.PUBLIC, keyValidation = KeyValidation.NONE)
   @PostMapping("/tokens/refresh")
   public ResponseEntity<SingleResponse<OurfitToken>> reissue(HttpServletRequest request) {
-    final var accessToken = JwtUtils.extractToken(request);
+    final var accessToken = HttpRequestUtils.extractAuthorization(request);
     if (accessToken == null) {
       throw new AuthenticationException();
     }
