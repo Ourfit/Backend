@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -29,12 +30,10 @@ public class JwtAuthenticationFilter extends AbstractSecurityFilter {
       return;
     }
 
-    Optional<String> userToken =
-        Optional.of(request).map(HttpRequestUtils::extractAuthorization);
+    Optional<String> userToken = Optional.of(request).map(HttpRequestUtils::extractAuthorization);
 
     if (userToken.isEmpty()) {
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No Authorization Header");
-      return;
+      throw new AuthenticationCredentialsNotFoundException("No user token provided.");
     }
 
     this.setAuthentication(userToken.get());

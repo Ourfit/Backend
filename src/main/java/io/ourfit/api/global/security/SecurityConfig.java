@@ -24,7 +24,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
@@ -66,8 +66,7 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .denyAll())
-        .addFilterBefore(
-            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(this.filterFactory.publicAccess(), ExceptionTranslationFilter.class)
         .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .addFilterAfter(this.filterFactory.adminAuth(), JwtAuthenticationFilter.class)
         .addFilterAfter(this.filterFactory.rateLimit(), AdminApiAuthorizationFilter.class)
@@ -104,8 +103,7 @@ public class SecurityConfig {
                     .hasAuthority("SUPER_ADMIN")
                     .anyRequest()
                     .permitAll())
-        .addFilterBefore(
-            this.filterFactory.publicAccess(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(this.filterFactory.publicAccess(), ExceptionTranslationFilter.class)
         .addFilterAfter(this.filterFactory.jwtAuth(), PublicApiAccessControlFilter.class)
         .addFilterAfter(this.filterFactory.adminAuth(), JwtAuthenticationFilter.class)
         .addFilterAfter(this.filterFactory.rateLimit(), AdminApiAuthorizationFilter.class)
@@ -129,12 +127,10 @@ public class SecurityConfig {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowedOriginPatterns(
         List.of(
-            "*",
             "https://ourfit.life",
             "https://*.ourfit.life",
             "https://ourfit.github.io",
-            "http://localhost:3000",
-            "http://localhost:63342"));
+            "http://localhost:3000"));
     corsConfiguration.setAllowedMethods(
         StreamUtils.mapToList(DEFAULT_PERMIT_METHODS, HttpMethod::name));
     corsConfiguration.setAllowCredentials(true);

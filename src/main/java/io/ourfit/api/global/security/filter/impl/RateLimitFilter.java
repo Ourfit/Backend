@@ -41,11 +41,11 @@ public class RateLimitFilter extends AbstractSecurityFilter {
     }
 
     RateLimit rateLimit = optionalRateLimit.get();
-    Assert.isTrue(rateLimit.maxRequests() > 0, "maxRequests must be greater than 0");
-    Assert.isTrue(rateLimit.duration() > 0, "duration must be greater than 0");
+    Assert.isTrue(rateLimit.maxRequests() > 0, "'maxRequests' must be greater than 0.");
+    Assert.isTrue(rateLimit.duration() > 0, "'duration' must be greater than 0.");
     if (rateLimit.limitType() == RateLimit.LimitType.USER && optionalPublicApi.isPresent()) {
       throw new IllegalStateException(
-          "RateLimit annotation cannot be used with PublicApi annotation");
+          "@RateLimit annotation cannot be used with @PublicApi annotation.");
     }
 
     String key = this.createKey(request, rateLimit);
@@ -79,7 +79,7 @@ public class RateLimitFilter extends AbstractSecurityFilter {
       long retryAfterInSeconds = this.rateLimiter.getRetryAfterSeconds(key, rateLimit);
       response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterInSeconds));
     }
-    logger.warn("Rate limit exceeded for key: " + key);
+    this.logger.warn("Rate limit exceeded for key: " + key);
     sendErrorResponse(response, HttpStatus.TOO_MANY_REQUESTS);
   }
 

@@ -17,6 +17,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,8 +44,8 @@ public class AdminApiAuthorizationFilter extends AbstractSecurityFilter {
         !isAdminApi || this.isAuthorizedAdmin(optionalAdminApi.get());
 
     if (!isAuthorizedRequest) {
-      this.handleUnauthorizedRequest(request, response, optionalAdminApi.get());
-      return;
+      this.publishAuditEventIfRequired(request, response, optionalAdminApi.get());
+      throw new AccessDeniedException("Admin privileges required.");
     }
 
     try {
@@ -76,13 +77,11 @@ public class AdminApiAuthorizationFilter extends AbstractSecurityFilter {
     return false;
   }
 
-  private void handleUnauthorizedRequest(
-      HttpServletRequest request, HttpServletResponse response, AdminApi adminApi)
-      throws IOException {
+  private void publishAuditEventIfRequired(
+      HttpServletRequest request, HttpServletResponse response, AdminApi adminApi) {
     if (adminApi.audit()) {
       this.publishAuditEvent(request, response, adminApi, false);
     }
-    response.sendError(HttpServletResponse.SC_FORBIDDEN);
   }
 
   private void publishAuditEvent(
