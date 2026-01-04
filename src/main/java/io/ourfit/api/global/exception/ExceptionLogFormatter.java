@@ -1,10 +1,12 @@
 package io.ourfit.api.global.exception;
 
 import io.ourfit.api.global.security.data.OurfitAuditorAware;
-import jakarta.servlet.http.HttpServletRequest;
+import io.ourfit.api.global.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 @Slf4j
@@ -20,82 +22,110 @@ public class ExceptionLogFormatter {
   /** 에러 모드에서 출력할 스택 트레이스 개수 */
   private static final int ERROR_TRACE_COUNT = 3;
 
-  private final HttpServletRequest currentRequest;
   private final OurfitAuditorAware auditorAware;
 
-  public String doFormat(Throwable ex) {
-    StringBuilder logBuilder = new StringBuilder();
-    StackTraceElement[] stackTraces = ex.getStackTrace();
-    // 예외 요약
-    logBuilder
-        .append(LINE_SEPARATOR)
-        .append(String.format("=== Exception Log - %s ===", ex.getClass().getSimpleName()))
-        .append(LINE_SEPARATOR);
-    logBuilder.append("Message: ").append(ex.getMessage()).append(LINE_SEPARATOR);
-    // 발생 위치
-    logBuilder.append("At: ");
-    appendStackTrace(logBuilder, stackTraces);
-    // 스레드 정보
-    Thread currentThread = Thread.currentThread();
-    logBuilder
-        .append("Thread: ")
-        .append(currentThread.getName())
-        .append(String.format(" (ID: %d)", currentThread.getId()))
-        .append(LINE_SEPARATOR);
-    // 원인 정보
-    Throwable cause = ex.getCause();
-    if (cause != null) {
-      logBuilder
-          .append("Caused By: ")
-          .append(cause.getClass().getSimpleName())
-          .append(LINE_SEPARATOR)
-          .append("Cause Message: ")
-          .append(cause.getMessage())
-          .append(LINE_SEPARATOR);
-    }
-    // HTTP 요청 정보
-    logBuilder.append("-- Additional Information --").append(LINE_SEPARATOR);
-    if (this.currentRequest != null) {
-      logBuilder
-          .append("Request Method: ")
-          .append(this.currentRequest.getMethod())
-          .append(LINE_SEPARATOR)
-          .append("Request URI: ")
-          .append(this.currentRequest.getRequestURI())
-          .append(LINE_SEPARATOR);
-      String queryString = this.currentRequest.getQueryString();
-      if (queryString != null) {
-        logBuilder.append("Query String: ").append(queryString).append(LINE_SEPARATOR);
-      }
-    }
-    // 요청 사용자 정보
-    this.auditorAware
-        .getCurrentAuditorUser()
-        .ifPresentOrElse(
-            user ->
-                logBuilder.append("Requested User: ").append(user.getId()).append(LINE_SEPARATOR),
-            () ->
-                logBuilder
-                    .append("Requested User: ")
-                    .append(OurfitAuditorAware.ANONYMOUS_USER)
-                    .append(LINE_SEPARATOR));
+  public String compact(Throwable ex) {
+    final var sb = new StringBuilder(256);
 
-    // 최종 로그 출력
-    return logBuilder.toString();
+    this.appendExceptionSignature(sb, ex);
+    this.appendStackTrace(sb, ex.getStackTrace(), 1);
+    this.appendSingleCauseIfPresent(sb, ex);
+    this.appendRequestContext(sb);
+
+    return sb.toString();
   }
 
-  private static void appendStackTrace(StringBuilder logBuilder, StackTraceElement[] stackTraces) {
-    int maxStackTraceCount = resolveStackTraceCount();
-    int length = Math.min(stackTraces.length, maxStackTraceCount);
+  public String detail(Throwable ex) {
+    final var sb = new StringBuilder(1024);
+    final int maxStackTraceCount = log.isDebugEnabled() ? TRACE_COUNT : ERROR_TRACE_COUNT;
+
+    this.appendExceptionSignature(sb, ex);
+    this.appendStackTrace(sb, ex.getStackTrace(), maxStackTraceCount);
+    this.appendCauseHierarchy(sb, ex);
+    this.appendRequestContext(sb);
+
+    return sb.toString();
+  }
+
+  private void appendExceptionSignature(StringBuilder sb, Throwable ex) {
+    sb.append(ClassUtils.getSimpleName(ex)).append(": ").append(sanitize(ex.getMessage()));
+  }
+
+  private void appendRequestContext(StringBuilder sb) {
+    sb.append("Thread: ")
+        .append(Thread.currentThread().getName())
+        .append(" | Auditor: ")
+        .append(this.auditorAware.getCurrentAuditor().map(String::valueOf).orElse("anonymous"));
+    final var requestAttributes = RequestContextHolder.getRequestAttributes();
+    if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
+      final var request = servletRequestAttributes.getRequest();
+      final var queryString = request.getQueryString();
+      sb.append(" | Request: ")
+          .append(request.getMethod())
+          .append(" ")
+          .append(request.getRequestURI());
+      if (queryString != null) {
+        sb.append("?").append(queryString);
+      }
+    }
+  }
+
+  private void appendStackTrace(
+      StringBuilder sb, StackTraceElement[] stackTraces, final int maxStackTraceCount) {
+    final int length = Math.min(stackTraces.length, maxStackTraceCount);
+    sb.append(LINE_SEPARATOR).append("At: ");
     for (int i = 0; i < length; i++) {
       if (i > 0) {
-        logBuilder.append("\t..."); // 두 번째 라인부터 들여쓰기
+        sb.append("\t..."); // 두 번째 라인부터 들여쓰기
       }
-      logBuilder.append(stackTraces[i]).append(LINE_SEPARATOR);
+      sb.append(stackTraces[i]);
+      if (i < length - 1) {
+        // 마지막이 아니라면 개행
+        sb.append(LINE_SEPARATOR);
+      }
     }
   }
 
-  private static int resolveStackTraceCount() {
-    return log.isDebugEnabled() ? TRACE_COUNT : ERROR_TRACE_COUNT;
+  private void appendSingleCauseIfPresent(StringBuilder sb, Throwable ex) {
+    Throwable cause = ex.getCause();
+    if (cause == null) {
+      // 포맷 유지를 위해 개행
+      sb.append(LINE_SEPARATOR);
+      return;
+    }
+    sb.append(LINE_SEPARATOR)
+        .append("cause: ")
+        .append(ClassUtils.getSimpleName(cause))
+        .append(": ")
+        .append(sanitize(cause.getMessage()))
+        .append(LINE_SEPARATOR);
+  }
+
+  private void appendCauseHierarchy(StringBuilder sb, Throwable ex) {
+    final int maxDepth = log.isDebugEnabled() ? TRACE_COUNT : ERROR_TRACE_COUNT;
+    Throwable cause = ex.getCause();
+    int depth = 1;
+
+    while (cause != null && depth <= maxDepth) {
+      sb.append("cause[")
+          .append(depth)
+          .append("]: ")
+          .append(ClassUtils.getSimpleName(cause))
+          .append(": ")
+          .append(sanitize(cause.getMessage()));
+      cause = cause.getCause();
+      depth++;
+      if (cause != null && depth <= maxDepth) {
+        // 다음 cause가 있으면 개행
+        sb.append(LINE_SEPARATOR);
+      }
+    }
+  }
+
+  private static String sanitize(String s) {
+    if (s == null) {
+      return "[NULL]";
+    }
+    return s.replace('\n', ' ').replace('\r', ' ').replace('"', '\'');
   }
 }

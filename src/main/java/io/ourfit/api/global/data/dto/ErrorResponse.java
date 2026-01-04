@@ -4,6 +4,7 @@ import static io.ourfit.api.global.exception.ApiExceptionType.*;
 
 import io.ourfit.api.global.exception.ApiExceptionType;
 import io.ourfit.api.global.exception.OurfitApiException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -23,6 +24,12 @@ public record ErrorResponse(String message, ErrorData error) {
   public static ErrorResponse badRequest(String message) {
     return new ErrorResponse(
         HttpStatus.BAD_REQUEST.getReasonPhrase(), ErrorData.of(message, BAD_REQUEST.getCode()));
+  }
+
+  public static ErrorResponse badRequest(List<FieldError> errors) {
+    return new ErrorResponse(
+        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+        ErrorData.of(HttpStatus.BAD_REQUEST.getReasonPhrase(), BAD_REQUEST.getCode(), errors));
   }
 
   public static ErrorResponse unauthorized(String message) {
