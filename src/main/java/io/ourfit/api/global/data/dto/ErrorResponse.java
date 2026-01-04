@@ -26,10 +26,10 @@ public record ErrorResponse(String message, ErrorData error) {
         HttpStatus.BAD_REQUEST.getReasonPhrase(), ErrorData.of(message, BAD_REQUEST.getCode()));
   }
 
-  public static ErrorResponse badRequest(List<FieldError> errors) {
+  public static ErrorResponse badRequest(String message, List<FieldError> errors) {
     return new ErrorResponse(
         HttpStatus.BAD_REQUEST.getReasonPhrase(),
-        ErrorData.of(HttpStatus.BAD_REQUEST.getReasonPhrase(), BAD_REQUEST.getCode(), errors));
+        ErrorData.of(message, BAD_REQUEST.getCode(), errors));
   }
 
   public static ErrorResponse unauthorized(String message) {

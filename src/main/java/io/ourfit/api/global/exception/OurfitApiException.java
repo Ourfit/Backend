@@ -49,4 +49,8 @@ public abstract class OurfitApiException extends RuntimeException {
   protected OurfitApiException(ApiExceptionType exceptionType) {
     this(exceptionType, null);
   }
+
+  public boolean is5xxServerError() {
+    return this.httpStatus.is5xxServerError();
+  }
 }

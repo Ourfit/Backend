@@ -1,7 +1,6 @@
 package io.ourfit.api.global.exception;
 
-import static io.ourfit.api.global.exception.ApiExceptionType.INTERNAL_SERVER_ERROR;
-import static io.ourfit.api.global.exception.ApiExceptionType.INVALID_PARAMETER;
+import static io.ourfit.api.global.exception.ApiExceptionType.*;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import io.ourfit.api.global.config.properties.EnvironmentProfileType;
@@ -48,14 +47,24 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   protected ResponseEntity<ErrorResponse> handleAllUncaughtException(Exception ex) {
-    this.logError(ex, true);
+    String message = this.formatter.detail(ex);
+
+    if (this.currentProfile.isRemote()) {
+      this.webhookService.send(message);
+    }
+
+    log.error(message);
     return ResponseEntity.internalServerError()
         .body(ErrorResponse.internalServerError(this.resolveMessage(INTERNAL_SERVER_ERROR)));
   }
 
   @ExceptionHandler(OurfitApiException.class)
   protected ResponseEntity<ErrorResponse> handleLocatApiException(OurfitApiException ex) {
-    this.logError(ex, false);
+    if (ex.is5xxServerError()) {
+      log.error(this.formatter.detail(ex));
+    } else {
+      log.warn(this.formatter.compact(ex));
+    }
     return ResponseEntity.status(ex.getHttpStatus())
         .body(ErrorResponse.fromException(ex, this.resolveMessage(ex.getApiExceptionType())));
   }
@@ -69,7 +78,7 @@ public class GlobalExceptionHandler {
     ConversionException.class
   })
   protected ResponseEntity<ErrorResponse> handleBadRequestException(Exception ex) {
-    this.logError(ex, false);
+    log.error(this.formatter.compact(ex));
     return ResponseEntity.badRequest()
         .body(ErrorResponse.badRequest(this.resolveMessage(INVALID_PARAMETER)));
   }
@@ -77,7 +86,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(AuthenticationException.class)
   protected ResponseEntity<ErrorResponse> handleAuthenticationException(
       AuthenticationException ex) {
-    this.logError(ex, false);
+    log.error(this.formatter.compact(ex));
     return ResponseEntity.status(UNAUTHORIZED)
         .body(ErrorResponse.unauthorized(this.resolveMessage(ApiExceptionType.UNAUTHORIZED)));
   }
@@ -98,14 +107,18 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(BindException.class)
   protected ResponseEntity<ErrorResponse> handleBindException(BindException ex) {
     log.info(this.formatter.compact(ex));
-    return ResponseEntity.badRequest().body(ErrorResponse.badRequest(FieldError.from(ex)));
+    return ResponseEntity.badRequest()
+        .body(
+            ErrorResponse.badRequest(this.resolveMessage(INVALID_PARAMETER), FieldError.from(ex)));
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
   protected ResponseEntity<ErrorResponse> handleConstraintViolationException(
       ConstraintViolationException ex) {
     log.info(this.formatter.compact(ex));
-    return ResponseEntity.badRequest().body(ErrorResponse.badRequest(FieldError.from(ex)));
+    return ResponseEntity.badRequest()
+        .body(
+            ErrorResponse.badRequest(this.resolveMessage(INVALID_PARAMETER), FieldError.from(ex)));
   }
 
   @ExceptionHandler(NoHandlerFoundException.class)
@@ -131,15 +144,6 @@ public class GlobalExceptionHandler {
       headers.setAccept(notSupported.getSupportedMediaTypes());
     }
     return ResponseEntity.status(ex.getStatusCode()).headers(headers).build();
-  }
-
-  private void logError(Exception ex, boolean sendWebhook) {
-    String logMessage = this.formatter.detail(ex);
-
-    log.error(logMessage);
-    if (this.currentProfile.isRemote() && sendWebhook) {
-      this.webhookService.send(logMessage);
-    }
   }
 
   private String resolveMessage(ApiExceptionType exceptionType) {
